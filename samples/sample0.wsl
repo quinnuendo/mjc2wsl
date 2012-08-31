@@ -1,0 +1,41 @@
+C:" This file automatically converted from microjava bytecode";
+C:" with mjc2wsl v 0.1";
+VAR < tempa := 0, tempb := 0, tempres :=0,
+loc0 := 0, loc1 := 0, loc2 := 0, loc3 := 0, 
+	estack := < >, t_e_m_p := 0 > :
+ ACTIONS A_S_start:
+ A_S_start == 
+
+C:" enter not fully procesed yet";
+estack := <0 > ++ estack;
+loc0 := HEAD(estack); estack := TAIL(estack);
+CALL a19 END
+a19 ==
+estack := <loc0 > ++ estack;
+estack := <5 > ++ estack;
+tempa := HEAD(estack); estack := TAIL(estack);
+tempb := HEAD(estack); estack := TAIL(estack);
+C:" IF CALL 13";
+IF tempb >= tempa THEN CALL a34 FI;
+estack := <loc0 > ++ estack;
+estack := <0 > ++ estack;
+tempa := HEAD(estack); estack := TAIL(estack);
+tempa := HEAD(estack); estack := TAIL(estack);
+PRINT(tempa);
+estack := <loc0 > ++ estack;
+estack := <1 > ++ estack;
+tempa := HEAD(estack); estack := TAIL(estack);
+tempb := HEAD(estack); estack := TAIL(estack);
+tempres := tempb + tempa;
+estack := <tempres > ++ estack;
+loc0 := HEAD(estack); estack := TAIL(estack);
+C:" CALL -12";
+CALL a19 END
+a34 ==
+C:" exit not fully procesed yet";
+C:" return not fully procesed yet";
+CALL Z
+END
+ENDACTIONS;
+SKIP
+ENDVAR

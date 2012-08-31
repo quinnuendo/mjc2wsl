@@ -1,0 +1,36 @@
+C:" This file automatically converted from microjava bytecode";
+C:" with mjc2wsl v 0.1";
+VAR < tempa := 0, tempb := 0, tempres :=0,
+	stack := < >, t_e_m_p := 0 > :
+
+C:"#51";
+C:" enter";
+C:"#22";
+stack := <10 > ++ stack;
+C:"#22";
+stack := <15 > ++ stack;
+C:"#56";
+tempa := HEAD(stack); stack := TAIL(stack);
+PRINT(tempa);
+C:"#22";
+stack := <97 > ++ stack;
+C:"#20";
+stack := <5 > ++ stack;
+C:"#54";
+tempa := HEAD(stack); stack := TAIL(stack);
+PRINT(tempa);
+C:"#15";
+stack := <0 > ++ stack;
+C:"#38";
+C:"!unknown op error: 38";
+C:"#15";
+stack := <0 > ++ stack;
+C:"#54";
+tempa := HEAD(stack); stack := TAIL(stack);
+PRINT(tempa);
+C:"#52";
+C:"!unknown op error: 52";
+C:"#50";
+C:"!unknown op error: 50";
+SKIP
+ENDVAR

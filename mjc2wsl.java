@@ -26,7 +26,10 @@ public class mjc2wsl{
 		load_2      =  4,
 		load_3      =  5,
 		store       =  6,
-		store_n     =  7,
+		store_0     =  7,
+		store_1     =  8,
+		store_2     =  9,
+		store_3     = 10,
 		getstatic   = 11,
 		putstatic   = 12,
 		getfield    = 13,
@@ -59,7 +62,12 @@ public class mjc2wsl{
 		dup         = 40,
 		dup2        = 41,
 		jmp         = 42,
-		jcc         = 43,
+		jeq         = 43,
+		jne         = 44,
+		jlt         = 45,
+		jle         = 46,
+		jgt         = 47,
+		jge         = 48,
 		call        = 49,
 		return_     = 50,
 		enter       = 51,
@@ -71,20 +79,24 @@ public class mjc2wsl{
 		trap		= 57;
 
 	public String getStandardStart(){
-		String ret ="C:\" This file automatically converted from microjava bytecode\";\n"
-			+"C:\" with mjc2wsl v "+versionN+"\";\n";
-		ret +="VAR < tempa := 0, tempb := 0, tempres :=0,\n"+
-		"	stack := < >, t_e_m_p := 0 > :\n";
+		StringBuilder ret = new StringBuilder("C:\" This file automatically converted from microjava bytecode\";\n"
+			+"C:\" with mjc2wsl v "+versionN+"\";\n");
 		
-		return ret;
+		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n");
+		for (int i=0;i<=3;i++) ret.append("loc"+i+" := 0, ");
+		ret.append("\n	estack := < >, t_e_m_p := 0 > :");
+		
+		return ret.toString();
 	}
 
 	public String getStandardEnd(){
 		return "SKIP\nENDVAR";
 	}
-		
+	
+	private boolean originalInComments = false;	
+	
 	private InputStream mainIn;
-	private PrintStream out = System.out;
+	private PrintWriter out = null;
 	
 	private void pr(int i){
 			out.print(i);
@@ -121,6 +133,10 @@ public class mjc2wsl{
 		return (get2()<<16) + (get2()<<16>>>16);
 	}
 	
+	private String loc(int i){
+		return "loc"+i;
+	}
+	
 	/**
 	 * Creates a WSL comment with care to quote chars.
 	 */
@@ -139,24 +155,24 @@ public class mjc2wsl{
 		return "C:\""+type+str.replace("\"", "''")+"\";";
 	}
 	
-	private String cmdToStack(int i){
-			return "stack := <"+i+" > ++ stack;";
+	private String cmdToEStack(int i){
+			return "estack := <"+i+" > ++ estack;";
 	}
 	
-	private String cmdToStack(String i){
-			return "stack := <"+i+" > ++ stack;";
+	private String cmdToEStack(String i){
+			return "estack := <"+i+" > ++ estack;";
 	}
 	
-	private String cmdFromStack(String st){
-			return st+" := HEAD(stack); stack := TAIL(stack);";
+	private String cmdFromEStack(String st){
+			return st+" := HEAD(estack); estack := TAIL(estack);";
 	}
 	
 	private String getTopTwo(){
-		 return cmdFromStack("tempa")+cmdFromStack("tempb");
+		 return cmdFromEStack("tempa")+"\n"+cmdFromEStack("tempb");
 	}
 	
 	private String getTop(){
-		 return cmdFromStack("tempa");
+		 return cmdFromEStack("tempa");
 	}
 	
 	public void convertStream(InputStream ins){
@@ -168,68 +184,84 @@ public class mjc2wsl{
 		
 		int op = get();
 		while (op>=0){
+				if (originalInComments) prl(createComment(""+op,C_OC));
 				switch(op) {
 					case load: {
-						prl(cmdToStack(get()));
+						prl(cmdToEStack(loc(get())));
 						break;
 					}
-					case load_0: {
-						prl(cmdToStack(0));
+					case load_0: case load_1: case load_2: case load_3: {
+									prl(cmdToEStack(loc(op-load_0)));
+									break;
+					}
+					case store: {
+						prl(cmdFromEStack(loc(get())));
 						break;
-					}			
+					}
+					case store_0: case store_1: case store_2: case store_3: {
+						prl(cmdFromEStack(loc(op-store_0)));
+						break;
+					}
 					case const_: {
-						prl(cmdToStack(get4()));
-						break;
-					}
-					case const_0: {
-						prl(cmdToStack(0));
-						break;
-					}
-					case const_1: {
-						prl(cmdToStack(1));
-						break;
-					}
-					case const_2: {
-						prl(cmdToStack(2));
-						break;
-					}
-					case const_3: {
-						prl(cmdToStack(3));
-						break;
-					}
-					case const_4: {
-						prl(cmdToStack(4));
+						prl(cmdToEStack(get4()));
 						break;
 					}
 					
-					case const_5: {
-						prl(cmdToStack(5));
+					case const_0: case const_1: case const_2: 
+					case const_3: case const_4: case const_5:{
+						prl(cmdToEStack(op-const_0));
 						break;
 					}
 					
+					case jmp: {
+						prl(createComment("CALL "+get2()));
+						break;			
+					}
+					
+					case jeq: case jne: case jlt: 
+					case jle: case jgt: case jge: {
+						prl(getTopTwo());
+						prl(createComment("IF CALL "+get2()));
+						break;			
+					}
+					
+					case add: {
+						prl(getTopTwo());
+						prl("tempres := tempb + tempa;");
+						prl(cmdToEStack("tempres"));
+						break;
+					}					
 					case div: {
 						prl(getTopTwo());
-						prl("tempr = tempa / tempb;");
-						prl(cmdToStack("tempr"));
+						prl("tempres := tempb / tempa;");
+						prl(cmdToEStack("tempres"));
 						break;
 					}
 					
 					case enter: {
-						prl(createComment("enter"));
+						prl(createComment("enter not fully procesed yet"));
 						get();get();
+						break;
+					}
+					case return_: {
+						prl(createComment("return not fully procesed yet"));
+						break;
+					}
+					case exit: {
+						prl(createComment("exit not fully procesed yet"));
 						break;
 					}
 
 					//the prints
 					case bprint: {
-									prl(getTop());
-									prl("PRINT(tempa);");
+									prl(getTopTwo());
+									prl("PRINT(tempb);");
 									break;
 					}
 					case print: {
 									//TODO need to make it a char
-									prl(getTop());
-									prl("PRINT(tempa);");
+									prl(getTopTwo());
+									prl("PRINT(tempb);");
 									break;
 					}
 
@@ -249,17 +281,63 @@ public class mjc2wsl{
 			}
 	}
 	
+	public void printHelp(){
+			System.out.println("MicroJava bytecode to WSL converter. v "+versionN+", by Doni Pracner");
+			System.out.println("usage:\n\t {options} mjc2wsl  filename [outfile]");
+			System.out.println("options:\n\t--screen print output to screen");
+			System.out.println("\t-o --oc include original code in comments");
+	}
+	
+	public String makeDefaultOutName(String inname){
+			String rez = inname;
+			if (inname.endsWith(".obj"))
+					rez = rez.substring(0,rez.length()-4);
+			return rez+".wsl";
+	}
+	
 	public void run(String[] args){
 		if (args.length == 0){
-			System.out.println("MicroJava bytecode to WSL converter. v "+versionN+", by Doni Pracner");
-			System.out.println("usage:\n\t mjc2wsl  filename");
+				printHelp();
 		}else{
-			File f = new File(args[0]);
+			int i=0;
+			while (i<args.length && args[i].charAt(0)=='-'){
+				if (args[i].compareTo("-h")==0){
+						printHelp();return;
+				}else
+				if (args[i].compareTo("-o")==0 || args[i].startsWith("--oc")){
+					if (args[i].length()==2) originalInComments = true;
+					else if (args[i].length()==5)
+							originalInComments = args[i].charAt(4)=='+';
+						else originalInComments = true;
+				}else
+				if (args[i].startsWith("--screen")){
+					out = new PrintWriter(System.out);
+				}
+				i++;
+			}
+
+			if (i>=args.length) {System.out.println("no filename supplied");System.exit(2);}
+			File f = new File(args[i]);
+			
+			if (i+1<args.length) {
+					try{out = new PrintWriter(args[i+1]);}catch (Exception e) {
+							System.err.println("error in opening out file:");
+							e.printStackTrace();
+					}
+			}
+			if (out == null){
+					//if not set to screen, or a file, make a default filename
+					try{out = new PrintWriter(makeDefaultOutName(args[i]));}catch (Exception e) {
+							System.err.println("error in opening out file:");
+							e.printStackTrace();
+					}
+			}
 			if (f.exists()){
 				Calendar now = Calendar.getInstance();
 				convertFile(f);
 				long mili = Calendar.getInstance().getTimeInMillis() - now.getTimeInMillis();
 				System.out.println("conversion time:"+mili+" ms");
+				out.close();
 			}else 
 				System.out.println("file does not exist");			
 		}
