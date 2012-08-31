@@ -1,0 +1,9 @@
+program P
+{
+	void main()
+	{
+			print(chr(10),15);
+			print(ord('a'),5);
+			print(len(null));
+	}
+}
