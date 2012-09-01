@@ -9,7 +9,7 @@ import java.util.*;
  * @author Doni Pracner, http://perun.dmi.rs/pracner http://quemaster.com
  */
 public class mjc2wsl{
-	public static String versionN = "0.1";
+	public static String versionN = "0.1.2";
 		
 	//regular comments from the original file
 	//OC when original code is inserted in the file, next to the translations
@@ -97,6 +97,7 @@ public class mjc2wsl{
 	
 	private InputStream mainIn;
 	private PrintWriter out = null;
+	private int counter = 0;
 	
 	private void pr(int i){
 			out.print(i);
@@ -122,6 +123,7 @@ public class mjc2wsl{
 			}catch (IOException ex){
 				ex.printStackTrace();
 			}
+			counter++;
 			return res;
 	}
 	
@@ -181,10 +183,11 @@ public class mjc2wsl{
 		for (int i=0;i<14;i++) get();
 		
 		prl(getStandardStart());
-		
+		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a14 END");
 		int op = get();
 		while (op>=0){
 				if (originalInComments) prl(createComment(""+op,C_OC));
+				prl("a"+counter+" == ");
 				switch(op) {
 					case load: {
 						prl(cmdToEStack(loc(get())));
@@ -214,14 +217,14 @@ public class mjc2wsl{
 					}
 					
 					case jmp: {
-						prl(createComment("CALL "+get2()));
+						prl("CALL a"+(counter+get2())+";");
 						break;			
 					}
 					
 					case jeq: case jne: case jlt: 
 					case jle: case jgt: case jge: {
 						prl(getTopTwo());
-						prl(createComment("IF CALL "+get2()));
+						prl("IF tempb >= tempa THEN CALL a"+(counter+get2())+" FI;");
 						break;			
 					}
 					
@@ -267,8 +270,11 @@ public class mjc2wsl{
 
 					default: prl(createComment("unknown op error: "+op,C_ERR)); break;
 				}
+				
 				op = get();
+				if (op>=0) prl("CALL a"+counter+" END");
 		}
+		prl("CALL Z;\nSKIP END\nENDACTIONS;\n");
 		prl(getStandardEnd());
 		
 	}
