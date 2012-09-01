@@ -183,7 +183,7 @@ public class mjc2wsl{
 		for (int i=0;i<14;i++) get();
 		
 		prl(getStandardStart());
-		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a14 END");
+		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a15 END");
 		int op = get();
 		while (op>=0){
 				if (originalInComments) prl(createComment(""+op,C_OC));
