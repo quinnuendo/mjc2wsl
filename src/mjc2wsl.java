@@ -11,15 +11,21 @@ import java.util.*;
  */
 public class mjc2wsl{
 	public static String versionN = "0.1.2";
-		
-	//regular comments from the original file
-	//OC when original code is inserted in the file, next to the translations
-	//SPEC special messages from the translator
-	//ERR error messages from the translator
-	public static final char C_REG = ' ', C_OC = '#', C_SPEC = '&', C_ERR = '!';
 
-		/** instruction code */
-		public static final int 
+	/** Constant used for marking a regular comment from the original file */
+	public static final char C_REG = ' ';
+	/**
+	 * Constant used for marking when original code is inserted in the file,
+	 * next to the translations
+	 */
+	public static final char C_OC = '#';
+	/** Constant used for marking special messages from the translator */
+	public static final char C_SPEC = '&';
+	/** Constant used for marking error messages from the translator */
+	public static final char C_ERR = '!';
+
+	/** instruction code in MicroJava bytecode. */
+	public static final int 
 		load        =  1,
 		load_0      =  2,
 		load_1      =  3,
