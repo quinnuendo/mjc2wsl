@@ -2,10 +2,11 @@ import java.io.*;
 import java.util.*;
 
 /**
- * This program converts file from compiled MicroJava bytecode (a subset used
- * in Compiler Construction courses by H. Moessenboeck, not "Java ME")
- * to WSL language which is a part of the FermaT Transformation system.
- *
+ * This program converts file from compiled MicroJava bytecode to WSL language
+ * which is a part of the FermaT Transformation system. MicroJava is a subset
+ * used in Compiler Construction courses by Hanspeter Moessenboeck, not
+ * "Java ME". 
+ * 
  * @author Doni Pracner, http://perun.dmi.rs/pracner http://quemaster.com
  */
 public class mjc2wsl{
@@ -14,10 +15,9 @@ public class mjc2wsl{
 	//regular comments from the original file
 	//OC when original code is inserted in the file, next to the translations
 	//SPEC special messages from the translator
-	//ERR error messages from the transnlator
+	//ERR error messages from the translator
 	public static final char C_REG = ' ', C_OC = '#', C_SPEC = '&', C_ERR = '!';
 
-	
 		/** instruction code */
 		public static final int 
 		load        =  1,
@@ -79,13 +79,15 @@ public class mjc2wsl{
 		trap		= 57;
 
 	public String getStandardStart(){
-		StringBuilder ret = new StringBuilder("C:\" This file automatically converted from microjava bytecode\";\n"
+		StringBuilder ret = new StringBuilder(
+			"C:\" This file automatically converted from microjava bytecode\";\n"
 			+"C:\" with mjc2wsl v "+versionN+"\";\n");
-		
+
 		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n");
-		for (int i=0;i<=3;i++) ret.append("loc"+i+" := 0, ");
+		for (int i = 0; i <= 3; i++)
+			ret.append("loc" + i + " := 0, ");
 		ret.append("\n	estack := < >, t_e_m_p := 0 > :");
-		
+
 		return ret.toString();
 	}
 
@@ -116,27 +118,28 @@ public class mjc2wsl{
 	}
 	
 	private int get() {
-			int res = -1;
-			try{
-					res = mainIn.read();
-					if (res>=0) res = res<<24>>>24;
-			}catch (IOException ex){
-				ex.printStackTrace();
-			}
-			counter++;
-			return res;
+		int res = -1;
+		try {
+			res = mainIn.read();
+			if (res >= 0)
+				res = res << 24 >>> 24;
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		counter++;
+		return res;
 	}
 	
 	private int get2() {
-		return (get()*256 + get())<<16>>16;
+		return (get() * 256 + get()) << 16 >> 16;
 	}
-	
+
 	private int get4() {
-		return (get2()<<16) + (get2()<<16>>>16);
+		return (get2() << 16) + (get2() << 16 >>> 16);
 	}
 	
 	private String loc(int i){
-		return "loc"+i;
+		return "loc" + i;
 	}
 	
 	/**
@@ -153,203 +156,234 @@ public class mjc2wsl{
 	 * in them, or additional comments regarding the translation
 	 * process.
 	 */
-	public static String createComment(String str, char type){
-		return "C:\""+type+str.replace("\"", "''")+"\";";
+	public static String createComment(String str, char type) {
+		return "C:\"" + type + str.replace("\"", "''") + "\";";
 	}
-	
-	private String cmdToEStack(int i){
-			return "estack := <"+i+" > ++ estack;";
+
+	private String cmdToEStack(int i) {
+		return "estack := <" + i + " > ++ estack;";
 	}
-	
-	private String cmdToEStack(String i){
-			return "estack := <"+i+" > ++ estack;";
+
+	private String cmdToEStack(String i) {
+		return "estack := <" + i + " > ++ estack;";
 	}
-	
-	private String cmdFromEStack(String st){
-			return st+" := HEAD(estack); estack := TAIL(estack);";
+
+	private String cmdFromEStack(String st) {
+		return st + " := HEAD(estack); estack := TAIL(estack);";
 	}
 	
 	private String getTopTwo(){
-		 return cmdFromEStack("tempa")+"\n"+cmdFromEStack("tempb");
+		return cmdFromEStack("tempa") + "\n" + cmdFromEStack("tempb");
 	}
-	
-	private String getTop(){
-		 return cmdFromEStack("tempa");
+
+	private String getTop() {
+		return cmdFromEStack("tempa");
 	}
-	
+
 	public void convertStream(InputStream ins){
 		mainIn = ins;
 		//skip start TODO make better
-		for (int i=0;i<14;i++) get();
+		for (int i = 0; i < 14; i++)
+			get();
 		
 		prl(getStandardStart());
 		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a14 END");
 		int op = get();
-		while (op>=0){
-				if (originalInComments) prl(createComment(""+op,C_OC));
-				prl("a"+counter+" == ");
-				switch(op) {
-					case load: {
-						prl(cmdToEStack(loc(get())));
-						break;
-					}
-					case load_0: case load_1: case load_2: case load_3: {
-									prl(cmdToEStack(loc(op-load_0)));
-									break;
-					}
-					case store: {
-						prl(cmdFromEStack(loc(get())));
-						break;
-					}
-					case store_0: case store_1: case store_2: case store_3: {
-						prl(cmdFromEStack(loc(op-store_0)));
-						break;
-					}
-					case const_: {
-						prl(cmdToEStack(get4()));
-						break;
-					}
-					
-					case const_0: case const_1: case const_2: 
-					case const_3: case const_4: case const_5:{
-						prl(cmdToEStack(op-const_0));
-						break;
-					}
-					
-					case jmp: {
-						prl("CALL a"+(counter+get2())+";");
-						break;			
-					}
-					
-					case jeq: case jne: case jlt: 
-					case jle: case jgt: case jge: {
-						prl(getTopTwo());
-						prl("IF tempb >= tempa THEN CALL a"+(counter+get2())+" FI;");
-						break;			
-					}
-					
-					case add: {
-						prl(getTopTwo());
-						prl("tempres := tempb + tempa;");
-						prl(cmdToEStack("tempres"));
-						break;
-					}					
-					case div: {
-						prl(getTopTwo());
-						prl("tempres := tempb / tempa;");
-						prl(cmdToEStack("tempres"));
-						break;
-					}
-					
-					case enter: {
-						prl(createComment("enter not fully procesed yet"));
-						get();get();
-						break;
-					}
-					case return_: {
-						prl(createComment("return not fully procesed yet"));
-						break;
-					}
-					case exit: {
-						prl(createComment("exit not fully procesed yet"));
-						break;
-					}
+		while (op >= 0) {
+			if (originalInComments)
+				prl(createComment("" + op, C_OC));
+			prl("a" + counter + " == ");
+			switch (op) {
+			case load: {
+				prl(cmdToEStack(loc(get())));
+				break;
+			}
+			case load_0:
+			case load_1:
+			case load_2:
+			case load_3: {
+				prl(cmdToEStack(loc(op - load_0)));
+				break;
+			}
+			case store: {
+				prl(cmdFromEStack(loc(get())));
+				break;
+			}
+			case store_0:
+			case store_1:
+			case store_2:
+			case store_3: {
+				prl(cmdFromEStack(loc(op - store_0)));
+				break;
+			}
+			case const_: {
+				prl(cmdToEStack(get4()));
+				break;
+			}
 
-					//the prints
-					case bprint: {
-									prl(getTopTwo());
-									prl("PRINT(tempb);");
-									break;
-					}
-					case print: {
-									//TODO need to make it a char
-									prl(getTopTwo());
-									prl("PRINT(tempb);");
-									break;
-					}
+			case const_0:
+			case const_1:
+			case const_2:
+			case const_3:
+			case const_4:
+			case const_5: {
+				prl(cmdToEStack(op - const_0));
+				break;
+			}
 
-					default: prl(createComment("unknown op error: "+op,C_ERR)); break;
-				}
-				
-				op = get();
-				if (op>=0) prl("CALL a"+counter+" END");
+			case jmp: {
+				prl("CALL a" + (counter + get2()) + ";");
+				break;
+			}
+
+			case jeq:
+			case jne:
+			case jlt:
+			case jle:
+			case jgt:
+			case jge: {
+				prl(getTopTwo());
+				prl("IF tempb >= tempa THEN CALL a" + (counter + get2())
+						+ " FI;");
+				break;
+			}
+
+			case add: {
+				prl(getTopTwo());
+				prl("tempres := tempb + tempa;");
+				prl(cmdToEStack("tempres"));
+				break;
+			}
+			case div: {
+				prl(getTopTwo());
+				prl("tempres := tempb / tempa;");
+				prl(cmdToEStack("tempres"));
+				break;
+			}
+
+			case enter: {
+				prl(createComment("enter not fully procesed yet"));
+				get();
+				get();
+				break;
+			}
+			case return_: {
+				prl(createComment("return not fully procesed yet"));
+				break;
+			}
+			case exit: {
+				prl(createComment("exit not fully procesed yet"));
+				break;
+			}
+
+			// the prints
+			case bprint: {
+				prl(getTopTwo());
+				prl("PRINT(tempb);");
+				break;
+			}
+			case print: {
+				// TODO need to make it a char
+				prl(getTopTwo());
+				prl("PRINT(tempb);");
+				break;
+			}
+			default:
+				prl(createComment("unknown op error: " + op, C_ERR));
+				break;
+			}
+
+			op = get();
+			if (op >= 0)
+				prl("CALL a" + counter + " END");
 		}
 		prl("CALL Z;\nSKIP END\nENDACTIONS;\n");
 		prl(getStandardEnd());
-		
+
 	}
 		
-	public void convertFile(File f){
-			try{
-					convertStream(new FileInputStream(f));
-			}catch (Exception ex){
-					ex.printStackTrace();
-			}
+	public void convertFile(File f) {
+		try {
+			convertStream(new FileInputStream(f));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 	
-	public void printHelp(){
-			System.out.println("MicroJava bytecode to WSL converter. v "+versionN+", by Doni Pracner");
-			System.out.println("usage:\n\t {options} mjc2wsl  filename [outfile]");
-			System.out.println("options:\n\t--screen print output to screen");
-			System.out.println("\t-o --oc include original code in comments");
+	public void printHelp() {
+		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
+				+ ", by Doni Pracner");
+		System.out.println("usage:\n\t {options} mjc2wsl  filename [outfile]");
+		System.out.println("options:\n\t--screen print output to screen");
+		System.out.println("\t-o --oc include original code in comments");
 	}
 	
 	public String makeDefaultOutName(String inname){
-			String rez = inname;
-			if (inname.endsWith(".obj"))
-					rez = rez.substring(0,rez.length()-4);
-			return rez+".wsl";
+		String rez = inname;
+		if (inname.endsWith(".obj"))
+			rez = rez.substring(0, rez.length() - 4);
+		return rez + ".wsl";
 	}
 	
-	public void run(String[] args){
-		if (args.length == 0){
-				printHelp();
-		}else{
-			int i=0;
-			while (i<args.length && args[i].charAt(0)=='-'){
-				if (args[i].compareTo("-h")==0){
-						printHelp();return;
-				}else
-				if (args[i].compareTo("-o")==0 || args[i].startsWith("--oc")){
-					if (args[i].length()==2) originalInComments = true;
-					else if (args[i].length()==5)
-							originalInComments = args[i].charAt(4)=='+';
-						else originalInComments = true;
-				}else
-				if (args[i].startsWith("--screen")){
+	public void run(String[] args) {
+		if (args.length == 0) {
+			printHelp();
+		} else {
+			int i = 0;
+			while (i < args.length && args[i].charAt(0) == '-') {
+				if (args[i].compareTo("-h") == 0) {
+					printHelp();
+					return;
+				} else if (args[i].compareTo("-o") == 0
+						|| args[i].startsWith("--oc")) {
+					if (args[i].length() == 2)
+						originalInComments = true;
+					else if (args[i].length() == 5)
+						originalInComments = args[i].charAt(4) == '+';
+					else
+						originalInComments = true;
+				} else if (args[i].startsWith("--screen")) {
 					out = new PrintWriter(System.out);
 				}
 				i++;
 			}
 
-			if (i>=args.length) {System.out.println("no filename supplied");System.exit(2);}
+			if (i >= args.length) {
+				System.out.println("no filename supplied");
+				System.exit(2);
+			}
 			File f = new File(args[i]);
-			
-			if (i+1<args.length) {
-					try{out = new PrintWriter(args[i+1]);}catch (Exception e) {
-							System.err.println("error in opening out file:");
-							e.printStackTrace();
-					}
+
+			if (i + 1 < args.length) {
+				try {
+					out = new PrintWriter(args[i + 1]);
+				} catch (Exception e) {
+					System.err.println("error in opening out file:");
+					e.printStackTrace();
+				}
 			}
-			if (out == null){
-					//if not set to screen, or a file, make a default filename
-					try{out = new PrintWriter(makeDefaultOutName(args[i]));}catch (Exception e) {
-							System.err.println("error in opening out file:");
-							e.printStackTrace();
-					}
+			if (out == null) {
+				// if not set to screen, or a file, make a default filename
+				try {
+					out = new PrintWriter(makeDefaultOutName(args[i]));
+				} catch (Exception e) {
+					System.err.println("error in opening out file:");
+					e.printStackTrace();
+				}
 			}
-			if (f.exists()){
+			if (f.exists()) {
 				Calendar now = Calendar.getInstance();
 				convertFile(f);
-				long mili = Calendar.getInstance().getTimeInMillis() - now.getTimeInMillis();
-				System.out.println("conversion time:"+mili+" ms");
+				long mili = Calendar.getInstance().getTimeInMillis()
+						- now.getTimeInMillis();
+				System.out.println("conversion time:" + mili + " ms");
 				out.close();
-			}else 
-				System.out.println("file does not exist");			
+			} else
+				System.out.println("file does not exist");
 		}
 	}
 	
-	public static void main(String[] args){
-			new mjc2wsl().run(args);
+	public static void main(String[] args) {
+		new mjc2wsl().run(args);
 	}
 }
