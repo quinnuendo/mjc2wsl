@@ -2,3 +2,4 @@
 *.obj
 *~
 *.bak
+samples-temp/*
