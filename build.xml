@@ -4,7 +4,7 @@
 	<property name="mjc2wsl.src.dir" value="src" />
 	<property name="mjc2wsl.options" value="" />
 	
-	<property name="compiler.class.dir" value="compiler" />
+	<property name="compiler.class.dir" value="compiler-bin" />
 	<property name="compiler.src.dir" value="compiler" />
 
 	<target name="help">
@@ -16,11 +16,16 @@
 		</echo>
 	</target>
 	
-	<target name="build">
+    <target name="init">
+        <mkdir dir="${mjc2wsl.class.dir}"/>
+        <mkdir dir="${compiler.class.dir}"/>
+    </target>
+
+	<target name="build" depends="init">
 		<javac srcdir="${mjc2wsl.src.dir}" destdir="${mjc2wsl.class.dir}" includeAntRuntime='no' />
 	</target>
 
-	<target name="mj-build">
+	<target name="mj-build" depends="init">
 		<javac srcdir="${compiler.src.dir}" destdir="${compiler.class.dir}" includeAntRuntime='no' />
 	</target>
 	
@@ -59,6 +64,19 @@
 	
 	<target name="all" depends='mj-samples,mjc2wsl-samples'>
 	
+	</target>
+	
+	<target name="clean" >
+		<delete includeemptydirs="true">
+            <fileset dir=".">
+                <include name="${mjc2wsl.class.dir}/*.class"/>
+                <include name="${compiler.class.dir}/*.class"/>
+            </fileset>
+            <dirset dir=".">
+                <include name="${mjc2wsl.class.dir}"/>
+                <include name="${compiler.class.dir}"/>
+            </dirset>
+        </delete>
 	</target>
 
 </project>
