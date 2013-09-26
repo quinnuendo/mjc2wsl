@@ -117,5 +117,8 @@
             </dirset>
         </delete>
     </target>
-
+    
+    <!-- jedit specific flags; needs to be the first or the last 10 lines
+    :noTabs=true:
+    -->
 </project>
