@@ -1,0 +1,118 @@
+C:"
+Copyright (C) 2012 Doni Pracner http://perun.dmi.rs/pracner
+
+This program is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public
+License along with this program. If not, see
+<http://www.gnu.org/licenses/>.
+==========================================================";
+
+C:"Automatic transformation tool for simplification of WSL";
+C:"code automaticaly translated from assembly using asm2wsl.";
+C:"a simple version";
+MW_PROC @Process_Prog() ==
+	@Trans(TR_Constant_Propagation, "");
+	FOREACH Statement DO
+		IF @ST(@I) = T_A_S THEN 
+			C:"don't need to test for this, works for T_A_S";
+			@Trans(TR_Simplify_Action_System, "");	
+			IF @Trans?(TR_Collapse_Action_System) THEN
+				@Trans(TR_Collapse_Action_System, "");
+			FI;
+		ELSIF @Trans?(TR_Remove_All_Redundant_Vars) THEN
+			@Trans(TR_Remove_All_Redundant_Vars, "");
+		ELSIF @ST(@I) = T_Skip THEN 
+			@Delete  
+		FI
+	OD;
+	C:"remove all the comments ";
+	FOREACH Statement DO
+	IF @ST(@I) = T_Comment THEN 
+			@Delete
+	FI
+	OD;
+	C:"Convert DO loops into WHILE loops";
+	FOREACH Statement DO
+		IF @Trans?(TR_Floop_To_While) THEN
+			@Trans(TR_Floop_To_While, "");
+		FI
+	OD;
+	C:"Go back to the start, and remove redundant";
+	@GOTO(< >);
+	@Trans(TR_Delete_All_Redundant, "");
+	SKIP
+END;
+
+BEGIN
+VAR< prog := < >, inifilename := "transf.ini", 
+	filename:="", file := "", inifile:= ""
+>:
+IF @File_Exists?(inifilename) THEN
+ 	inifile := @Open_Input_File(inifilename);
+	filename := @Read_Line(inifile);
+	WHILE NOT @EOF?(filename) DO
+		IF @File_Exists?(filename) THEN
+			@New_Program(@Parse_File(filename, T_Statements));
+			PRINT("Processing: ", filename);
+			prog := @Program;
+			@Process_Prog();
+			Get_New_Name(VAR filename);
+			@PP_Item(@Program, 80, filename);
+			Prog_Stat(prog);
+			PRINT("");
+			PRINT("After Conversion");
+			Prog_Stat(@Program)
+		FI;
+		filename := @Read_Line(inifile)
+	OD;
+	@Close_Input_Port(inifile);
+ELSE
+    PRINT("ini file (",inifile,") not found.",
+    " it should contain a list of filenames to be converted");
+    PRINT("you can input a filename now:");
+    filename := @Read_Line(Standard_Input_Port);
+    IF @File_Exists?(filename) THEN
+	@New_Program(@Parse_File(filename, T_Statements));
+	@Process_Prog();
+	Get_New_Name(VAR filename);
+	@PP_Item(@Program, 80, filename)
+    FI;
+FI
+ENDVAR
+WHERE
+
+PROC Prog_Stat(Pro VAR)==
+  PRINT ("Mc ", @McCabe(Pro));
+  PRINT ("Statements ", @Stat_Count(Pro));
+  PRINT ("Control/data Flow ", @CFDF_Metric(Pro));
+  PRINT ("Size(nodes) ", @Total_Size(Pro));
+  PRINT ("Struct ", @Struct_Metric(Pro));
+  SKIP
+END
+
+PROC Get_New_Name(VAR str) == 
+	IF @Ends_With?(str, ".wsl") THEN
+		str := SUBSTR(str, 0, SLENGTH(str)-4)
+	FI;
+	str := str ++ "_t.wsl"
+END
+
+PROC Get_Before_Name(VAR str) == 
+	IF @Ends_With?(str, ".wsl") THEN
+		str := SUBSTR(str, 0, SLENGTH(str)-4)
+	FI;
+	str := str ++ "_b.wsl"
+END
+
+END
