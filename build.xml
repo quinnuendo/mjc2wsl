@@ -36,11 +36,11 @@
         </copy>
     </target>
 
-    <target name="build" depends="init">
+    <target name="build" depends="init" description="build the mjv2wsl tool">
         <javac srcdir="${mjc2wsl.src.dir}" destdir="${mjc2wsl.class.dir}" includeAntRuntime='no' />
     </target>
 
-    <target name="mj-build" depends="init">
+    <target name="mj-build" depends="init" description="build the mj compiler">
         <javac srcdir="${compiler.src.dir}" destdir="${compiler.class.dir}" includeAntRuntime='no' />
     </target>
     
@@ -51,7 +51,7 @@
         </java>
     </target>
     
-    <target name="mj-samples" depends="build">
+    <target name="mj-samples" depends="build" description="run the mj compiler on the samples">
         <foreach param="filename" target="mj-compile">
             <path>
             <fileset dir='${samples.temp.dir}'>
@@ -99,11 +99,11 @@
         </antcall>
     </target>
     
-    <target name="all" depends='mj-samples,mjc2wsl-samples'>
+    <target name="all" depends='mj-samples,mjc2wsl-samples' description="build the tools, run them on the samples to check">
     
     </target>
     
-    <target name="clean" >
+    <target name="clean" description="clean up all the generated content">
         <delete includeemptydirs="true">
             <fileset dir=".">
                 <include name="${mjc2wsl.class.dir}/*.class"/>
