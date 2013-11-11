@@ -1,10 +1,6 @@
 <project name="mjc2wsl" default="all">
     <property name="java.encoding" value="utf-8" />
-    <taskdef resource="net/sf/antcontrib/antlib.xml">
-        <classpath>
-            <pathelement location="/usr/share/java/"/>
-        </classpath>
-    </taskdef>
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
     
     <property name="mjc2wsl.class.dir" value="bin" />
     <property name="mjc2wsl.src.dir" value="src" />
