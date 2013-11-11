@@ -12,7 +12,9 @@
     <property name="samples.main.dir" value="samples" />
     <property name="samples.temp.dir" value="samples-temp" />
     
-    <target name="help">
+    <property name="fermat.dir" value="/home/donny/d/donny/fermat3" />
+    
+    <target name="help" description="a short help text">
         <echo>Possible options:
         all - build the tool and the compiler and test on the samples
         build - build the mjc2wsl tool
@@ -93,6 +95,16 @@
         <antcall target="mjc2wsl">
             <param name="filename" value="samples-temp/sample0.obj" />
         </antcall>
+    </target>
+    
+    <target name="wsl-run" >
+        <exec executable="${fermat.dir}/bin/wsl" >
+            <env key="PATH" path="${env.PATH}:${fermat.dir}/bin"/>
+            <env key="FermaT" path="${fermat.dir}" />
+            <env key="SCHEME_LIBRARY_PATH" path="${fermat.dir}/slib/" />
+            <env key="SCM_INIT_PATH" path="${fermat.dir}/scm/Init5e5.scm" />
+            <arg value="${filename}"/>
+        </exec>
     </target>
     
     <target name="all" depends='mj-samples,mjc2wsl-samples' description="build the tools, run them on the samples to check">
