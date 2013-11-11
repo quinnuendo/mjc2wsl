@@ -13,15 +13,11 @@
     <property name="samples.temp.dir" value="samples-temp" />
     
     <property name="fermat.dir" value="/home/donny/d/donny/fermat3" />
-    
-    <target name="help" description="a short help text">
-        <echo>Possible options:
-        all - build the tool and the compiler and test on the samples
-        build - build the mjc2wsl tool
-        mj-build - build the mj compiler
-        mj-samples - run the mj compiler on the samples (build if needed)
-        </echo>
-    </target>
+
+    <description>
+        Builder script for mjc2wsl and related tools, runs test
+        on given samples.
+    </description>
     
     <target name="init">
         <mkdir dir="${mjc2wsl.class.dir}"/>
