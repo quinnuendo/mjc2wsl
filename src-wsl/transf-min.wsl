@@ -78,7 +78,7 @@ IF @File_Exists?(inifilename) THEN
 	OD;
 	@Close_Input_Port(inifile);
 ELSE
-    PRINT("ini file (",inifile,") not found.",
+    PRINT("ini file (",inifilename,") not found.",
     " it should contain a list of filenames to be converted");
     PRINT("you can input a filename now:");
     filename := @Read_Line(Standard_Input_Port);
