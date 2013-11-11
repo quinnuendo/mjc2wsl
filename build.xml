@@ -117,14 +117,14 @@
                     <exclude name="**/*_t.wsl"/>
                 </patternset>
         </fileset>
-        <pathconvert pathsep="${line.separator}" property="generated-wsl-files" refid="generated-wsl-fileset">
-            
-        </pathconvert>
+        <pathconvert pathsep="${line.separator}" 
+            property="generated-wsl-files" refid="generated-wsl-fileset" />
 
         <echo file="transf.ini">${generated-wsl-files}</echo>
     </target>
     
-    <target name="all" depends='mj-samples,mjc2wsl-samples' description="build the tools, run them on the samples to check">
+    <target name="all" depends='mj-samples,mjc2wsl-samples' 
+        description="build the tools, run them on the samples to check">
     
     </target>
     
