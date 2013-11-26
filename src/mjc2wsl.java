@@ -378,7 +378,7 @@ public class mjc2wsl{
 				+ ", by Doni Pracner");
 		System.out.println("usage:\n\t {options} mjc2wsl  filename [outfile]");
 		System.out.println("options:\n\t--screen print output to screen");
-		System.out.println("\t-o --oc include original code in comments");
+		System.out.println("\t-o --oc[+-] include original code in comments");
 	}
 	
 	public String makeDefaultOutName(String inname){
