@@ -10,7 +10,7 @@ import java.util.*;
  * @author Doni Pracner, http://perun.dmi.rs/pracner http://quemaster.com
  */
 public class mjc2wsl{
-	public static String versionN = "0.1.2";
+	public static String versionN = "0.1.3";
 
 	public static final int M_ERR = 2, M_WAR = 1, M_DEB = 0;
 	
