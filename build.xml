@@ -81,7 +81,7 @@
         </java>
     </target>
     
-    <target name="mjc2wsl-samples" depends="build">
+    <target name="mjc2wsl-samples" depends="build" description="run the mjc2wsl tool on the samples">
         <foreach param="filename" target="mjc2wsl">
             <path>
             <fileset dir='${samples.temp.dir}'>
