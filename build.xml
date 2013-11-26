@@ -35,7 +35,7 @@
         </copy>
     </target>
 
-    <target name="build" depends="init" description="build the mjv2wsl tool">
+    <target name="build" depends="init" description="build the mjc2wsl tool">
         <javac srcdir="${mjc2wsl.src.dir}" destdir="${mjc2wsl.class.dir}" includeAntRuntime='no' />
     </target>
 
