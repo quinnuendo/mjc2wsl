@@ -287,7 +287,15 @@ public class mjc2wsl{
 			}
 			case div: {
 				prl(getTopTwo());
-				prl("tempres := tempb / tempa;");
+				prl("IF tempa = 0 THEN ERROR(\"division by zero\") FI;");
+				prl("tempres := tempb DIV tempa;");
+				prl(cmdToEStack("tempres"));
+				break;
+			}
+			case rem: {
+				prl(getTopTwo());
+				prl("IF tempa = 0 THEN ERROR(\"division by zero\") FI;");
+				prl("tempres := tempb MOD tempa;");
 				prl(cmdToEStack("tempres"));
 				break;
 			}
