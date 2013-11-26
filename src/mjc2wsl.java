@@ -189,7 +189,7 @@ public class mjc2wsl{
 	private String getRelationFor(int opcode) throws Exception {
 			switch (opcode) {
 					case jeq: return "=";
-					case jne: return "#";
+					case jne: return "<>";
 					case jlt: return "<";
 					case jle: return "<=";
 					case jgt: return ">";
