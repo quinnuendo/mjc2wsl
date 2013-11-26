@@ -12,14 +12,14 @@ import java.util.*;
 public class mjc2wsl{
 	public static String versionN = "0.1.2";
 
-	public static final int M_ERR = 2, M_WAR = 1;
+	public static final int M_ERR = 2, M_WAR = 1, M_DEB = 0;
 	
-	private int printLevel = 0;
+	private int printLevel = M_ERR;
 	
 	private int[] messageCounters = new int[M_ERR+1];
 	
 	private void message(String mes, int level){
-			if (level>printLevel)
+			if (level>=printLevel)
 					System.out.println(mes);
 			messageCounters[level]++;
 	}
@@ -379,6 +379,9 @@ public class mjc2wsl{
 		System.out.println("usage:\n\t {options} mjc2wsl  filename [outfile]");
 		System.out.println("options:\n\t--screen print output to screen");
 		System.out.println("\t-o --oc[+-] include original code in comments");
+		System.out.println("\t-v verbose, print warning messages");
+		System.out.println("\t-q don't print even the error messages");
+		System.out.println("\t-d print detailed debug messages");
 	}
 	
 	public String makeDefaultOutName(String inname){
@@ -407,6 +410,12 @@ public class mjc2wsl{
 						originalInComments = true;
 				} else if (args[i].startsWith("--screen")) {
 					out = new PrintWriter(System.out);
+				} else if (args[i].compareTo("-d") == 0) {
+					printLevel = M_DEB;//print debug info
+				} else if (args[i].compareTo("-v") == 0) {
+					printLevel = M_WAR;//print warnings
+				} else if (args[i].compareTo("-q") == 0) {
+					printLevel = M_ERR+1;//no printing
 				}
 				i++;
 			}
@@ -436,7 +445,6 @@ public class mjc2wsl{
 			}
 			if (f.exists()) {
 				Calendar now = Calendar.getInstance();
-				printLevel=10;
 				convertFile(f);
 				long mili = Calendar.getInstance().getTimeInMillis()
 						- now.getTimeInMillis();
