@@ -273,6 +273,18 @@ public class mjc2wsl{
 				prl(cmdToEStack("tempres"));
 				break;
 			}
+			case sub: {
+				prl(getTopTwo());
+				prl("tempres := tempb - tempa;");
+				prl(cmdToEStack("tempres"));
+				break;
+			}
+			case mul: {
+				prl(getTopTwo());
+				prl("tempres := tempb * tempa;");
+				prl(cmdToEStack("tempres"));
+				break;
+			}
 			case div: {
 				prl(getTopTwo());
 				prl("tempres := tempb / tempa;");
