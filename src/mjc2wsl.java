@@ -12,6 +12,26 @@ import java.util.*;
 public class mjc2wsl{
 	public static String versionN = "0.1.2";
 
+	public static final int M_ERR = 2, M_WAR = 1;
+	
+	private int printLevel = 0;
+	
+	private int[] messageCounters = new int[M_ERR+1];
+	
+	private void message(String mes, int level){
+			if (level>printLevel)
+					System.out.println(mes);
+			messageCounters[level]++;
+	}
+	
+	private void printMessageCounters(){
+			printMessageCounters(System.out);
+	}
+	
+	private void printMessageCounters(PrintStream out){
+			out.println("total errors:"+messageCounters[M_ERR]+" warnings:"+messageCounters[M_WAR]);
+	}
+	
 	/** Constant used for marking a regular comment from the original file */
 	public static final char C_REG = ' ';
 	/**
@@ -302,16 +322,19 @@ public class mjc2wsl{
 
 			case enter: {
 				prl(createComment("enter not fully procesed yet"));
+				message("enter not fully procesed yet", M_WAR);
 				get();
 				get();
 				break;
 			}
 			case return_: {
 				prl(createComment("return not fully procesed yet"));
+				message("return not fully procesed yet", M_WAR);
 				break;
 			}
 			case exit: {
 				prl(createComment("exit not fully procesed yet"));
+				message("exit not fully procesed yet", M_WAR);
 				break;
 			}
 
@@ -329,6 +352,7 @@ public class mjc2wsl{
 			}
 			default:
 				prl(createComment("unknown op error: " + op, C_ERR));
+				message("unknown op error: "+ op, M_ERR);
 				break;
 			}
 
@@ -412,10 +436,12 @@ public class mjc2wsl{
 			}
 			if (f.exists()) {
 				Calendar now = Calendar.getInstance();
+				printLevel=10;
 				convertFile(f);
 				long mili = Calendar.getInstance().getTimeInMillis()
 						- now.getTimeInMillis();
 				System.out.println("conversion time:" + mili + " ms");
+				printMessageCounters();
 				out.close();
 			} else
 				System.out.println("file does not exist");
