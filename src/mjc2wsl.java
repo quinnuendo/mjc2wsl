@@ -185,8 +185,20 @@ public class mjc2wsl{
 	private String getTop() {
 		return cmdFromEStack("tempa");
 	}
+	
+	private String getRelationFor(int opcode) throws Exception {
+			switch (opcode) {
+					case jeq: return "=";
+					case jne: return "#";
+					case jlt: return "<";
+					case jle: return "<=";
+					case jgt: return ">";
+					case jge: return ">=";
+			}
+			throw new Exception("Wrong opcode for a relation");
+	}
 
-	public void convertStream(InputStream ins){
+	public void convertStream(InputStream ins) throws Exception{
 		mainIn = ins;
 		//skip start TODO make better
 		for (int i = 0; i < 14; i++)
@@ -249,7 +261,8 @@ public class mjc2wsl{
 			case jgt:
 			case jge: {
 				prl(getTopTwo());
-				prl("IF tempb >= tempa THEN CALL a" + (counter + get2())
+				prl("IF tempb "+ getRelationFor(op)
+						+" tempa THEN CALL a" + (counter + get2())
 						+ " FI;");
 				break;
 			}
