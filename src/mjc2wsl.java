@@ -355,8 +355,11 @@ public class mjc2wsl{
 			}
 
 			case return_: {
-				prl(createComment("return not fully procesed yet"));
-				message("return not fully procesed yet", M_WAR);
+				prl("IF EMPTY?(mjvm_mstack) THEN CALL Z ELSE");
+				//else we let things return		
+				prl(cmdFromMStack("tempa"));
+				prl("SKIP FI");
+				prl("END b"+counter+" ==");
 				break;
 			}
 			case enter: {
