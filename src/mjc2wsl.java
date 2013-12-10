@@ -112,7 +112,7 @@ public class mjc2wsl{
 		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n");
 		for (int i = 0; i <= 3; i++)
 			ret.append("loc" + i + " := 0, ");
-		ret.append("\n	estack := < >, t_e_m_p := 0 > :");
+		ret.append("\n	estack := < >, mstack := < >, t_e_m_p := 0 > :");
 
 		return ret.toString();
 	}
@@ -186,6 +186,8 @@ public class mjc2wsl{
 		return "C:\"" + type + str.replace("\"", "''") + "\";";
 	}
 
+	//Expression stack
+	
 	private String cmdToEStack(int i) {
 		return "estack := <" + i + " > ++ estack;";
 	}
@@ -204,6 +206,20 @@ public class mjc2wsl{
 
 	private String getTop() {
 		return cmdFromEStack("tempa");
+	}
+	
+	//Method stack
+	
+	private String cmdToMStack(int i) {
+		return "mstack := <" + i + " > ++ mstack;";
+	}
+
+	private String cmdToMStack(String i) {
+		return "mstack := <" + i + " > ++ mstack;";
+	}
+
+	private String cmdFromMStack(String st) {
+		return st + " := HEAD(mstack); mstack := TAIL(mstack);";
 	}
 	
 	private String getRelationFor(int opcode) throws Exception {
@@ -330,7 +346,11 @@ public class mjc2wsl{
 				break;
 			}
 
-			//TODO call
+			case call: {
+				prl(cmdToMStack(counter+2));
+				prl("CALL a" + (counter + get2()) + ";");
+				break;
+			}
 
 			case return_: {
 				prl(createComment("return not fully procesed yet"));
