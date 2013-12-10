@@ -50,7 +50,7 @@
         </java>
     </target>
     
-    <target name="mj-samples" depends="build" description="run the mj compiler on the samples">
+    <target name="mj-samples" depends="mj-build" description="run the mj compiler on the samples">
         <foreach param="filename" target="mj-compile">
             <path>
             <fileset dir='${samples.temp.dir}'>
