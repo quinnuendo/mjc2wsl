@@ -254,6 +254,10 @@ public class mjc2wsl{
 				prl(cmdFromEStack(loc(op - store_0)));
 				break;
 			}
+			
+			//TODO getstatic, putstatic
+			//TODO getfield, putfield
+			
 			case const_: {
 				prl(cmdToEStack(get4()));
 				break;
@@ -266,24 +270,6 @@ public class mjc2wsl{
 			case const_4:
 			case const_5: {
 				prl(cmdToEStack(op - const_0));
-				break;
-			}
-
-			case jmp: {
-				prl("CALL a" + (counter + get2()) + ";");
-				break;
-			}
-
-			case jeq:
-			case jne:
-			case jlt:
-			case jle:
-			case jgt:
-			case jge: {
-				prl(getTopTwo());
-				prl("IF tempb "+ getRelationFor(op)
-						+" tempa THEN CALL a" + (counter + get2())
-						+ " FI;");
 				break;
 			}
 
@@ -320,6 +306,37 @@ public class mjc2wsl{
 				break;
 			}
 
+			//TODO neg, shl, shr, inc
+			//TODO new_ newarray
+			//TODO aload, asstore, baload, bastore
+			//TODO arraylength
+			//TODO pop, dup, dup2
+			
+			case jmp: {
+				prl("CALL a" + (counter + get2()) + ";");
+				break;
+			}
+
+			case jeq:
+			case jne:
+			case jlt:
+			case jle:
+			case jgt:
+			case jge: {
+				prl(getTopTwo());
+				prl("IF tempb "+ getRelationFor(op)
+						+" tempa THEN CALL a" + (counter + get2())
+						+ " FI;");
+				break;
+			}
+
+			//TODO call
+
+			case return_: {
+				prl(createComment("return not fully procesed yet"));
+				message("return not fully procesed yet", M_WAR);
+				break;
+			}
 			case enter: {
 				prl(createComment("enter not fully procesed yet"));
 				message("enter not fully procesed yet", M_WAR);
@@ -327,16 +344,13 @@ public class mjc2wsl{
 				get();
 				break;
 			}
-			case return_: {
-				prl(createComment("return not fully procesed yet"));
-				message("return not fully procesed yet", M_WAR);
-				break;
-			}
 			case exit: {
 				prl(createComment("exit not fully procesed yet"));
 				message("exit not fully procesed yet", M_WAR);
 				break;
 			}
+
+			//TODO read, print
 
 			// the prints
 			case bprint: {
@@ -355,6 +369,9 @@ public class mjc2wsl{
 				message("unknown op error: "+ op, M_ERR);
 				break;
 			}
+
+			//TODO trap
+
 
 			op = get();
 			if (op >= 0)
