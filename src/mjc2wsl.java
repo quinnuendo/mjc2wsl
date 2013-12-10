@@ -109,10 +109,12 @@ public class mjc2wsl{
 			"C:\" This file automatically converted from microjava bytecode\";\n"
 			+"C:\" with mjc2wsl v "+versionN+"\";\n");
 
-		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n");
+		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
 		for (int i = 0; i <= 3; i++)
-			ret.append("loc" + i + " := 0, ");
-		ret.append("\n	estack := < >, mstack := < >, t_e_m_p := 0 > :");
+			ret.append("mjvm_loc" + i + " := 0, ");
+		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
+		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
+		ret.append("\n	t_e_m_p := 0 > :");
 
 		return ret.toString();
 	}
@@ -165,7 +167,7 @@ public class mjc2wsl{
 	}
 	
 	private String loc(int i){
-		return "loc" + i;
+		return "mjvm_loc" + i;
 	}
 	
 	/**
@@ -189,15 +191,15 @@ public class mjc2wsl{
 	//Expression stack
 	
 	private String cmdToEStack(int i) {
-		return "estack := <" + i + " > ++ estack;";
+		return "mjvm_estack := <" + i + " > ++ mjvm_estack;";
 	}
 
 	private String cmdToEStack(String i) {
-		return "estack := <" + i + " > ++ estack;";
+		return "mjvm_estack := <" + i + " > ++ mjvm_estack;";
 	}
 
 	private String cmdFromEStack(String st) {
-		return st + " := HEAD(estack); estack := TAIL(estack);";
+		return st + " := HEAD(mjvm_estack); mjvm_estack := TAIL(mjvm_estack);";
 	}
 	
 	private String getTopTwo(){
@@ -211,15 +213,15 @@ public class mjc2wsl{
 	//Method stack
 	
 	private String cmdToMStack(int i) {
-		return "mstack := <" + i + " > ++ mstack;";
+		return "mjvm_mstack := <" + i + " > ++ mjvm_mstack;";
 	}
 
 	private String cmdToMStack(String i) {
-		return "mstack := <" + i + " > ++ mstack;";
+		return "mjvm_mstack := <" + i + " > ++ mjvm_mstack;";
 	}
 
 	private String cmdFromMStack(String st) {
-		return st + " := HEAD(mstack); mstack := TAIL(mstack);";
+		return st + " := HEAD(mjvm_mstack); mjvm_mstack := TAIL(mjvm_mstack);";
 	}
 	
 	private String getRelationFor(int opcode) throws Exception {
