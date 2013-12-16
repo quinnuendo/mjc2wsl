@@ -1,0 +1,5 @@
+# if you rename this file (or make a copy) to "custom.properties"
+# it will override the default properties
+
+# set this to wherever your FermaT is installed
+fermat.dir=/some/path/fermat3
