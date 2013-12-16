@@ -4,3 +4,4 @@
 *.bak
 samples-temp/*
 transf.ini
+custom.properties

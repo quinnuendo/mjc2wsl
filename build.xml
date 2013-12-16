@@ -1,4 +1,5 @@
 <project name="mjc2wsl" default="all">
+    <property file="custom.properties"/>
     <property name="java.encoding" value="utf-8" />
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
     
@@ -12,7 +13,7 @@
     <property name="samples.main.dir" value="samples" />
     <property name="samples.temp.dir" value="samples-temp" />
     
-    <property name="fermat.dir" value="/home/donny/d/donny/fermat3" />
+    <property name="fermat.dir" value="${user.home}/fermat3" />
 
     <property name="transf.wsl.file" value="src-wsl/transf-min.wsl" />
     <property name="transf.wsl.ini" value="transf.ini" />
