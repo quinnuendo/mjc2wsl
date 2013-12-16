@@ -35,6 +35,17 @@ file "custom.properties.default" to "custom.properties" and
 specify a correct path for your system.
 
 
+About MicroJava
+---------------
+
+This is a simple language made by H. Mössenböck for a Compiler
+Construction course. It is not the same as Java Micro Edition
+(JavaME) used on mobile phones.
+
+More about the course, the language and its VM:
+http://www.ssw.uni-linz.ac.at/Misc/CC/
+
+
 Contact
 -------
 
