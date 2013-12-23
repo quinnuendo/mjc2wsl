@@ -3,3 +3,6 @@
 
 # set this to wherever your FermaT is installed
 fermat.dir=/some/path/fermat3
+
+# use this for passing options to mjc2wsl
+mjc2wsl.options="-o -q"
