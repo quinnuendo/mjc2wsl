@@ -125,6 +125,38 @@ public class mjc2wsl{
 	
 	private boolean originalInComments = false;	
 	
+	private HashMap<Integer,String> opMap = null;
+	
+	private String opCodeFile = "mj-bytecodes.properties";
+	
+	private HashMap<Integer,String> getOpMap() {
+			if (opMap==null) {
+					opMap = new HashMap<Integer, String> (60, 0.98f);
+					try{
+					BufferedReader in = new BufferedReader(
+							new InputStreamReader(getClass().getResourceAsStream(opCodeFile)));
+					String str = in.readLine();
+					while (str != null) {
+							String[] ss = str.split("=");
+							opMap.put(Integer.parseInt(ss[0]),ss[1]);
+							str = in.readLine();
+					}
+					in.close();
+					}catch (Exception ex) {
+						ex.printStackTrace();
+					}
+			}
+			return opMap;
+	}
+	
+	public String getOpString(int op) {
+			return getOpMap().get(op);
+	}
+	
+	public String describeOpCode(int op) {
+			return op + " (" + getOpString(op) + ")";
+	}
+	
 	private InputStream mainIn;
 	private PrintWriter out = null;
 	private int counter = -1;
@@ -247,7 +279,7 @@ public class mjc2wsl{
 		int op = get();
 		while (op >= 0) {
 			if (originalInComments)
-				prl(createComment("" + op, C_OC));
+				prl(createComment(describeOpCode(op), C_OC));
 			prl("a" + counter + " == ");
 			switch (op) {
 			case load: {
