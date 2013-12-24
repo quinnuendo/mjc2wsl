@@ -408,6 +408,11 @@ public class mjc2wsl{
 			}
 
 			//TODO read, print
+			case read: {
+				prl("tempa := @String_To_Num(@Read_Line(Standard_Input_Port));");
+				prl(cmdToEStack("tempa"));
+				break;
+			}
 
 			// the prints
 			case bprint: {
