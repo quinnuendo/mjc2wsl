@@ -1,0 +1,9 @@
+program InOut1{
+	void main()
+	int i;
+	{
+			print('?');
+			read(i);
+			print(i);
+	}
+}
