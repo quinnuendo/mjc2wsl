@@ -71,6 +71,13 @@
         </foreach>
     </target>
 
+    <target name="mj-run">
+        <echo message="${filename}" />
+        <java classpath="${compiler.class.dir}" classname="Run">
+            <arg value="${filename}" />
+        </java>
+    </target>
+
     <target name="mj-samples1" depends="mj-build">
     <!-- simplistic version when antlib (foreach) is not available -->
         <antcall target="mj-compile">
