@@ -35,6 +35,8 @@
         Also gives options to chain the tools on individual files.
     </description>
 
+    <!-- general tasks -->
+
     <target name="init">
         <mkdir dir="${mjc2wsl.class.dir}"/>
         <mkdir dir="${compiler.class.dir}"/>
@@ -45,10 +47,62 @@
             </fileset>
         </copy>
     </target>
-
+    
+    <target name="all" depends='mj-samples,mjc2wsl-samples,wsl-transf-samples'
+        description="build the tools, run them on the samples to check">
+    
+    </target>
+    
+    <target name="clean" description="clean up all the generated content">
+        <delete includeemptydirs="true">
+            <fileset dir=".">
+                <include name="${mjc2wsl.class.dir}/*.class"/>
+                <include name="${compiler.class.dir}/*.class"/>
+                <include name="${samples.temp.dir}/*"/>
+            </fileset>
+            <dirset dir=".">
+                <include name="${mjc2wsl.class.dir}"/>
+                <include name="${compiler.class.dir}"/>
+                <include name="${samples.temp.dir}"/>
+            </dirset>
+        </delete>
+    </target>
+    
+    
+    <!-- mjc2wsl related tasks -->
+    
     <target name="build" depends="init" description="build the mjc2wsl tool">
         <javac srcdir="${mjc2wsl.src.dir}" destdir="${mjc2wsl.class.dir}" includeAntRuntime='no' />
     </target>
+
+    <target name="mjc2wsl">
+        <echo message="${filename}" />
+        <java classpath="${mjc2wsl.class.dir}:${res.dir}" classname="mjc2wsl">
+            <arg line="${mjc2wsl.options}" />
+            <arg value="${filename}" />
+        </java>
+    </target>
+    
+    <target name="mjc2wsl-samples" depends="build" description="run the mjc2wsl tool on the samples">
+        <foreach param="filename" target="mjc2wsl">
+            <path>
+            <fileset dir='${samples.temp.dir}'>
+                <include name="*.obj"/>
+            </fileset>
+            </path>
+        </foreach>
+    </target>
+    
+    <target name="mjc2wsl-samples1" depends="build">
+    <!-- simplistic version when antlib (foreach) is not available -->
+        <antcall target="mjc2wsl">
+            <param name="filename" value="samples-temp/sample0.obj" />
+        </antcall>
+    </target>
+
+
+    <!-- MicroJava related tasks -->
+
 
     <target name="mj-build" depends="init" description="build the mj compiler">
         <javac srcdir="${compiler.src.dir}" destdir="${compiler.class.dir}" includeAntRuntime='no' />
@@ -90,32 +144,10 @@
             <param name="filename" value="samples-temp/sample0.mj" />
         </antcall>
     </target>
-    
-    <target name="mjc2wsl">
-        <echo message="${filename}" />
-        <java classpath="${mjc2wsl.class.dir}:${res.dir}" classname="mjc2wsl">
-            <arg line="${mjc2wsl.options}" />
-            <arg value="${filename}" />
-        </java>
-    </target>
-    
-    <target name="mjc2wsl-samples" depends="build" description="run the mjc2wsl tool on the samples">
-        <foreach param="filename" target="mjc2wsl">
-            <path>
-            <fileset dir='${samples.temp.dir}'>
-                <include name="*.obj"/>
-            </fileset>
-            </path>
-        </foreach>
-    </target>
-    
-    <target name="mjc2wsl-samples1" depends="build">
-    <!-- simplistic version when antlib (foreach) is not available -->
-        <antcall target="mjc2wsl">
-            <param name="filename" value="samples-temp/sample0.obj" />
-        </antcall>
-    </target>
-    
+
+
+    <!-- wsl related tasks -->
+
     <target name="wsl-run" >
         <exec executable="${fermat.dir}/bin/wsl" inputstring="${inputstring}">
             <env key="PATH" path="${env.PATH}:${fermat.dir}/bin"/>
@@ -154,26 +186,6 @@
             property="generated-wsl-files" refid="generated-wsl-fileset" />
 
         <echo file="${transf.wsl.ini}">${generated-wsl-files}</echo>
-    </target>
-    
-    <target name="all" depends='mj-samples,mjc2wsl-samples,wsl-transf-samples'
-        description="build the tools, run them on the samples to check">
-    
-    </target>
-    
-    <target name="clean" description="clean up all the generated content">
-        <delete includeemptydirs="true">
-            <fileset dir=".">
-                <include name="${mjc2wsl.class.dir}/*.class"/>
-                <include name="${compiler.class.dir}/*.class"/>
-                <include name="${samples.temp.dir}/*"/>
-            </fileset>
-            <dirset dir=".">
-                <include name="${mjc2wsl.class.dir}"/>
-                <include name="${compiler.class.dir}"/>
-                <include name="${samples.temp.dir}"/>
-            </dirset>
-        </delete>
     </target>
     
     <!-- jedit specific flags; needs to be the first or the last 10 lines
