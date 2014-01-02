@@ -108,7 +108,7 @@
         <javac srcdir="${compiler.src.dir}" destdir="${compiler.class.dir}" includeAntRuntime='no' />
     </target>
     
-    <target name="mj-compile">
+    <target name="mj-compile" description="compile a MJ into obj file; given ${filename}">
         <echo message="${filename}" />
         <java classpath="${compiler.class.dir}" classname="Compiler">
             <arg value="${filename}" />
@@ -125,9 +125,9 @@
         </foreach>
     </target>
 
-    <target name="mj-run">
+    <target name="mj-run" description="run a MJ obj file given in ${filename} with ${inputstring}">
         <echo message="${filename}" />
-        <java classpath="${compiler.class.dir}" classname="Run">
+        <java classpath="${compiler.class.dir}" classname="Run" inputstring="${inputstring}">
             <arg value="${filename}" />
         </java>
     </target>
@@ -186,6 +186,31 @@
             property="generated-wsl-files" refid="generated-wsl-fileset" />
 
         <echo file="${transf.wsl.ini}">${generated-wsl-files}</echo>
+    </target>
+    
+    <!-- Testing tasks -->
+    
+    <target name="test-run" 
+    description="run .obj .wsl _t.wsl, given are ${file.dir}, ${file.name} (no extension) and an ${inputstring}">
+        <antcall target="mj-run">
+            <param name="filename" value="${file.dir}/${file.name}.obj" />
+            <param name="inputstring" value="${inputstring}" />
+        </antcall>
+        <antcall target="wsl-run">
+            <param name="filename" value="${file.dir}/${file.name}.wsl" />
+            <param name="inputstring" value="${inputstring}" />
+        </antcall>
+        <antcall target="wsl-run">
+            <param name="filename" value="${file.dir}/${file.name}_t.wsl" />
+            <param name="inputstring" value="${inputstring}" />
+        </antcall>
+    </target>
+    
+    <target name="test-run-samples-dir"
+    description="run .obj .wsl _t.wsl, in the samples-temp directory; given ${file.name} (no extension) and an ${inputstring}">
+        <antcall target="test-run">
+            <param name="file.dir" value="${samples.temp.dir}"/>
+        </antcall>
     </target>
     
     <!-- jedit specific flags; needs to be the first or the last 10 lines
