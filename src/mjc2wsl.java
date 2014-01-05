@@ -449,10 +449,7 @@ public class mjc2wsl{
 			}
 
 			case trap: {
-				// TODO finish trap
-				prl(createComment("trap not fully procesed yet"));
-				message("trap not fully procesed yet", M_WAR);
-				get();
+				prl("ERROR(\"Runtime error: trap("+get()+")\");");
 				break;
 			}
 			
