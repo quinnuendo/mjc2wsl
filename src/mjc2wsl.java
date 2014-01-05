@@ -426,14 +426,21 @@ public class mjc2wsl{
 				prl("PRINT(tempb);");
 				break;
 			}
+
+			case trap: {
+				// TODO finish trap
+				prl(createComment("trap not fully procesed yet"));
+				message("trap not fully procesed yet", M_WAR);
+				get();
+				break;
+			}
+			
+	
 			default:
 				prl(createComment("unknown op error: " + op, C_ERR));
 				message("unknown op error: "+ op, M_ERR);
 				break;
 			}
-
-			//TODO trap
-
 
 			op = get();
 			if (op >= 0)
