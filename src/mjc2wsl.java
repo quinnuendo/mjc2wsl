@@ -270,9 +270,14 @@ public class mjc2wsl{
 
 	public void convertStream(InputStream ins) throws Exception{
 		mainIn = ins;
-		//skip start TODO make better
-		for (int i = 0; i < 14; i++)
-			get();
+		//process start 
+		byte m = (byte) get();
+		byte j = (byte) get();
+		if (m!='M' || j !='J') 
+				throw new Exception("Wrong start of bytecode file");
+		int codesize = get4();
+		int numberOfWords = get4();
+		int mainAdr = get4();
 		
 		prl(getStandardStart());
 		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a14 END");
