@@ -280,7 +280,7 @@ public class mjc2wsl{
 		int mainAdr = get4();
 		
 		prl(getStandardStart());
-		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a14 END");
+		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a"+(14+mainAdr)+" END");
 		int op = get();
 		while (op >= 0) {
 			if (originalInComments)
