@@ -21,6 +21,8 @@
     
     <property name="compiler.class.dir" value="compiler-bin" />
     <property name="compiler.src.dir" value="compiler" />
+    <property name="compiler.classname.compiler" value="Compiler" />
+    <property name="compiler.classname.interpreter" value="Run" />
 
     <property name="samples.main.dir" value="samples" />
     <property name="samples.temp.dir" value="samples-temp" />
@@ -110,7 +112,7 @@
     
     <target name="mj-compile" description="compile a MJ into obj file; given ${filename}">
         <echo message="${filename}" />
-        <java classpath="${compiler.class.dir}" classname="Compiler">
+        <java classpath="${compiler.class.dir}" classname="${compiler.classname.compiler}">
             <arg value="${filename}" />
         </java>
     </target>
@@ -127,7 +129,7 @@
 
     <target name="mj-run" description="run a MJ obj file given in ${filename} with ${inputstring}">
         <echo message="${filename}" />
-        <java classpath="${compiler.class.dir}" classname="Run" inputstring="${inputstring}">
+        <java classpath="${compiler.class.dir}" classname="${compiler.classname.interpreter}" inputstring="${inputstring}">
             <arg value="${filename}" />
         </java>
     </target>
