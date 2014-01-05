@@ -410,8 +410,11 @@ public class mjc2wsl{
 			case enter: {
 				prl(createComment("enter not fully procesed yet"));
 				message("enter not fully procesed yet", M_WAR);
+				int parameters = get();
+				
 				get();
-				get();
+				for (int i = parameters-1; i >= 0; i--)
+						prl(cmdFromEStack("mjvm_loc" + i));
 				break;
 			}
 			case exit: {
