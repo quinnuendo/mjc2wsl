@@ -32,6 +32,9 @@ public class mjc2wsl{
 			out.println("total errors:"+messageCounters[M_ERR]+" warnings:"+messageCounters[M_WAR]);
 	}
 	
+	private boolean addPauseAfterEachAddress=false, 
+		addPrintForEachAddress = false;
+	
 	/** Constant used for marking a regular comment from the original file */
 	public static final char C_REG = ' ';
 	/**
@@ -286,6 +289,11 @@ public class mjc2wsl{
 			if (originalInComments)
 				prl(createComment(describeOpCode(op), C_OC));
 			prl("a" + counter + " == ");
+			if (addPrintForEachAddress) {
+					prl("PRINT(\"a"+counter+"\");");
+					if (addPauseAfterEachAddress)
+							prl("debug_disposable_string := @Read_Line(Standard_Input_Port);");
+			}
 			switch (op) {
 			case load: {
 				prl(cmdToEStack(loc(get())));
