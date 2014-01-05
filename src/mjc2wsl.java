@@ -270,6 +270,10 @@ public class mjc2wsl{
 			}
 			throw new Exception("Wrong opcode for a relation");
 	}
+	
+	private boolean isJumpCode(int opcode) {
+			return (opcode>=jmp) && (opcode<=jge);
+	}
 
 	public void convertStream(InputStream ins) throws Exception{
 		mainIn = ins;
@@ -389,6 +393,7 @@ public class mjc2wsl{
 				prl(getTopTwo());
 				prl("IF tempb "+ getRelationFor(op)
 						+" tempa THEN CALL a" + (counter + get2())
+						+" ELSE CALL a" + (counter+1)
 						+ " FI;");
 				break;
 			}
@@ -458,9 +463,13 @@ public class mjc2wsl{
 				break;
 			}
 
+			boolean wasJump = isJumpCode(op);
 			op = get();
 			if (op >= 0)
-				prl("CALL a" + counter + " END");
+				if (wasJump)
+						prl("SKIP END");
+				else
+						prl("CALL a" + counter + " END");
 		}
 		prl("CALL Z;\nSKIP END\nENDACTIONS;\n");
 		prl(getStandardEnd());
