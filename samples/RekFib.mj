@@ -9,6 +9,8 @@ program RekFib{
 	
 	void main()
 	{
-		print(fib(2));
+		print(fib(0),3);
+		print(fib(2),3);
+		print(fib(7),3);
 	}
 }
