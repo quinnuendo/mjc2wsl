@@ -491,7 +491,7 @@ public class mjc2wsl{
 	public void printHelp() {
 		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
 				+ ", by Doni Pracner");
-		System.out.println("usage:\n\t {options} mjc2wsl  filename [outfile]");
+		System.out.println("usage:\n\t mjc2wsl {options} filename [outfile]");
 		System.out.println("options:\n\t--screen print output to screen");
 		System.out.println("\t-o --oc[+-] include original code in comments");
 		System.out.println("\t-v verbose, print warning messages");
