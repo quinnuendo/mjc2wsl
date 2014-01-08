@@ -33,7 +33,8 @@ public class mjc2wsl{
 	}
 	
 	private boolean addPauseAfterEachAddress=false, 
-		addPrintForEachAddress = false;
+		addPrintForEachAddress = false,
+		genPrintEStackOnChange = false;
 	
 	/** Constant used for marking a regular comment from the original file */
 	public static final char C_REG = ' ';
@@ -226,15 +227,21 @@ public class mjc2wsl{
 	//Expression stack
 	
 	private String cmdToEStack(int i) {
-		return "mjvm_estack := <" + i + " > ++ mjvm_estack;";
+		String res = "mjvm_estack := <" + i + " > ++ mjvm_estack;";
+		if (genPrintEStackOnChange) res +="PRINT(\"eStack\",mjvm_estack);";
+		return res;
 	}
 
 	private String cmdToEStack(String i) {
-		return "mjvm_estack := <" + i + " > ++ mjvm_estack;";
+		String res = "mjvm_estack := <" + i + " > ++ mjvm_estack;";
+		if (genPrintEStackOnChange) res +="PRINT(\"eStack\",mjvm_estack);";
+		return res;
 	}
 
 	private String cmdFromEStack(String st) {
-		return st + " := HEAD(mjvm_estack); mjvm_estack := TAIL(mjvm_estack);";
+		String res = st + " := HEAD(mjvm_estack); mjvm_estack := TAIL(mjvm_estack);";
+		if (genPrintEStackOnChange) res +="PRINT(\"eStack\",mjvm_estack);";
+		return res;
 	}
 	
 	private String getTopTwo(){
@@ -516,16 +523,21 @@ public class mjc2wsl{
 						originalInComments = args[i].charAt(4) == '+';
 					else
 						originalInComments = true;
-				} else if (args[i].startsWith("--screen")) {
+				} else if (args[i].compareTo("--screen") == 0) {
 					out = new PrintWriter(System.out);
 				} else if (args[i].compareTo("-d") == 0) {
 					printLevel = M_DEB;//print debug info
 				} else if (args[i].compareTo("-v") == 0) {
 					printLevel = M_WAR;//print warnings
 				} else if (args[i].compareTo("-q") == 0) {
-					printLevel = M_ERR+1;//no printing
-				}
-				i++;
+					printLevel = M_ERR+1;//no printing				
+				} else if (args[i].compareToIgnoreCase("--genEStackPrint") == 0) {
+					genPrintEStackOnChange = true;
+				} else if (args[i].compareToIgnoreCase("--genAll") == 0) {
+					genPrintEStackOnChange = true;
+					addPrintForEachAddress = true;
+					addPauseAfterEachAddress = true;
+				}i++;
 			}
 
 			if (i >= args.length) {
