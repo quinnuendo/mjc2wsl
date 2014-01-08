@@ -434,23 +434,24 @@ public class mjc2wsl{
 				break;
 			}
 
-			//TODO read, print
+			// read, print
+			case bread:
 			case read: {
+				//TODO make it a char for read
 				prl("tempa := @String_To_Num(@Read_Line(Standard_Input_Port));");
 				prl(cmdToEStack("tempa"));
 				break;
 			}
 
 			// the prints
-			case bprint: {
-				prl(getTopTwo());
-				prl("PRINT(tempb);");
-				break;
-			}
+			case bprint: 
 			case print: {
-				// TODO need to make it a char
+				// TODO need to make it a char on print
+				// TODO printing numbers needs different lengths of spacing
 				prl(getTopTwo());
-				prl("PRINT(tempb);");
+				pr(createComment("print spacing",C_SPEC));
+				prl("IF tempa>1 THEN FOR i:=2 TO tempa STEP 1 DO PRINFLUSH(\" \") OD FI;");
+				prl("PRINFLUSH(tempb);");
 				break;
 			}
 
