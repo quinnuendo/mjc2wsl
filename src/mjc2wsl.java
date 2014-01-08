@@ -406,16 +406,13 @@ public class mjc2wsl{
 			}
 
 			case call: {
-				prl(cmdToMStack(counter+2));
 				prl("CALL a" + (counter + get2()) + ";");
 				break;
 			}
 
 			case return_: {
-				prl("IF EMPTY?(mjvm_mstack) THEN CALL Z ELSE");
+				prl("IF EMPTY?(mjvm_mstack) THEN CALL Z FI");
 				//else we let things return		
-				prl(cmdFromMStack("tempa"));
-				prl("SKIP FI");
 				prl("END b"+counter+" ==");
 				break;
 			}
