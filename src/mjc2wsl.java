@@ -32,8 +32,8 @@ public class mjc2wsl{
 			out.println("total errors:"+messageCounters[M_ERR]+" warnings:"+messageCounters[M_WAR]);
 	}
 	
-	private boolean addPauseAfterEachAddress=false, 
-		addPrintForEachAddress = false,
+	private boolean genPauseAfterEachAddress=false, 
+		genPrintForEachAddress = false,
 		genPrintEStackOnChange = false;
 	
 	/** Constant used for marking a regular comment from the original file */
@@ -300,9 +300,9 @@ public class mjc2wsl{
 			if (originalInComments)
 				prl(createComment(describeOpCode(op), C_OC));
 			prl("a" + counter + " == ");
-			if (addPrintForEachAddress) {
+			if (genPrintForEachAddress) {
 					prl("PRINT(\"a"+counter+"\");");
-					if (addPauseAfterEachAddress)
+					if (genPauseAfterEachAddress)
 							prl("debug_disposable_string := @Read_Line(Standard_Input_Port);");
 			}
 			switch (op) {
@@ -535,8 +535,8 @@ public class mjc2wsl{
 					genPrintEStackOnChange = true;
 				} else if (args[i].compareToIgnoreCase("--genAll") == 0) {
 					genPrintEStackOnChange = true;
-					addPrintForEachAddress = true;
-					addPauseAfterEachAddress = true;
+					genPrintForEachAddress = true;
+					genPauseAfterEachAddress = true;
 				}i++;
 			}
 
