@@ -114,7 +114,7 @@ public class mjc2wsl{
 
 		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
 		for (int i = 0; i <= 3; i++)
-			ret.append("mjvm_loc" + i + " := 0, ");
+			ret.append(loc(i) + " := 0, ");
 		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
 		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
 		ret.append("\n	t_e_m_p := 0 > :");
@@ -419,7 +419,7 @@ public class mjc2wsl{
 				
 				get();
 				for (int i = parameters-1; i >= 0; i--)
-						prl(cmdFromEStack("mjvm_loc" + i));
+						prl(cmdFromEStack(loc(i)));
 				break;
 			}
 			case exit: {
