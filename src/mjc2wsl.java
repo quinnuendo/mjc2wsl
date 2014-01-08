@@ -114,8 +114,7 @@ public class mjc2wsl{
 			+"C:\" with mjc2wsl v "+versionN+"\";\n");
 
 		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
-		for (int i = 0; i <= 3; i++)
-			ret.append(loc(i) + " := 0, ");
+		ret.append("mjvm_locals := ARRAY(1,0), ");
 		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
 		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
 		ret.append("\n	t_e_m_p := 0 > :");
@@ -203,7 +202,8 @@ public class mjc2wsl{
 	}
 	
 	private String loc(int i){
-		return "mjvm_loc" + i;
+		//arrays start at 1 in WSL, so we need an offset
+		return "mjvm_locals[" + (i+1)+"]";
 	}
 	
 	/**
@@ -420,18 +420,17 @@ public class mjc2wsl{
 				break;
 			}
 			case enter: {
-				prl(createComment("enter not fully procesed yet"));
-				message("enter not fully procesed yet", M_WAR);
 				int parameters = get();
 				
-				get();
+				int locals = get();
+				prl(cmdToMStack("mjvm_locals"));
+				prl("mjvm_locals := ARRAY("+locals+",0);");
 				for (int i = parameters-1; i >= 0; i--)
 						prl(cmdFromEStack(loc(i)));
 				break;
 			}
 			case exit: {
-				prl(createComment("exit not fully procesed yet"));
-				message("exit not fully procesed yet", M_WAR);
+				prl(cmdFromMStack("mjvm_locals"));
 				break;
 			}
 
