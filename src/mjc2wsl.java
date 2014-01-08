@@ -533,6 +533,13 @@ public class mjc2wsl{
 					printLevel = M_ERR+1;//no printing				
 				} else if (args[i].compareToIgnoreCase("--genEStackPrint") == 0) {
 					genPrintEStackOnChange = true;
+				} else if (args[i].compareToIgnoreCase("--genAddrPause") == 0) {
+					genPauseAfterEachAddress = true;
+				} else if (args[i].compareToIgnoreCase("--genAddrPrint") == 0) {
+					genPrintForEachAddress = true;
+				} else if (args[i].compareToIgnoreCase("--genAddr") == 0) {
+					genPrintForEachAddress = true;
+					genPauseAfterEachAddress = true;
 				} else if (args[i].compareToIgnoreCase("--genAll") == 0) {
 					genPrintEStackOnChange = true;
 					genPrintForEachAddress = true;
