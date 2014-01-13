@@ -109,12 +109,17 @@ public class mjc2wsl{
 		trap		= 57;
 
 	public String getStandardStart(){
+			return getStandardStart(10);
+	}
+	
+	public String getStandardStart(int numWords){
 		StringBuilder ret = new StringBuilder(
 			"C:\" This file automatically converted from microjava bytecode\";\n"
 			+"C:\" with mjc2wsl v "+versionN+"\";\n");
 
 		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
 		ret.append("mjvm_locals := ARRAY(1,0), ");
+		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
 		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
 		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
 		ret.append("\n	t_e_m_p := 0 > :");
@@ -206,6 +211,10 @@ public class mjc2wsl{
 		return "mjvm_locals[" + (i+1)+"]";
 	}
 	
+	private String genStatic(int i){
+			return "mjvm_statics[" + (i+1)+"]";
+	}
+	
 	/**
 	 * Creates a WSL comment with care to quote chars.
 	 */
@@ -293,7 +302,7 @@ public class mjc2wsl{
 		int numberOfWords = get4();
 		int mainAdr = get4();
 		
-		prl(getStandardStart());
+		prl(getStandardStart(numberOfWords));
 		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a"+(14+mainAdr)+" END");
 		int op = get();
 		while (op >= 0) {
@@ -329,7 +338,14 @@ public class mjc2wsl{
 				break;
 			}
 			
-			//TODO getstatic, putstatic
+			case getstatic:{
+				prl(cmdToEStack(genStatic(get2())));
+				break;
+			} 
+			case putstatic: {
+				prl(cmdFromEStack(genStatic(get2())));
+				break;
+			}
 			//TODO getfield, putfield
 			
 			case const_: {
