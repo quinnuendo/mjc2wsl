@@ -347,6 +347,13 @@ public class mjc2wsl{
 				break;
 			}
 			//TODO getfield, putfield
+			case getfield:
+			case putfield:{
+					prl(createComment("fields are not processed properly", C_ERR));
+					message("fields are not processed properly", M_ERR);
+					get2();
+					break;
+			}
 			
 			case const_: {
 				prl(cmdToEStack(get4()));
@@ -398,6 +405,14 @@ public class mjc2wsl{
 
 			//TODO neg, shl, shr, inc
 			//TODO new_ newarray
+			case new_ :
+					get();//needs a short, but a byte will be taken bellow as well
+			case newarray :{
+					prl(createComment("memory allocation not processed properly", C_ERR));
+					message("memory allocation  not processed properly", M_ERR);
+					get();
+					break;
+			}
 			//TODO aload, asstore, baload, bastore
 			//TODO arraylength
 			//TODO pop, dup, dup2
