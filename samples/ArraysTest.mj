@@ -1,0 +1,29 @@
+program ArraysTest
+{
+	void rek_arr(int i)
+	int[] a; int loc, loc2; {
+		if (i>1){ 
+				a = new int[i];
+				loc = 0;
+				loc2 = 1;
+				while (loc<i){
+					a[loc] = loc2;
+					loc++;
+					loc2 = loc2 * i;
+				}
+				rek_arr(i-1);
+				loc = 0;
+				while (loc<i){
+					print(a[loc],3);
+					loc++;
+				}
+				print(0,5);
+		}
+	}
+
+	void main() int max;
+	{
+		max = 5;
+		rek_arr(max);
+	}
+}
