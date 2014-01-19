@@ -410,7 +410,12 @@ public class mjc2wsl{
 				break;
 			}
 
-			//TODO neg, shl, shr, inc
+			case neg :{
+				prl(getTop());
+				prl(cmdToEStack("-tempa"));
+				break;
+			}			
+			//TODO shl, shr
 			
 			case inc  : {
 				int b1 = get(), b2 = get();
