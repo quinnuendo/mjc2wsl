@@ -120,6 +120,7 @@ public class mjc2wsl{
 		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
 		ret.append("mjvm_locals := ARRAY(1,0), ");
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
+		ret.append("\n\tmjvm_arrays := < >, ");
 		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
 		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
 		ret.append("\n	t_e_m_p := 0 > :");
@@ -213,6 +214,14 @@ public class mjc2wsl{
 	
 	private String genStatic(int i){
 			return "mjvm_statics[" + (i+1)+"]";
+	}
+	
+	private String genArray(int i){
+			return "mjvm_arrays["+ i +"]";
+	}
+	
+	private String genArray(String i){
+			return "mjvm_arrays["+ i+"]";
 	}
 	
 	/**
@@ -423,15 +432,37 @@ public class mjc2wsl{
 				break;
 			}
 			//TODO new_ newarray
-			case new_ :
-					get();//needs a short, but a byte will be taken bellow as well
-			case newarray :{
+			case new_ :{
 					prl(createComment("memory allocation not processed properly", C_ERR));
 					message("memory allocation  not processed properly", M_ERR);
-					get();
+					get2();
 					break;
 			}
-			//TODO aload, asstore, baload, bastore
+			case newarray :{
+					get();// 0 - bytes, 1 - words; ignore for now
+					//TODO take into consideration 0/1
+					prl(getTop());
+					prl("mjvm_arrays := mjvm_arrays ++ < ARRAY(tempa,0) >;");
+					prl(cmdToEStack("LENGTH(mjvm_arrays)"));
+					break;
+			}
+			
+			case aload:
+			case baload:{
+				prl(getTopTwo());
+				prl(cmdToEStack(genArray("tempb")+"[tempa+1]"));
+				break;
+			}
+			case astore:
+			case bastore:{
+				prl(cmdFromEStack("tempres"));
+				prl(getTopTwo());
+				//we need to use a temparray as a pointer, WSL
+				//otherwise tries to access it as a list of lists and fails
+				prl("VAR < tempArray := "+genArray("tempb")+" > :");
+				prl("tempArray[tempa+1]:=tempres ENDVAR;");
+				break;
+			}
 			//TODO arraylength
 			//TODO dup, dup2
 			
