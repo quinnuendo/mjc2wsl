@@ -411,6 +411,12 @@ public class mjc2wsl{
 			}
 
 			//TODO neg, shl, shr, inc
+			
+			case inc  : {
+				int b1 = get(), b2 = get();
+				prl(loc(b1)+" := " +loc(b1)+" + "+b2);
+				break;
+			}
 			//TODO new_ newarray
 			case new_ :
 					get();//needs a short, but a byte will be taken bellow as well
