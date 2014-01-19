@@ -419,7 +419,7 @@ public class mjc2wsl{
 			
 			case inc  : {
 				int b1 = get(), b2 = get();
-				prl(loc(b1)+" := " +loc(b1)+" + "+b2);
+				prl(loc(b1)+" := " +loc(b1)+" + "+b2+";");
 				break;
 			}
 			//TODO new_ newarray
