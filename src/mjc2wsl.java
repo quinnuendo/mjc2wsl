@@ -486,24 +486,24 @@ public class mjc2wsl{
 			}
 
 			// read, print
-			case read:{
+			case bread:{
 				//TODO make it a char for read
 				message("char is read like a number", M_WAR);
 				prl(createComment("char is read like a number",C_SPEC));
 			}
-			case bread: {
+			case read: {
 				prl("tempa := @String_To_Num(@Read_Line(Standard_Input_Port));");
 				prl(cmdToEStack("tempa"));
 				break;
 			}
 
 			// the prints
-			case print:{
+			case bprint:{
 				// TODO need to make it a char on print
 				message("chars will be printed as number codes", M_WAR);
 				prl(createComment("char will be printed as a number code",C_SPEC));
 			}
-			case bprint: {
+			case print: {
 				// TODO printing numbers needs different lengths of spacing
 				prl(getTopTwo());
 				pr(createComment("print spacing",C_SPEC));
