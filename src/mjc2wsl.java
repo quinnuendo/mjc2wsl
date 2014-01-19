@@ -253,6 +253,13 @@ public class mjc2wsl{
 		return res;
 	}
 	
+	private String cmdPopEStack() {
+		String res = "mjvm_estack := TAIL(mjvm_estack);";
+		if (genPrintEStackOnChange) res +="PRINT(\"eStack\",mjvm_estack);";
+		return res;
+	}
+	
+	
 	private String getTopTwo(){
 		return cmdFromEStack("tempa") + "\n" + cmdFromEStack("tempb");
 	}
@@ -415,7 +422,12 @@ public class mjc2wsl{
 			}
 			//TODO aload, asstore, baload, bastore
 			//TODO arraylength
-			//TODO pop, dup, dup2
+			//TODO dup, dup2
+			
+			case pop : {
+					prl(cmdPopEStack());
+					break;					
+			}
 			
 			case jmp: {
 				prl("CALL a" + (counter + get2()) + ";");
