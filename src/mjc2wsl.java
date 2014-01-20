@@ -496,9 +496,9 @@ public class mjc2wsl{
 			}
 
 			case return_: {
-				prl("IF EMPTY?(mjvm_mstack) THEN CALL Z FI");
-				//else we let things return		
-				prl("END b"+counter+" ==");
+				//we let the actions return
+				// there is nothing to clean up
+				prl("SKIP END b"+counter+" ==");
 				break;
 			}
 			case enter: {
