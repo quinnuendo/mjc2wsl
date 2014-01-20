@@ -121,6 +121,7 @@ public class mjc2wsl{
 		ret.append("mjvm_locals := ARRAY(1,0), ");
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
 		ret.append("\n\tmjvm_arrays := < >, ");
+		ret.append("\n\tmjvm_objects := < >, ");
 		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
 		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
 		ret.append("\n	t_e_m_p := 0 > :");
@@ -222,6 +223,10 @@ public class mjc2wsl{
 	
 	private String genArray(String i){
 			return "mjvm_arrays["+ i+"]";
+	}
+	
+	private String genObject(String i){
+			return "mjvm_objects["+ i+"]";
 	}
 	
 	/**
@@ -362,12 +367,20 @@ public class mjc2wsl{
 				prl(cmdFromEStack(genStatic(get2())));
 				break;
 			}
-			//TODO getfield, putfield
-			case getfield:
+
+			case getfield:{
+					int f = get2();
+					prl(getTop());
+					prl(cmdToEStack(genObject("tempa")+"["+(f+1)+"]"));
+					break;
+			}
 			case putfield:{
-					prl(createComment("fields are not processed properly", C_ERR));
-					message("fields are not processed properly", M_ERR);
-					get2();
+					int f = get2();
+					//we need to use a temparray as a pointer, WSL
+					//otherwise tries to access it as a list of lists and fails
+					prl(getTopTwo());
+					prl("VAR < tempArray := "+genObject("tempb")+" > :");
+					prl("tempArray["+(f+1)+"]:=tempa ENDVAR;");				
 					break;
 			}
 			
@@ -431,11 +444,12 @@ public class mjc2wsl{
 				prl(loc(b1)+" := " +loc(b1)+" + "+b2+";");
 				break;
 			}
-			//TODO new_ newarray
+
 			case new_ :{
-					prl(createComment("memory allocation not processed properly", C_ERR));
-					message("memory allocation  not processed properly", M_ERR);
-					get2();
+					int size = get2();
+					//TODO maybe objects and arrays should be in the same list?
+					prl("mjvm_objects := mjvm_objects ++ < ARRAY("+size+",0) >;");
+					prl(cmdToEStack("LENGTH(mjvm_objects)"));
 					break;
 			}
 			case newarray :{
