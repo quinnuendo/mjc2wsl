@@ -463,7 +463,16 @@ public class mjc2wsl{
 				prl("tempArray[tempa+1]:=tempres ENDVAR;");
 				break;
 			}
-			//TODO arraylength
+			case arraylength :{
+				prl(getTop());
+				//TODO make an array length function of some sort!
+				prl(createComment("array length not known - LENGTH not aplicable to arrays",C_ERR));
+				message("array length not known - LENGTH not aplicable to arrays",M_ERR);
+				prl(createComment("put 1 on the stack for consistency",C_SPEC));
+				prl(cmdToEStack(1));
+				break;
+			}
+			
 			//TODO dup, dup2
 			
 			case pop : {
