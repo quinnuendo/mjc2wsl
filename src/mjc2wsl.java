@@ -437,8 +437,24 @@ public class mjc2wsl{
 				prl(cmdToEStack("-tempa"));
 				break;
 			}			
-			//TODO shl, shr
-			
+
+			case shl  : {
+				prl(getTopTwo());
+				prl("VAR <tempres :=tempb, i:=1 >:");
+				prl("\tFOR i:=1 TO tempa STEP 1 DO tempres := tempres * 2 OD;");
+				prl(cmdToEStack("tempres"));
+				prl("ENDVAR;");
+				break;
+			}
+			case shr  : {
+				prl(getTopTwo());
+				prl("VAR <tempres :=tempb, i:=1 >:");
+				prl("\tFOR i:=1 TO tempa STEP 1 DO tempres := tempres DIV 2 OD;");
+				prl(cmdToEStack("tempres"));
+				prl("ENDVAR;");
+				break;
+			}
+
 			case inc  : {
 				int b1 = get(), b2 = get();
 				prl(loc(b1)+" := " +loc(b1)+" + "+b2+";");
