@@ -473,7 +473,20 @@ public class mjc2wsl{
 				break;
 			}
 			
-			//TODO dup, dup2
+			case dup : {
+					prl(getTop());
+					prl(cmdToEStack("tempa"));
+					prl(cmdToEStack("tempa"));
+					break;					
+			}
+			case dup2 : {
+					prl(getTopTwo());
+					prl(cmdToEStack("tempb"));
+					prl(cmdToEStack("tempa"));
+					prl(cmdToEStack("tempb"));
+					prl(cmdToEStack("tempa"));
+					break;					
+			}
 			
 			case pop : {
 					prl(cmdPopEStack());
