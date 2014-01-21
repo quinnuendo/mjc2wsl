@@ -12,26 +12,8 @@ import java.util.*;
 public class mjc2wsl{
 	public static String versionN = "0.1.4";
 
-	public static final int M_ERR = 2, M_WAR = 1, M_DEB = 0;
-	
-	private int printLevel = M_ERR;
-	
-	private int[] messageCounters = new int[M_ERR+1];
-	
-	private void message(String mes, int level){
-			if (level>=printLevel)
-					System.out.println(mes);
-			messageCounters[level]++;
-	}
-	
-	private void printMessageCounters(){
-			printMessageCounters(System.out);
-	}
-	
-	private void printMessageCounters(PrintStream out){
-			out.println("total errors:"+messageCounters[M_ERR]+" warnings:"+messageCounters[M_WAR]);
-	}
-	
+	private TransMessages messages = new TransMessages();
+
 	private boolean genPauseAfterEachAddress=false, 
 		genPrintForEachAddress = false,
 		genPrintEStackOnChange = false;
@@ -108,31 +90,6 @@ public class mjc2wsl{
 		bprint      = 56,
 		trap		= 57;
 
-	public String createStandardStart(){
-			return createStandardStart(10);
-	}
-	
-	public String createStandardStart(int numWords){
-		StringBuilder ret = new StringBuilder(
-			"C:\" This file automatically converted from microjava bytecode\";\n"
-			+"C:\" with mjc2wsl v "+versionN+"\";\n");
-
-		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
-		ret.append("mjvm_locals := ARRAY(1,0), ");
-		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
-		ret.append("\n\tmjvm_arrays := < >, ");
-		ret.append("\n\tmjvm_objects := < >, ");
-		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
-		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
-		ret.append("\n	t_e_m_p := 0 > :");
-
-		return ret.toString();
-	}
-
-	public String createStandardEnd(){
-		return "SKIP\nENDVAR";
-	}
-	
 	private boolean originalInComments = false;	
 	
 	private HashMap<Integer,String> opMap = null;
@@ -208,6 +165,31 @@ public class mjc2wsl{
 		return (get2() << 16) + (get2() << 16 >>> 16);
 	}
 	
+	public String createStandardStart(){
+			return createStandardStart(10);
+	}
+
+	public String createStandardStart(int numWords){
+		StringBuilder ret = new StringBuilder(
+			"C:\" This file automatically converted from microjava bytecode\";\n"
+			+"C:\" with mjc2wsl v "+versionN+"\";\n");
+	
+		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
+		ret.append("mjvm_locals := ARRAY(1,0), ");
+		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
+		ret.append("\n\tmjvm_arrays := < >, ");
+		ret.append("\n\tmjvm_objects := < >, ");
+		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
+		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
+		ret.append("\n	t_e_m_p := 0 > :");
+	
+		return ret.toString();
+	}
+
+	public String createStandardEnd(){
+		return "SKIP\nENDVAR";
+	}
+
 	private String createLocal(int i) {
 		// arrays start at 1 in WSL, so we need an offset
 		return "mjvm_locals[" + (i + 1) + "]";
@@ -505,8 +487,7 @@ public class mjc2wsl{
 				prl(createComment(
 						"array length not known - LENGTH not aplicable to arrays",
 						C_ERR));
-				message("array length not known - LENGTH not aplicable to arrays",
-						M_ERR);
+				messages.message("array length not known - LENGTH not aplicable to arrays", TransMessages.M_ERR);
 				prl(createComment("put 1 on the stack for consistency", C_SPEC));
 				prl(createToEStack(1));
 				break;
@@ -579,7 +560,7 @@ public class mjc2wsl{
 			// read, print
 			case bread: {
 				// TODO make it a char for read
-				message("char is read like a number", M_WAR);
+				messages.message("char is read like a number", TransMessages.M_WAR);
 				prl(createComment("char is read like a number", C_SPEC));
 			}
 			case read: {
@@ -591,7 +572,7 @@ public class mjc2wsl{
 			// the prints
 			case bprint: {
 				// TODO need to make it a char on print
-				message("chars will be printed as number codes", M_WAR);
+				messages.message("chars will be printed as number codes", TransMessages.M_WAR);
 				prl(createComment("char will be printed as a number code",
 						C_SPEC));
 			}
@@ -611,7 +592,7 @@ public class mjc2wsl{
 
 			default:
 				prl(createComment("unknown op error: " + op, C_ERR));
-				message("unknown op error: " + op, M_ERR);
+				messages.message("unknown op error: " + op, TransMessages.M_ERR);
 				break;
 			}
 
@@ -673,11 +654,11 @@ public class mjc2wsl{
 				} else if (args[i].compareTo("--screen") == 0) {
 					out = new PrintWriter(System.out);
 				} else if (args[i].compareTo("-d") == 0) {
-					printLevel = M_DEB;// print debug info
+					messages.setPrintLevel(TransMessages.M_DEB);// print debug info
 				} else if (args[i].compareTo("-v") == 0) {
-					printLevel = M_WAR;// print warnings
+					messages.setPrintLevel(TransMessages.M_WAR);// print warnings
 				} else if (args[i].compareTo("-q") == 0) {
-					printLevel = M_ERR + 1;// no printing
+					messages.setPrintLevel(TransMessages.M_QUIET);// no printing
 				} else if (args[i].compareToIgnoreCase("--genEStackPrint") == 0) {
 					genPrintEStackOnChange = true;
 				} else if (args[i].compareToIgnoreCase("--genAddrPause") == 0) {
@@ -724,7 +705,7 @@ public class mjc2wsl{
 				long mili = Calendar.getInstance().getTimeInMillis()
 						- now.getTimeInMillis();
 				System.out.println("conversion time:" + mili + " ms");
-				printMessageCounters();
+				messages.printMessageCounters();
 				out.close();
 			} else
 				System.out.println("file does not exist");
