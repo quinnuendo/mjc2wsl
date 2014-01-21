@@ -108,11 +108,11 @@ public class mjc2wsl{
 		bprint      = 56,
 		trap		= 57;
 
-	public String getStandardStart(){
-			return getStandardStart(10);
+	public String createStandardStart(){
+			return createStandardStart(10);
 	}
 	
-	public String getStandardStart(int numWords){
+	public String createStandardStart(int numWords){
 		StringBuilder ret = new StringBuilder(
 			"C:\" This file automatically converted from microjava bytecode\";\n"
 			+"C:\" with mjc2wsl v "+versionN+"\";\n");
@@ -129,7 +129,7 @@ public class mjc2wsl{
 		return ret.toString();
 	}
 
-	public String getStandardEnd(){
+	public String createStandardEnd(){
 		return "SKIP\nENDVAR";
 	}
 	
@@ -208,24 +208,24 @@ public class mjc2wsl{
 		return (get2() << 16) + (get2() << 16 >>> 16);
 	}
 	
-	private String loc(int i) {
+	private String createLocal(int i) {
 		// arrays start at 1 in WSL, so we need an offset
 		return "mjvm_locals[" + (i + 1) + "]";
 	}
 
-	private String genStatic(int i) {
+	private String createStatic(int i) {
 		return "mjvm_statics[" + (i + 1) + "]";
 	}
 
-	private String genArray(int i) {
+	private String createArray(int i) {
 		return "mjvm_arrays[" + i + "]";
 	}
 
-	private String genArray(String i) {
+	private String createArray(String i) {
 		return "mjvm_arrays[" + i + "]";
 	}
 
-	private String genObject(String i) {
+	private String createObject(String i) {
 		return "mjvm_objects[" + i + "]";
 	}
 	
@@ -249,21 +249,21 @@ public class mjc2wsl{
 
 	//Expression stack
 	
-	private String cmdToEStack(int i) {
+	private String createToEStack(int i) {
 		String res = "mjvm_estack := <" + i + " > ++ mjvm_estack;";
 		if (genPrintEStackOnChange)
 			res += "PRINT(\"eStack\",mjvm_estack);";
 		return res;
 	}
 
-	private String cmdToEStack(String i) {
+	private String createToEStack(String i) {
 		String res = "mjvm_estack := <" + i + " > ++ mjvm_estack;";
 		if (genPrintEStackOnChange)
 			res += "PRINT(\"eStack\",mjvm_estack);";
 		return res;
 	}
 
-	private String cmdFromEStack(String st) {
+	private String createFromEStack(String st) {
 		String res = st
 				+ " := HEAD(mjvm_estack); mjvm_estack := TAIL(mjvm_estack);";
 		if (genPrintEStackOnChange)
@@ -271,32 +271,32 @@ public class mjc2wsl{
 		return res;
 	}
 
-	private String cmdPopEStack() {
+	private String createPopEStack() {
 		String res = "mjvm_estack := TAIL(mjvm_estack);";
 		if (genPrintEStackOnChange)
 			res += "PRINT(\"eStack\",mjvm_estack);";
 		return res;
 	}
 
-	private String getTopTwo() {
-		return cmdFromEStack("tempa") + "\n" + cmdFromEStack("tempb");
+	private String createTopTwoEStack() {
+		return createFromEStack("tempa") + "\n" + createFromEStack("tempb");
 	}
 
-	private String getTop() {
-		return cmdFromEStack("tempa");
+	private String createTopEStack() {
+		return createFromEStack("tempa");
 	}
 	
 	//Method stack
 
-	private String cmdToMStack(int i) {
+	private String createToMStack(int i) {
 		return "mjvm_mstack := <" + i + " > ++ mjvm_mstack;";
 	}
 
-	private String cmdToMStack(String i) {
+	private String createToMStack(String i) {
 		return "mjvm_mstack := <" + i + " > ++ mjvm_mstack;";
 	}
 
-	private String cmdFromMStack(String st) {
+	private String createFromMStack(String st) {
 		return st + " := HEAD(mjvm_mstack); mjvm_mstack := TAIL(mjvm_mstack);";
 	}
 
@@ -327,7 +327,7 @@ public class mjc2wsl{
 		int numberOfWords = get4();
 		int mainAdr = get4();
 		
-		prl(getStandardStart(numberOfWords));
+		prl(createStandardStart(numberOfWords));
 		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a" + (14 + mainAdr)
 				+ " END");
 		int op = get();
@@ -342,55 +342,55 @@ public class mjc2wsl{
 			}
 			switch (op) {
 			case load: {
-				prl(cmdToEStack(loc(get())));
+				prl(createToEStack(createLocal(get())));
 				break;
 			}
 			case load_0:
 			case load_1:
 			case load_2:
 			case load_3: {
-				prl(cmdToEStack(loc(op - load_0)));
+				prl(createToEStack(createLocal(op - load_0)));
 				break;
 			}
 			case store: {
-				prl(cmdFromEStack(loc(get())));
+				prl(createFromEStack(createLocal(get())));
 				break;
 			}
 			case store_0:
 			case store_1:
 			case store_2:
 			case store_3: {
-				prl(cmdFromEStack(loc(op - store_0)));
+				prl(createFromEStack(createLocal(op - store_0)));
 				break;
 			}
 
 			case getstatic: {
-				prl(cmdToEStack(genStatic(get2())));
+				prl(createToEStack(createStatic(get2())));
 				break;
 			}
 			case putstatic: {
-				prl(cmdFromEStack(genStatic(get2())));
+				prl(createFromEStack(createStatic(get2())));
 				break;
 			}
 
 			case getfield: {
 				int f = get2();
-				prl(getTop());
-				prl(cmdToEStack(genObject("tempa") + "[" + (f + 1) + "]"));
+				prl(createTopEStack());
+				prl(createToEStack(createObject("tempa") + "[" + (f + 1) + "]"));
 				break;
 			}
 			case putfield: {
 				int f = get2();
 				// we need to use a temparray as a pointer, WSL
 				// otherwise tries to access it as a list of lists and fails
-				prl(getTopTwo());
-				prl("VAR < tempArray := " + genObject("tempb") + " > :");
+				prl(createTopTwoEStack());
+				prl("VAR < tempArray := " + createObject("tempb") + " > :");
 				prl("tempArray[" + (f + 1) + "]:=tempa ENDVAR;");
 				break;
 			}
 
 			case const_: {
-				prl(cmdToEStack(get4()));
+				prl(createToEStack(get4()));
 				break;
 			}
 
@@ -400,69 +400,69 @@ public class mjc2wsl{
 			case const_3:
 			case const_4:
 			case const_5: {
-				prl(cmdToEStack(op - const_0));
+				prl(createToEStack(op - const_0));
 				break;
 			}
 
 			case add: {
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				prl("tempres := tempb + tempa;");
-				prl(cmdToEStack("tempres"));
+				prl(createToEStack("tempres"));
 				break;
 			}
 			case sub: {
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				prl("tempres := tempb - tempa;");
-				prl(cmdToEStack("tempres"));
+				prl(createToEStack("tempres"));
 				break;
 			}
 			case mul: {
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				prl("tempres := tempb * tempa;");
-				prl(cmdToEStack("tempres"));
+				prl(createToEStack("tempres"));
 				break;
 			}
 			case div: {
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				prl("IF tempa = 0 THEN ERROR(\"division by zero\") FI;");
 				prl("tempres := tempb DIV tempa;");
-				prl(cmdToEStack("tempres"));
+				prl(createToEStack("tempres"));
 				break;
 			}
 			case rem: {
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				prl("IF tempa = 0 THEN ERROR(\"division by zero\") FI;");
 				prl("tempres := tempb MOD tempa;");
-				prl(cmdToEStack("tempres"));
+				prl(createToEStack("tempres"));
 				break;
 			}
 
 			case neg: {
-				prl(getTop());
-				prl(cmdToEStack("-tempa"));
+				prl(createTopEStack());
+				prl(createToEStack("-tempa"));
 				break;
 			}
 
 			case shl: {
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				prl("VAR <tempres :=tempb, i:=1 >:");
 				prl("\tFOR i:=1 TO tempa STEP 1 DO tempres := tempres * 2 OD;");
-				prl(cmdToEStack("tempres"));
+				prl(createToEStack("tempres"));
 				prl("ENDVAR;");
 				break;
 			}
 			case shr: {
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				prl("VAR <tempres :=tempb, i:=1 >:");
 				prl("\tFOR i:=1 TO tempa STEP 1 DO tempres := tempres DIV 2 OD;");
-				prl(cmdToEStack("tempres"));
+				prl(createToEStack("tempres"));
 				prl("ENDVAR;");
 				break;
 			}
 
 			case inc: {
 				int b1 = get(), b2 = get();
-				prl(loc(b1) + " := " + loc(b1) + " + " + b2 + ";");
+				prl(createLocal(b1) + " := " + createLocal(b1) + " + " + b2 + ";");
 				break;
 			}
 
@@ -471,36 +471,36 @@ public class mjc2wsl{
 				// TODO maybe objects and arrays should be in the same list?
 				prl("mjvm_objects := mjvm_objects ++ < ARRAY(" + size
 						+ ",0) >;");
-				prl(cmdToEStack("LENGTH(mjvm_objects)"));
+				prl(createToEStack("LENGTH(mjvm_objects)"));
 				break;
 			}
 			case newarray: {
 				get();// 0 - bytes, 1 - words; ignore for now
 				// TODO take into consideration 0/1
-				prl(getTop());
+				prl(createTopEStack());
 				prl("mjvm_arrays := mjvm_arrays ++ < ARRAY(tempa,0) >;");
-				prl(cmdToEStack("LENGTH(mjvm_arrays)"));
+				prl(createToEStack("LENGTH(mjvm_arrays)"));
 				break;
 			}
 
 			case aload:
 			case baload: {
-				prl(getTopTwo());
-				prl(cmdToEStack(genArray("tempb") + "[tempa+1]"));
+				prl(createTopTwoEStack());
+				prl(createToEStack(createArray("tempb") + "[tempa+1]"));
 				break;
 			}
 			case astore:
 			case bastore: {
-				prl(cmdFromEStack("tempres"));
-				prl(getTopTwo());
+				prl(createFromEStack("tempres"));
+				prl(createTopTwoEStack());
 				// we need to use a temparray as a pointer, WSL
 				// otherwise tries to access it as a list of lists and fails
-				prl("VAR < tempArray := " + genArray("tempb") + " > :");
+				prl("VAR < tempArray := " + createArray("tempb") + " > :");
 				prl("tempArray[tempa+1]:=tempres ENDVAR;");
 				break;
 			}
 			case arraylength: {
-				prl(getTop());
+				prl(createTopEStack());
 				// TODO make an array length function of some sort!
 				prl(createComment(
 						"array length not known - LENGTH not aplicable to arrays",
@@ -508,27 +508,27 @@ public class mjc2wsl{
 				message("array length not known - LENGTH not aplicable to arrays",
 						M_ERR);
 				prl(createComment("put 1 on the stack for consistency", C_SPEC));
-				prl(cmdToEStack(1));
+				prl(createToEStack(1));
 				break;
 			}
 
 			case dup: {
-				prl(getTop());
-				prl(cmdToEStack("tempa"));
-				prl(cmdToEStack("tempa"));
+				prl(createTopEStack());
+				prl(createToEStack("tempa"));
+				prl(createToEStack("tempa"));
 				break;
 			}
 			case dup2: {
-				prl(getTopTwo());
-				prl(cmdToEStack("tempb"));
-				prl(cmdToEStack("tempa"));
-				prl(cmdToEStack("tempb"));
-				prl(cmdToEStack("tempa"));
+				prl(createTopTwoEStack());
+				prl(createToEStack("tempb"));
+				prl(createToEStack("tempa"));
+				prl(createToEStack("tempb"));
+				prl(createToEStack("tempa"));
 				break;
 			}
 
 			case pop: {
-				prl(cmdPopEStack());
+				prl(createPopEStack());
 				break;
 			}
 
@@ -543,7 +543,7 @@ public class mjc2wsl{
 			case jle:
 			case jgt:
 			case jge: {
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				prl("IF tempb " + getRelationFor(op) + " tempa THEN CALL a"
 						+ (counter + get2()) + " ELSE CALL a" + (counter + 1)
 						+ " FI;");
@@ -565,14 +565,14 @@ public class mjc2wsl{
 				int parameters = get();
 
 				int locals = get();
-				prl(cmdToMStack("mjvm_locals"));
+				prl(createToMStack("mjvm_locals"));
 				prl("mjvm_locals := ARRAY(" + locals + ",0);");
 				for (int i = parameters - 1; i >= 0; i--)
-					prl(cmdFromEStack(loc(i)));
+					prl(createFromEStack(createLocal(i)));
 				break;
 			}
 			case exit: {
-				prl(cmdFromMStack("mjvm_locals"));
+				prl(createFromMStack("mjvm_locals"));
 				break;
 			}
 
@@ -584,7 +584,7 @@ public class mjc2wsl{
 			}
 			case read: {
 				prl("tempa := @String_To_Num(@Read_Line(Standard_Input_Port));");
-				prl(cmdToEStack("tempa"));
+				prl(createToEStack("tempa"));
 				break;
 			}
 
@@ -597,7 +597,7 @@ public class mjc2wsl{
 			}
 			case print: {
 				// TODO printing numbers needs different lengths of spacing
-				prl(getTopTwo());
+				prl(createTopTwoEStack());
 				pr(createComment("print spacing", C_SPEC));
 				prl("IF tempa>1 THEN FOR i:=2 TO tempa STEP 1 DO PRINFLUSH(\" \") OD FI;");
 				prl("PRINFLUSH(tempb);");
@@ -624,7 +624,7 @@ public class mjc2wsl{
 					prl("CALL a" + counter + " END");
 		}
 		prl("CALL Z;\nSKIP END\nENDACTIONS;\n");
-		prl(getStandardEnd());
+		prl(createStandardEnd());
 	}
 
 	public void convertFile(File f) {
