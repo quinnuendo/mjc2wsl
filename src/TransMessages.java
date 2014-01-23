@@ -30,7 +30,7 @@ public class TransMessages {
 	public static final int M_WAR = 1;
 	public static final int M_ERR = 2;
 	public static final int M_QUIET = 3;
-	private PrintStream outStream;
+	private PrintStream outStream = System.out;
 
 	public TransMessages() {
 		this.setPrintLevel(M_ERR);
@@ -39,7 +39,6 @@ public class TransMessages {
 
 	void message(String mes, int level){
 			if (level>=getPrintLevel()) {
-				outStream = System.out;
 				outStream.println(mes);
 			}
 			messageCounters[level]++;
