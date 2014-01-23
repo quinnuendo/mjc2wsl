@@ -1,0 +1,49 @@
+MicroJava Compiler
+==================
+
+About MicroJava
+---------------
+
+MicroJava is a simple language made by H. Mössenböck for a Compiler Construction
+course.  It is not the same as Java Micro Edition (JavaME) used on mobile
+phones.
+
+More about the course, the language and its VM:
+http://www.ssw.uni-linz.ac.at/Misc/CC/
+
+The site for the Serbian version of the course:
+http://perun.pmf.uns.ac.rs/kurbalija/Teaching/kk.htm
+
+
+About the compiler and runner
+-----------------------------
+
+The source files for a functional MJ compiler are given in the compiler-src
+folder.  These are heavily based on the source templates that are used in
+the Compiler Construction classes and finished by students during the
+course. 
+
+The original source templates were written by Moessenboeck and are available
+on the sites given above, though there are posible updates.  The version
+given has the compiler finished by a student, and a few additional changes
+(such as the optional decoding while writeing to file).
+
+
+Usage
+-----
+
+An ant build script can be found in the root folder of the project and it
+includes (among others) tasks for building the sources, as well as using
+the compiler and runner. 
+
+Otherwise calls can be made with:
+
+java MJ.Compiler <input.mj> [-print]
+java MJ.Run [-d] <input.obj>
+
+There is also a Decoder available:
+
+java MJ.Decode <input.obj>
+
+You might want to include the "compiler-bin" into your CLASSPATH, or just
+use "-cp compiler-bin" in the command line.
