@@ -1,14 +1,17 @@
 MJC2WSL - convert MicroJava Compiled Bytecode to WSL/FermaT
 ===========================================================
 
+mjc2wsl is distributed under the GPL licence, for more details check the src
+folder.
+
+
 Quick build and test
 --------------------
 
-Running ant in the folder should compile the tool as well
-as the MJ compiler and then do a test - compile all of the
-sample MicroJava codes into MJ bytecode, translate them
-to WSL and then apply the given transformations in MetaWSL
-to the programs.
+Running ant in the folder should compile the tool as well as the MJ compiler
+and then do a test - compile all of the sample MicroJava codes into MJ
+bytecode, translate them to WSL and then apply the given transformations in
+MetaWSL to the programs.
 
 
 Requirements
@@ -27,23 +30,26 @@ Downloads available at http://www.cse.dmu.ac.uk/~mward/fermat.html
 Setting the FermaT dir
 ----------------------
 
-The ant build script assumes that Fermat is in "C:/fermat3" under
-Windows and "~/fermat3" for everything else (Linux/Mac...).
+The ant build script assumes that Fermat is in "C:/fermat3" under Windows
+and "~/fermat3" for everything else (Linux/Mac...).
 
-If you need to change this you can rename (or copy) the given
-file "custom.properties.default" to "custom.properties" and
-specify a correct path for your system.
+If you need to change this you can rename (or copy) the given file
+"custom.properties.default" to "custom.properties" and specify a correct
+path for your system.
 
 
 About MicroJava
 ---------------
 
-This is a simple language made by H. Mössenböck for a Compiler
-Construction course. It is not the same as Java Micro Edition
-(JavaME) used on mobile phones.
+This is a simple language made by H. Mössenböck for a Compiler Construction
+course.  It is not the same as Java Micro Edition (JavaME) used on mobile
+phones.
 
 More about the course, the language and its VM:
 http://www.ssw.uni-linz.ac.at/Misc/CC/
+
+A functional compiler is distributed in the lib folder for ease of testing
+and evaluating.  Check the folder for further details.
 
 
 Contact
