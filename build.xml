@@ -19,10 +19,10 @@
 
     <property name="res.dir" value="res" />
     
-    <property name="compiler.class.dir" value="compiler-bin" />
-    <property name="compiler.src.dir" value="compiler" />
-    <property name="compiler.classname.compiler" value="Compiler" />
-    <property name="compiler.classname.interpreter" value="Run" />
+    <property name="compiler.class.dir" value="lib/compiler-bin" />
+    <property name="compiler.src.dir" value="lib/compiler-src" />
+    <property name="compiler.classname.compiler" value="MJ.Compiler" />
+    <property name="compiler.classname.interpreter" value="MJ.Run" />
 
     <property name="samples.main.dir" value="samples" />
     <property name="samples.temp.dir" value="samples-temp" />
