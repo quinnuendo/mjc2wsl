@@ -25,7 +25,7 @@
     <property name="compiler.classname.interpreter" value="MJ.Run" />
 
     <property name="samples.main.dir" value="samples" />
-    <property name="samples.temp.dir" value="samples-temp" />
+    <property name="samples.temp.dir" value="temp" />
 
     <property name="transf.wsl.file" value="src-wsl/transf-min.wsl" />
     <property name="transf.wsl.ini" value="transf.ini" />
