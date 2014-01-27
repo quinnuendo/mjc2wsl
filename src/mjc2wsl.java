@@ -28,7 +28,7 @@ import java.util.*;
  * @author Doni Pracner, http://perun.dmi.rs/pracner http://quemaster.com
  */
 public class mjc2wsl{
-	public static String versionN = "0.1.4";
+	public static String versionN = "0.1.5";
 
 	private TransMessages messages = new TransMessages();
 
