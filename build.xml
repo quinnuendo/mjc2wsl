@@ -182,7 +182,7 @@
 
     <target name="wsl-run" >
         <exec executable="${fermat.dir}/bin/wsl" inputstring="${inputstring}">
-            <env key="PATH" path="${env.PATH}:${fermat.dir}/bin"/>
+            <env key="PATH" path="${fermat.dir}/bin:${env.PATH}"/>
             <env key="FermaT" path="${fermat.dir}" />
             <env key="SCHEME_LIBRARY_PATH" path="${fermat.dir}/slib/" />
             <env key="SCM_INIT_PATH" path="${fermat.dir}/scm/Init5e5.scm" />
