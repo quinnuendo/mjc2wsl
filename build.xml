@@ -1,5 +1,6 @@
 <project name="mjc2wsl" default="all">
     <property file="custom.properties"/>
+    <property environment="env"/>
     
      <condition property="fermat.dir" value="C:\fermat3">
        <os family="windows" />
