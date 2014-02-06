@@ -206,7 +206,7 @@
         <antcall target="wsl-run">
             <param name="filename" value="${transf.wsl.file}" />
         </antcall>
-        <record name="${log.file.transformations}${time}" action="stop" />
+	<record name="${log.file.transformations}${time}.txt" action="stop" />
         <copy file="${log.file.transformations}${time}.txt" tofile="${log.file.transformations}.txt"/>
     </target>
     
