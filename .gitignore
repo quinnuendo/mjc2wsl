@@ -1,9 +1,18 @@
+# compiled versions
 *.class
 *.obj
+
+#backups
 *~
 *.bak
+
+#temp folders
 samples-temp/*
 temp/*
-transf.ini
-custom.properties
 logs/*
+
+#temp files used by scripts
+transf.ini
+
+#local custom properties etc
+custom.properties
