@@ -6,3 +6,4 @@ samples-temp/*
 temp/*
 transf.ini
 custom.properties
+logs/*
