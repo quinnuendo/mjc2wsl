@@ -636,38 +636,50 @@ public class mjc2wsl{
 	
 	public void printHelp() {
 		printVersion();
-		System.out.println("usage:\n\t mjc2wsl {options} filename [outfile]");
-		System.out.println("basic options:\n\t--screen print output to screen");
-		System.out.println("\t-o --oc[+-] include original code in comments");
-		System.out.println("\t-v verbose, print warning messages");
-		System.out.println("\t-q quiet; don't print even the error messages");
-		System.out.println("\t-d print detailed debug messages");
-		System.out.println("\t-h basic help; this screen");
-		System.out.println("\t--help print more detailed help");
+		printUsage();
+		printHelpOutput();
+		printHelpHelp();
 	}
 	
 	public void printLongHelp() {
 		printVersion();
-		System.out.println("usage:\n\t mjc2wsl {options} filename [outfile]");
+		printUsage();
+		System.out.println();
+		printHelpOutput();
+		System.out.println();
+		printHelpGenerating();
+		System.out.println();
+		printHelpHelp();
+	}
+
+	public void printHelpOutput() {
 		System.out.println("Output options:");
 		System.out.println("  --screen print output to screen");
 		System.out.println("  -o --oc[+-] include original code in comments");
 		System.out.println("  -v verbose, print warning messages");
 		System.out.println("  -q quiet; don't print even the error messages");
 		System.out.println("  -d print detailed debug messages");
+	}
 		
-		System.out.println("\nOptions for generating extra code for tracking code execution");
+	public void printHelpGenerating() {
+		System.out.println("Options for generating extra code for tracking code execution");
 		System.out.println("  --genEStackPrint generate print for all EStack changes");
 		System.out.println("  --genAddrPrint  generate prints after every address of the original code ");
 		System.out.println("  --genAddrPause  generate a pause after every address of the original code ");
 		System.out.println("  --genAddr  short for --genAddrPrint and --genAddrPause");
 		System.out.println("  --genAll   short for applying all code generation");
-		
-		System.out.println("\nHelp options");
+	}
+
+	public void printHelpHelp() {
+		System.out.println("Help options");
 		System.out.println("  -h basic help");
-		System.out.println("  --help print more detailed help; this screen");
+		System.out.println("  --help print more detailed help");
 	}
 	
+	public void printUsage(){
+		System.out.println("usage:\n\t mjc2wsl {options} filename [outfile]");
+	}
+
 	public void printVersion() {
 		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
 				+ ", by Doni Pracner");
