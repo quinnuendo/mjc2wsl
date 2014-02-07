@@ -671,9 +671,10 @@ public class mjc2wsl{
 	}
 
 	public void printHelpHelp() {
-		System.out.println("Help options");
+		System.out.println("Help and info options");
 		System.out.println("  -h basic help");
 		System.out.println("  --help print more detailed help");
+		System.out.println("  --version or -version print version and exit");
 	}
 	
 	public void printUsage(){
@@ -703,6 +704,10 @@ public class mjc2wsl{
 					return;
 				} else if (args[i].compareTo("--help") == 0) {
 					printLongHelp();
+					return;
+				} else if (args[i].compareTo("--version") == 0 
+						|| args[i].compareTo("-version") == 0) {
+					printVersion();
 					return;
 				} else if (args[i].compareTo("-o") == 0
 						|| args[i].startsWith("--oc")) {
