@@ -638,11 +638,36 @@ public class mjc2wsl{
 		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
 				+ ", by Doni Pracner");
 		System.out.println("usage:\n\t mjc2wsl {options} filename [outfile]");
-		System.out.println("options:\n\t--screen print output to screen");
+		System.out.println("basic options:\n\t--screen print output to screen");
 		System.out.println("\t-o --oc[+-] include original code in comments");
 		System.out.println("\t-v verbose, print warning messages");
-		System.out.println("\t-q don't print even the error messages");
+		System.out.println("\t-q quiet; don't print even the error messages");
 		System.out.println("\t-d print detailed debug messages");
+		System.out.println("\t-h basic help; this screen");
+		System.out.println("\t--help print more detailed help");
+	}
+	
+	public void printLongHelp() {
+		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
+				+ ", by Doni Pracner");
+		System.out.println("usage:\n\t mjc2wsl {options} filename [outfile]");
+		System.out.println("Output options:");
+		System.out.println("  --screen print output to screen");
+		System.out.println("  -o --oc[+-] include original code in comments");
+		System.out.println("  -v verbose, print warning messages");
+		System.out.println("  -q quiet; don't print even the error messages");
+		System.out.println("  -d print detailed debug messages");
+		
+		System.out.println("\nOptions for generating extra code for tracking code execution");
+		System.out.println("  --genEStackPrint generate print for all EStack changes");
+		System.out.println("  --genAddrPrint  generate prints after every address of the original code ");
+		System.out.println("  --genAddrPause  generate a pause after every address of the original code ");
+		System.out.println("  --genAddr  short for --genAddrPrint and --genAddrPause");
+		System.out.println("  --genAll   short for applying all code generation");
+		
+		System.out.println("\nHelp options");
+		System.out.println("  -h basic help");
+		System.out.println("  --help print more detailed help; this screen");
 	}
 	
 	public String makeDefaultOutName(String inname){
@@ -660,6 +685,9 @@ public class mjc2wsl{
 			while (i < args.length && args[i].charAt(0) == '-') {
 				if (args[i].compareTo("-h") == 0) {
 					printHelp();
+					return;
+				} else if (args[i].compareTo("--help") == 0) {
+					printLongHelp();
 					return;
 				} else if (args[i].compareTo("-o") == 0
 						|| args[i].startsWith("--oc")) {
