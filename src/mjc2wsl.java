@@ -635,8 +635,7 @@ public class mjc2wsl{
 	}
 	
 	public void printHelp() {
-		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
-				+ ", by Doni Pracner");
+		printVersion();
 		System.out.println("usage:\n\t mjc2wsl {options} filename [outfile]");
 		System.out.println("basic options:\n\t--screen print output to screen");
 		System.out.println("\t-o --oc[+-] include original code in comments");
@@ -648,8 +647,7 @@ public class mjc2wsl{
 	}
 	
 	public void printLongHelp() {
-		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
-				+ ", by Doni Pracner");
+		printVersion();
 		System.out.println("usage:\n\t mjc2wsl {options} filename [outfile]");
 		System.out.println("Output options:");
 		System.out.println("  --screen print output to screen");
@@ -668,6 +666,11 @@ public class mjc2wsl{
 		System.out.println("\nHelp options");
 		System.out.println("  -h basic help");
 		System.out.println("  --help print more detailed help; this screen");
+	}
+	
+	public void printVersion() {
+		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
+				+ ", by Doni Pracner");
 	}
 	
 	public String makeDefaultOutName(String inname){
