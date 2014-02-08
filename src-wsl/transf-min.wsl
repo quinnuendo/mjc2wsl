@@ -26,7 +26,6 @@ MW_PROC @Process_Prog() ==
 	FOREACH Statement DO
 		IF @ST(@I) = T_A_S THEN 
 			C:"don't need to test for this, works for T_A_S";
-			@Trans(TR_Simplify_Action_System, "");	
 			IF @Trans?(TR_Collapse_Action_System) THEN
 				@Trans(TR_Collapse_Action_System, "");
 			FI;
