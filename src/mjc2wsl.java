@@ -501,13 +501,8 @@ public class mjc2wsl{
 			}
 			case arraylength: {
 				prl(createTopEStack());
-				// TODO make an array length function of some sort!
-				prl(createComment(
-						"array length not known - LENGTH not aplicable to arrays",
-						C_ERR));
-				messages.message("array length not known - LENGTH not aplicable to arrays", TransMessages.M_ERR);
-				prl(createComment("put 1 on the stack for consistency", C_SPEC));
-				prl(createToEStack(1));
+				prl("tempb := LENGTH("+ createArray("tempa") + ");");
+				prl(createToEStack("tempb"));
 				break;
 			}
 
