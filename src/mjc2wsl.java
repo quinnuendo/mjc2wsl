@@ -617,7 +617,7 @@ public class mjc2wsl{
 				else
 					prl("CALL a" + counter + " END");
 		}
-		prl("CALL Z;\nSKIP END\nENDACTIONS;\n");
+		prl("\nSKIP END\nENDACTIONS;\n");
 		prl(createStandardEnd());
 	}
 
