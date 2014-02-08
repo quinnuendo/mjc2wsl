@@ -12,7 +12,7 @@ program ArrayTest
 			i++;
 		}
 		i = 0;
-		while (i<max){
+		while (i<len(arr)){
 			print(arr[i],3);
 			i++;
 		}
