@@ -197,9 +197,7 @@ public class mjc2wsl{
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
 		ret.append("\n\tmjvm_arrays := < >, ");
 		ret.append("\n\tmjvm_objects := < >, ");
-		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < >, "); 
-		ret.append("\n	mjvm_fp := 0, mjvm_sp := 0,");
-		ret.append("\n	t_e_m_p := 0 > :");
+		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < > > : "); 
 	
 		return ret.toString();
 	}
