@@ -18,6 +18,9 @@ License along with this program. If not, see
 <http://www.gnu.org/licenses/>.
 ==========================================================";
 
+C:"set the following so that Action Systems are not automaticaly treated as regular";
+Assume_A_S_Regular := 0;
+
 C:"Automatic transformation tool for simplification of WSL";
 C:"code automaticaly translated from assembly using asm2wsl.";
 C:"a simple version";
@@ -26,6 +29,7 @@ MW_PROC @Process_Prog() ==
 	FOREACH Statement DO
 		IF @ST(@I) = T_A_S THEN 
 			C:"don't need to test for this, works for T_A_S";
+			@Trans(TR_Simplify_Action_System, "");
 			IF @Trans?(TR_Collapse_Action_System) THEN
 				@Trans(TR_Collapse_Action_System, "");
 			FI;
@@ -41,6 +45,13 @@ MW_PROC @Process_Prog() ==
 			@Delete
 	FI
 	OD;
+
+	FOREACH Statement DO
+	      IF @Trans?(TR_Simplify_Item) THEN
+		@Trans(TR_Simplify_Item,"")
+	      FI
+	OD;
+
 	C:"Convert DO loops into WHILE loops";
 	FOREACH Statement DO
 		IF @Trans?(TR_Floop_To_While) THEN
