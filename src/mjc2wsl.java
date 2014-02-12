@@ -344,7 +344,7 @@ public class mjc2wsl{
 		while (op >= 0) {
 			if (originalInComments)
 				prl(createComment(describeOpCode(op), C_OC));
-			prl("a" + counter + " == ");
+			prl(" a" + counter + " == ");
 			if (genPrintForEachAddress) {
 				prl("PRINT(\"a" + counter + "\");");
 				if (genPauseAfterEachAddress)
@@ -562,7 +562,7 @@ public class mjc2wsl{
 			case return_: {
 				// we let the actions return
 				// there is nothing to clean up
-				prl("SKIP END b" + counter + " ==");
+				prl("SKIP\n END\n b" + counter + " ==");
 				break;
 			}
 			case enter: {
@@ -621,11 +621,11 @@ public class mjc2wsl{
 			op = get();
 			if (op >= 0)
 				if (wasJump)
-					prl("SKIP END");
+					prl("SKIP\n END");
 				else
-					prl("CALL a" + counter + " END");
+					prl("CALL a" + counter + "\n END");
 		}
-		prl("\nSKIP END\nENDACTIONS;\n");
+		prl("SKIP\n END\nENDACTIONS;\n");
 		prl(createStandardEnd());
 	}
 
