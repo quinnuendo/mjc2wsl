@@ -1,0 +1,107 @@
+Running the ant tasks
+============================================================
+
+This project supplies an ant build file.
+
+When used without parameters it will 
+- build the main tool, mjc2wsl, as well as the MicroJava compiler
+- compile all the given MicroJava samples in a temp folder
+- translated these to WSL
+- run a transformation script for all of these files 
+(if FermaT is found)
+
+There are other tasks available, as well as the option of
+doing some of the above taks on their own.
+
+Many of these can be given parameters, such as 
+
+ant mjc2wsl -Dfilename=temp/Rek1.obj -Dmjc2wsl.options=-q
+
+
+General tasks
+-------------
+
+all - the default one.
+
+init - sets everything up, makes the folders, copies the
+samples as needed. Used by most, just in case.
+
+clean - will clean up everything in the temp dirs and
+the bin dires, as well as the logs.
+
+
+mjc2wsl tasks
+-------------
+
+mjc2wsl - run the tool on a single file given in "filename".
+influenced by "mjc2wsl.options"
+
+mjc2wsl - runs the tool on all obj files in "samples.temp.dir"
+
+
+MicroJava tasks
+---------------
+
+These tasks use "compiler.class.dir"
+
+mj-decode - decode the bytecode given in "filename" into
+operation names and parameteres (uses
+"compiler.classname.decoder")
+
+mj-decode-samples - decode the samples in "samples.temp.dir"
+and save everything in a file called "decoded.txt" in the
+same dir.
+
+mj-compile - compile a file given with "filename" (uses
+"compiler.classname.compiler")
+
+mj-samples - compile all the samples in "samples.temp.dir"
+
+mj-run - run with MJVM the obj file given in "filename",
+give it "inputstring" as the inputstring (uses
+"compiler.classname.interpreter")
+
+
+WSL tasks
+---------
+
+All of these are influenced by "fermat.dir" - it needs to
+be setup properly.
+
+wsl-run - run the wsl file given in "filename", 
+give it "inputstring" as the inputstring.
+
+wsl-transf - run the wsl transformation script (given in
+"transf.wsl.file" on "transf.filename". the result file ends
+with "_t".
+
+wsl-transf-samples - transform all the wsl file in the
+samples folder, except those ending in "_t" (should be
+transformations results from earlier).
+
+
+Testing tasks
+-------------
+
+test-run - run sequentially the '.obj', '.wsl' and '_t.wsl'
+versions of the same program. given are "file.dir" and
+"file.name" without an extension.
+
+test-run-samples-dir - same as above, presumes that
+"file.dir" is "samples.temp.dir".
+
+
+Logging
+------------------------------------------------------------
+
+Calls to some of the bigger tasks are automatically logged
+in the "log.dir" directory.
+
+mjc2wsl-samples is logged in "mjc2wsl-TIMESTAMP.txt". the
+last run is always copied to "mjc2wsl.txt" (property
+"log.file.mjc2wsl")
+
+wsl-transf-samples is logged in
+"transformations-TIMESTAMP.txt". The last run is always
+copied to "transformations.txt" (property
+"log.file.transformations")
