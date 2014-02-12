@@ -1,0 +1,69 @@
+mjc2wsl tool
+============================================================
+
+This tool converts MicroJava bytecode into WSL code. 
+
+The specification currently supported is from 1999. There
+are some changes introduced later. For instance there is the
+2006 specifcation but there were no big changes, mostly some
+pieces of the language and bytecode were removed, presumably
+for simplification and more focus on the concepts.
+
+More details about the specifications can be found in the
+MicroJava folder in the docs folder.
+
+For usage guides run the tool without parameters, or with
+"-h" for the basic help, or with "--help" for the longer
+help screen.
+
+
+What works
+----------
+
+Currently all of the commands of the 99 specification are
+reconised and processed properly. All tested examples showed
+the same behaviour when executing the original bytecode and
+executing the translated WSL code.
+
+Some details below:
+
+There are virtual stacks to simulate both the expresion and
+the method stack. 
+
+There are arrays representing the static variables and the
+local variables.
+
+The local variables arrays is swaped out on recursive calls.
+
+Objects and arrays are stored in arrays with all the regular
+access code mapping properly.
+
+
+What is different
+-----------------
+
+Objects and arrays are not directly held on a single heap,
+and the memory maping is simulated to behave the same, but
+there is no rounding for direct access to pieces of memory.
+
+Object and arrays are actually held in different memory
+storages.
+
+There is not stack pointer or frame pointer, the local
+variables array is swaped out as needed.
+
+
+What does not
+-------------
+
+Character codes are not converted to actuall characters when
+printed on the screen.
+
+The heap is not actually simulated byte-per-byte, so any
+code that would attempt to optimise by doing so would not
+work. Note however that the language specification is not
+allowing direct access to the memory, neither is the
+bytecode actually working directly with the heap, and that
+array and object access are done by specialised commands.
+Still there is an option for using indexes out of bounds
+that could produce unexpected behaviour.
