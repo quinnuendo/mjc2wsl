@@ -192,6 +192,7 @@ public class mjc2wsl{
 			"C:\" This file automatically converted from microjava bytecode\";\n"
 			+"C:\" with mjc2wsl v "+versionN+"\";\n");
 	
+		ret.append("BEGIN ");
 		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
 		ret.append("mjvm_locals := ARRAY(1,0), ");
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
@@ -203,7 +204,19 @@ public class mjc2wsl{
 	}
 
 	public String createStandardEnd(){
-		return "SKIP\nENDVAR";
+		StringBuilder ret = new StringBuilder("SKIP\nENDVAR");
+		ret.append("\nWHERE\n");
+		
+		ret.append("\nPROC Print_MJ(val, format VAR)==\n");
+		ret.append(createComment("print spacing", C_SPEC));
+				
+		ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
+		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
+		ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
+		
+		ret.append("\nEND\n");
+		
+		return ret.toString();
 	}
 
 	private String createLocal(int i) {
@@ -590,9 +603,7 @@ public class mjc2wsl{
 			case print: {
 				// TODO printing numbers needs different lengths of spacing
 				prl(createTopTwoEStack());
-				pr(createComment("print spacing", C_SPEC));
-				prl("IF tempa>1 THEN FOR i:=2 TO tempa STEP 1 DO PRINFLUSH(\" \") OD FI;");
-				prl("PRINFLUSH(tempb);");
+				prl("Print_MJ(tempb,tempa);");
 				break;
 			}
 
