@@ -339,8 +339,7 @@ public class mjc2wsl{
 		int mainAdr = get4();
 		
 		prl(createStandardStart(numberOfWords));
-		prl("SKIP;\n ACTIONS A_S_start:\n A_S_start == CALL a" + (14 + mainAdr)
-				+ " END");
+		prl("SKIP;\n ACTIONS a" + (14 + mainAdr) + " :");
 		int op = get();
 		while (op >= 0) {
 			if (originalInComments)
