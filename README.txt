@@ -42,8 +42,11 @@ About MicroJava
 ---------------
 
 This is a simple language made by H. Mössenböck for a Compiler Construction
-course.  It is not the same as Java Micro Edition (JavaME) used on mobile
+course.  It is NOT the same as Java Micro Edition (JavaME) used on mobile
 phones.
+
+For details about the language and the version used in this project check
+out the "docs" folder.
 
 More about the course, the language and its VM:
 http://www.ssw.uni-linz.ac.at/Misc/CC/
