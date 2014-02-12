@@ -2,7 +2,7 @@ MJC2WSL - convert MicroJava Compiled Bytecode to WSL/FermaT
 ===========================================================
 
 mjc2wsl is distributed under the GPL licence, for more details check the src
-folder.
+folder. More about the tools can be found in the "docs" folder.
 
 
 Quick build and test
@@ -12,6 +12,9 @@ Running ant in the folder should compile the tool as well as the MJ compiler
 and then do a test - compile all of the sample MicroJava codes into MJ
 bytecode, translate them to WSL and then apply the given transformations in
 MetaWSL to the programs.
+
+Look in the "docs" folder for more details about running the available ant
+tasks.
 
 
 Requirements
