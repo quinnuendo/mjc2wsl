@@ -18,32 +18,50 @@ http://perun.pmf.uns.ac.rs/kurbalija/Teaching/kk.htm
 About the compiler and runner
 -----------------------------
 
-The source files for a functional MJ compiler are given in the compiler-src
-folder.  These are heavily based on the source templates that are used in
-the Compiler Construction classes and finished by students during the
-course. 
+A jar file "mj.jar" for a functional MJ compiler is given in
+the lib folder. The implementation used is heavily based on
+the source templates that are used in the Compiler
+Construction classes and finished by students during the
+course.
 
-The original source templates were written by Moessenboeck and are available
-on the sites given above, though there are posible updates.  The version
-given has the compiler finished by a student, and a few additional changes
-(such as the optional decoding while writeing to file).
+The original source templates were written by Moessenboeck
+and are available on the sites given above, though there are
+posible updates. The version given has the compiler finished
+by a student, and a few additional changes (such as the
+optional decoding while writeing to file).
 
 
-Usage
------
+Usage of the compiler
+---------------------
 
-An ant build script can be found in the root folder of the project and it
-includes (among others) tasks for building the sources, as well as using
-the compiler and runner. 
-
-Otherwise calls can be made with:
+Calls to the compiler can be made with:
 
 java MJ.Compiler <input.mj> [-print]
+
+"-print" is to output the bytecode generated to the screen
+
+
+Calling the interpreter is done with:
+
 java MJ.Run [-d] <input.obj>
+
+"-d" is to decode the input file before running it.
+
 
 There is also a Decoder available:
 
 java MJ.Decode <input.obj>
 
-You might want to include the "compiler-bin" into your CLASSPATH, or just
-use "-cp compiler-bin" in the command line.
+
+You might want to include the "mj.jar" into your CLASSPATH,
+or just use "-cp mj.jar" in the command line.
+
+
+Ant
+----
+
+An ant build script can be found in the root folder of the
+project and it includes tasks for building using the
+compiler and runner. It also includes tasks for building a
+compiler from and into the appropriate directories which
+are then overrideing the jar file.
