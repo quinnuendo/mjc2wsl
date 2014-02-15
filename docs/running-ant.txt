@@ -4,7 +4,7 @@ Running the ant tasks
 This project supplies an ant build file.
 
 When used without parameters it will 
-- build the main tool, mjc2wsl, as well as the MicroJava compiler
+- build the main tool, mjc2wsl
 - compile all the given MicroJava samples in a temp folder
 - translated these to WSL
 - run a transformation script for all of these files 
@@ -42,7 +42,10 @@ mjc2wsl - runs the tool on all obj files in "samples.temp.dir"
 MicroJava tasks
 ---------------
 
-These tasks use "compiler.class.dir"
+These tasks use "compiler.class.jar" to get the classes,
+but will also look first into "compiler.class.dir" if there
+is any override.
+
 
 mj-decode - decode the bytecode given in "filename" into
 operation names and parameteres (uses
