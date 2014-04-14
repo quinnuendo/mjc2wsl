@@ -65,5 +65,15 @@ work. Note however that the language specification is not
 allowing direct access to the memory, neither is the
 bytecode actually working directly with the heap, and that
 array and object access are done by specialised commands.
-Still there is an option for using indexes out of bounds
-that could produce unexpected behaviour.
+Still there is an option for using fields beyond the actuall
+object that could produce unexpected behaviour.
+Array access in the MJVM does check for indexe out of bounds
+errors.
+
+The size of the heap is not taken into consideration when
+allocating new arrays and objects. What this means is that
+there will be no heap overflow exception thrown, since our
+heap is seemingly endless.
+
+Null access does not throw explicit errors, although it
+will cause problems with the list access.
