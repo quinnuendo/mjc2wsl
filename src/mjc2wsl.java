@@ -35,6 +35,8 @@ public class mjc2wsl{
 	private boolean genPauseAfterEachAddress=false, 
 		genPrintForEachAddress = false,
 		genPrintEStackOnChange = false;
+		
+	private boolean genPopPush=false;
 	
 	/** Constant used for marking a regular comment from the original file */
 	public static final char C_REG = ' ';
@@ -275,10 +277,16 @@ public class mjc2wsl{
 	// generalised stack operations
 	
 	private String createToStack(String stack, String var){
-			return stack + " := <" + var + " > ++ " + stack +";";
+		if (genPopPush)
+				return 	"PUSH("+stack+"," + var + ");";
+		else
+				return stack + " := <" + var + " > ++ " + stack +";";
 	}
 
 	private String createFromStack(String stack, String var){
+		if (genPopPush)
+			return "POP("+ var + ", "+stack+");";
+		else
 			return var + ":= HEAD("+stack+"); "+stack+" := TAIL("+stack+");";
 	}
 //Expression stack
@@ -378,7 +386,10 @@ public class mjc2wsl{
 			case load_1:
 			case load_2:
 			case load_3: {
-				prl(createToEStack(createLocal(op - load_0)));
+				prl(createStartVar("tempa"));
+				prl("tempa :="+createLocal(op - load_0)+";");
+				prl(createToEStack("tempa"));
+				prl(createEndVar());
 				break;
 			}
 			case store: {
@@ -389,7 +400,10 @@ public class mjc2wsl{
 			case store_1:
 			case store_2:
 			case store_3: {
-				prl(createFromEStack(createLocal(op - store_0)));
+				prl(createStartVar("tempa"));
+				prl(createFromEStack("tempa"));
+				prl(createLocal(op - store_0)+" := tempa;");
+				prl(createEndVar());
 				break;
 			}
 
@@ -689,6 +703,8 @@ public class mjc2wsl{
 		System.out.println();
 		printHelpOutput();
 		System.out.println();
+		printHelpDirectives();
+		System.out.println();
 		printHelpGenerating();
 		System.out.println();
 		printHelpHelp();
@@ -710,6 +726,11 @@ public class mjc2wsl{
 		System.out.println("  --genAddrPause  generate a pause after every address of the original code ");
 		System.out.println("  --genAddr  short for --genAddrPrint and --genAddrPause");
 		System.out.println("  --genAll   short for applying all code generation");
+	}
+
+	public void printHelpDirectives(){
+		System.out.println("Alternatives for code generation:");
+		System.out.println("  --genPopPush generate POP/PUSH instead of TAIL/HEAD");
 	}
 
 	public void printHelpHelp() {
@@ -780,6 +801,8 @@ public class mjc2wsl{
 					genPrintEStackOnChange = true;
 					genPrintForEachAddress = true;
 					genPauseAfterEachAddress = true;
+				} else if (args[i].compareToIgnoreCase("--genPopPush") == 0) {
+					genPopPush = true;
 				}
 				i++;
 			}
