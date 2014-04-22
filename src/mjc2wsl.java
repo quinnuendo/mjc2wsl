@@ -271,26 +271,31 @@ public class mjc2wsl{
 	public static String createComment(String str, char type) {
 		return "C:\"" + type + str.replace("\"", "''") + "\";";
 	}
+	
+	// generalised stack operations
+	
+	private String createToStack(String stack, String var){
+			return stack + " := <" + var + " > ++ " + stack +";";
+	}
 
-	//Expression stack
+	private String createFromStack(String stack, String var){
+			return var + ":= HEAD("+stack+"); "+stack+" := TAIL("+stack+");";
+	}
+//Expression stack
 	
 	private String createToEStack(int i) {
-		String res = "mjvm_estack := <" + i + " > ++ mjvm_estack;";
-		if (genPrintEStackOnChange)
-			res += "PRINT(\"eStack\",mjvm_estack);";
-		return res;
+		return createToEStack(i+"");
 	}
 
 	private String createToEStack(String i) {
-		String res = "mjvm_estack := <" + i + " > ++ mjvm_estack;";
+		String res = createToStack("mjvm_estack", i);
 		if (genPrintEStackOnChange)
 			res += "PRINT(\"eStack\",mjvm_estack);";
 		return res;
 	}
 
 	private String createFromEStack(String st) {
-		String res = st
-				+ " := HEAD(mjvm_estack); mjvm_estack := TAIL(mjvm_estack);";
+		String res = createFromStack("mjvm_estack",st);
 		if (genPrintEStackOnChange)
 			res += "PRINT(\"eStack\",mjvm_estack);";
 		return res;
@@ -314,15 +319,15 @@ public class mjc2wsl{
 	//Method stack
 
 	private String createToMStack(int i) {
-		return "mjvm_mstack := <" + i + " > ++ mjvm_mstack;";
+		return createToMStack(i+"");
 	}
 
 	private String createToMStack(String i) {
-		return "mjvm_mstack := <" + i + " > ++ mjvm_mstack;";
+		return createToStack("mjvm_mstack", i);
 	}
 
 	private String createFromMStack(String st) {
-		return st + " := HEAD(mjvm_mstack); mjvm_mstack := TAIL(mjvm_mstack);";
+		return createFromStack("mjvm_mstack", st);
 	}
 
 	private String getRelationFor(int opcode) throws Exception {
