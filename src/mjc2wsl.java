@@ -219,6 +219,20 @@ public class mjc2wsl{
 		return ret.toString();
 	}
 
+	private String createStartVar(String... vars){
+		StringBuilder ret = new StringBuilder("VAR < ");
+		ret.append(vars[0] + " := 0");
+		for (int i=1; i<vars.length; i++)
+				ret.append(", "+ vars[i] +" := 0");
+		ret.append(" > : ");
+		
+		return ret.toString();
+	}
+	
+	private String createEndVar(){
+		return "ENDVAR;";
+	}
+	
 	private String createLocal(int i) {
 		// arrays start at 1 in WSL, so we need an offset
 		return "mjvm_locals[" + (i + 1) + "]";
@@ -433,17 +447,21 @@ public class mjc2wsl{
 				break;
 			}
 			case div: {
+				prl(createStartVar("tempa", "tempb", "tempres"));
 				prl(createTopTwoEStack());
 				prl("IF tempa = 0 THEN ERROR(\"division by zero\") FI;");
 				prl("tempres := tempb DIV tempa;");
 				prl(createToEStack("tempres"));
+				prl(createEndVar());
 				break;
 			}
 			case rem: {
+				prl(createStartVar("tempa", "tempb", "tempres"));
 				prl(createTopTwoEStack());
 				prl("IF tempa = 0 THEN ERROR(\"division by zero\") FI;");
 				prl("tempres := tempb MOD tempa;");
 				prl(createToEStack("tempres"));
+				prl(createEndVar());
 				break;
 			}
 
