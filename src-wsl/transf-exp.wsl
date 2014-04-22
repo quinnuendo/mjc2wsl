@@ -20,7 +20,11 @@ License along with this program. If not, see
 
 C:"Automatic transformation tool for simplification of WSL";
 C:"code automaticaly translated from assembly using asm2wsl.";
-C:"a simple version";
+C:"experimental version";
+
+C:"set the following so that Action Systems are not automaticaly treated as regular";
+Assume_A_S_Regular := 0;
+
 MW_PROC @Process_Prog() ==
 	FOREACH Statement DO
 		IF @Trans?(TR_Push_Pop) THEN
@@ -31,6 +35,7 @@ MW_PROC @Process_Prog() ==
 	FOREACH Statement DO
 		IF @ST(@I) = T_A_S THEN 
 			C:"don't need to test for this, works for T_A_S";
+			@Trans(TR_Simplify_Action_System, "");
 			IF @Trans?(TR_Collapse_Action_System) THEN
 				@Trans(TR_Collapse_Action_System, "");
 			FI;
@@ -40,12 +45,23 @@ MW_PROC @Process_Prog() ==
 			@Delete  
 		FI
 	OD;
+	FOREACH Statement DO
+		IF @Trans?(TR_Flag_Removal) THEN
+			@Trans(TR_Flag_Removal, "");
+		FI
+	OD;
 	C:"remove all the comments ";
 	FOREACH Statement DO
 	IF @ST(@I) = T_Comment THEN 
 			@Delete
 	FI
 	OD;
+	FOREACH Statement DO
+	      IF @Trans?(TR_Simplify_Item) THEN
+		@Trans(TR_Simplify_Item,"")
+	      FI
+	OD;
+
 	C:"Convert DO loops into WHILE loops";
 	FOREACH Statement DO
 		IF @Trans?(TR_Floop_To_While) THEN
@@ -74,10 +90,10 @@ IF @File_Exists?(inifilename) THEN
 			@Process_Prog();
 			Get_New_Name(VAR filename);
 			@PP_Item(@Program, 80, filename);
-			Prog_Stat(prog);
-			PRINT("");
-			PRINT("After Conversion");
-			Prog_Stat(@Program)
+			PRINT("<Metrics>");
+			PRINT(filename);
+			Prog_Stat_Comp(prog, @Program);
+			PRINT("</Metrics>")
 		FI;
 		filename := @Read_Line(inifile)
 	OD;
@@ -104,6 +120,27 @@ PROC Prog_Stat(Pro VAR)==
   PRINT ("Size(nodes) ", @Total_Size(Pro));
   PRINT ("Struct ", @Struct_Metric(Pro));
   SKIP
+END
+
+PROC Prog_Stat_Comp(Pro, After VAR)==
+  VAR < ma := 0, mb :=1 > :
+  ma := @McCabe(Pro);
+  mb := @McCabe(After);
+  PRINT ("McCabe ", ma, "  ", mb, "  ",(mb-ma));
+  ma := @Stat_Count(Pro);
+  mb := @Stat_Count(After);
+  PRINT ("Statem ", ma, "  ",mb, "  ",(mb-ma));
+  ma := @CFDF_Metric(Pro);
+  mb := @CFDF_Metric(After);
+  PRINT ("CF/DF  ", ma,"  ", mb,"  ", (mb-ma));
+  ma := @Total_Size(Pro);
+  mb := @Total_Size(After);
+  PRINT ("Size   ", ma,"  ", mb, "  ",(mb-ma));
+  ma := @Struct_Metric(Pro);
+  mb := @Struct_Metric(After);
+  PRINT ("Struct ", ma, "  ",mb, "  ",(mb-ma));
+  SKIP
+  ENDVAR
 END
 
 PROC Get_New_Name(VAR str) == 
