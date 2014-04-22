@@ -40,6 +40,11 @@ MW_PROC @Process_Prog() ==
 			@Delete  
 		FI
 	OD;
+	FOREACH Statement DO
+		IF @Trans?(TR_Flag_Removal) THEN
+			@Trans(TR_Flag_Removal, "");
+		FI
+	OD;
 	C:"remove all the comments ";
 	FOREACH Statement DO
 	IF @ST(@I) = T_Comment THEN 
