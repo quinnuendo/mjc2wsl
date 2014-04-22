@@ -193,7 +193,7 @@ public class mjc2wsl{
 			+"C:\" with mjc2wsl v "+versionN+"\";\n");
 	
 		ret.append("BEGIN ");
-		ret.append("VAR < tempa := 0, tempb := 0, tempres :=0,\n\t");
+		ret.append("VAR < \n\t");
 		ret.append("mjvm_locals := ARRAY(1,0), ");
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
 		ret.append("\n\tmjvm_arrays := < >, ");
@@ -429,21 +429,27 @@ public class mjc2wsl{
 			}
 
 			case add: {
+				prl(createStartVar("tempa", "tempb", "tempres"));
 				prl(createTopTwoEStack());
 				prl("tempres := tempb + tempa;");
 				prl(createToEStack("tempres"));
+				prl(createEndVar());
 				break;
 			}
 			case sub: {
+				prl(createStartVar("tempa", "tempb", "tempres"));
 				prl(createTopTwoEStack());
 				prl("tempres := tempb - tempa;");
 				prl(createToEStack("tempres"));
+				prl(createEndVar());
 				break;
 			}
 			case mul: {
+				prl(createStartVar("tempa", "tempb", "tempres"));
 				prl(createTopTwoEStack());
 				prl("tempres := tempb * tempa;");
 				prl(createToEStack("tempres"));
+				prl(createEndVar());
 				break;
 			}
 			case div: {
@@ -466,8 +472,10 @@ public class mjc2wsl{
 			}
 
 			case neg: {
+				prl(createStartVar("tempa"));
 				prl(createTopEStack());
 				prl(createToEStack("-tempa"));
+				prl(createEndVar());				
 				break;
 			}
 
@@ -565,10 +573,13 @@ public class mjc2wsl{
 			case jle:
 			case jgt:
 			case jge: {
+				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());
 				prl("IF tempb " + getRelationFor(op) + " tempa THEN CALL a"
 						+ (counter + get2()) + " ELSE CALL a" + (counter + 1)
 						+ " FI;");
+				prl(createEndVar());
+				
 				break;
 			}
 
@@ -605,8 +616,10 @@ public class mjc2wsl{
 				prl(createComment("char is read like a number", C_SPEC));
 			}
 			case read: {
+				prl(createStartVar("tempa"));
 				prl("tempa := @String_To_Num(@Read_Line(Standard_Input_Port));");
 				prl(createToEStack("tempa"));
+				prl(createEndVar());
 				break;
 			}
 
@@ -619,8 +632,11 @@ public class mjc2wsl{
 			}
 			case print: {
 				// TODO printing numbers needs different lengths of spacing
+				prl(createStartVar("tempa", "tempb"));
+
 				prl(createTopTwoEStack());
 				prl("Print_MJ(tempb,tempa);");
+				prl(createEndVar());
 				break;
 			}
 
