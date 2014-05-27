@@ -192,16 +192,26 @@ public class mjc2wsl{
 	public String createStandardStart(int numWords){
 		StringBuilder ret = new StringBuilder(
 			"C:\" This file automatically converted from microjava bytecode\";\n"
-			+"C:\" with mjc2wsl v "+versionN+"\";\n");
-	
-		ret.append("BEGIN ");
-		ret.append("VAR < \n\t");
+			+"C:\" with mjc2wsl v "+versionN+"\";\n\n");
+
+		ret.append(createAsciiString());
+
+		ret.append("\nBEGIN ");
+		ret.append("\nVAR < \n\t");
 		ret.append("mjvm_locals := ARRAY(1,0), ");
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
 		ret.append("\n\tmjvm_arrays := < >, ");
 		ret.append("\n\tmjvm_objects := < >, ");
 		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < > > : "); 
-	
+
+		return ret.toString();
+	}
+
+	public String createAsciiString(){
+		StringBuilder ret = new StringBuilder("C:\"char array for ascii code conversions\";");
+		ret.append("\nascii := \"????????????????????????????????\"++\n");
+		ret.append("\" !\"++Quote++\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\";\n");
+
 		return ret.toString();
 	}
 
@@ -209,15 +219,28 @@ public class mjc2wsl{
 		StringBuilder ret = new StringBuilder("SKIP\nENDVAR");
 		ret.append("\nWHERE\n");
 		
+		ret.append("\nFUNCT CHR(num) ==:\n");
+		ret.append("\tSUBSTR(ascii,num,1)\n");
+		ret.append("END\n");
+
 		ret.append("\nPROC Print_MJ(val, format VAR)==\n");
 		ret.append(createComment("print spacing", C_SPEC));
-				
 		ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
 		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
 		ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
-		
+
+		ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
+		ret.append(createComment("print spacing", C_SPEC));
+		ret.append("\n\tIF val=10 OR val=13 THEN\n");
+		ret.append("\t\tPRINT(\"\");");
+		ret.append("\tELSE\n");
+		ret.append("\t\tIF format>1 THEN\n\t\t\tFOR i:=2 TO ");
+		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
+		ret.append("\t\tFI;\n\t\tPRINFLUSH(CHR(val))\n");
+		ret.append("\tFI\n");
+		ret.append("END\n");
+
 		ret.append("\nEND\n");
-		
 		return ret.toString();
 	}
 
@@ -644,10 +667,11 @@ public class mjc2wsl{
 
 			// the prints
 			case bprint: {
-				// TODO need to make it a char on print
-				messages.message("chars will be printed as number codes", TransMessages.M_WAR);
-				prl(createComment("char will be printed as a number code",
-						C_SPEC));
+				prl(createStartVar("tempa", "tempb"));
+				prl(createTopTwoEStack());
+				prl("Print_MJ_CHAR(tempb,tempa);");
+				prl(createEndVar());
+				break;
 			}
 			case print: {
 				// TODO printing numbers needs different lengths of spacing
