@@ -16,3 +16,6 @@ transf.ini
 
 #local custom properties etc
 custom.properties
+
+#var local temp files etc
+.directory
