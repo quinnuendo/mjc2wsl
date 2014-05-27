@@ -392,9 +392,9 @@ public class mjc2wsl{
 		prl("SKIP;\n ACTIONS a" + (14 + mainAdr) + " :");
 		int op = get();
 		while (op >= 0) {
+			prl(" a" + counter + " == ");
 			if (originalInComments)
 				prl(createComment(describeOpCode(op), C_OC));
-			prl(" a" + counter + " == ");
 			if (genPrintForEachAddress) {
 				prl("PRINT(\"a" + counter + "\");");
 				if (genPauseAfterEachAddress)
