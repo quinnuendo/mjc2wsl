@@ -196,13 +196,13 @@ public class mjc2wsl{
 
 		ret.append(createAsciiString());
 
-		ret.append("\nBEGIN ");
-		ret.append("\nVAR < \n\t");
-		ret.append("mjvm_locals := ARRAY(1,0), ");
-		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0), ");
-		ret.append("\n\tmjvm_arrays := < >, ");
-		ret.append("\n\tmjvm_objects := < >, ");
-		ret.append("\n	mjvm_estack := < >, mjvm_mstack := < > > : "); 
+		ret.append("\nBEGIN");
+		ret.append("\nVAR <\n\t");
+		ret.append("mjvm_locals := ARRAY(1,0),");
+		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0),");
+		ret.append("\n\tmjvm_arrays := < >,");
+		ret.append("\n\tmjvm_objects := < >,");
+		ret.append("\n\tmjvm_estack := < >, mjvm_mstack := < > > :");
 
 		return ret.toString();
 	}
@@ -216,7 +216,7 @@ public class mjc2wsl{
 	}
 
 	public String createStandardEnd(){
-		StringBuilder ret = new StringBuilder("SKIP\nENDVAR");
+		StringBuilder ret = new StringBuilder("SKIP\nENDVAR\n");
 		ret.append("\nWHERE\n");
 		
 		ret.append("\nFUNCT CHR(num) ==:\n");
@@ -232,7 +232,7 @@ public class mjc2wsl{
 		ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
 		ret.append(createComment("print spacing", C_SPEC));
 		ret.append("\n\tIF val=10 OR val=13 THEN\n");
-		ret.append("\t\tPRINT(\"\");");
+		ret.append("\t\tPRINT(\"\");\n");
 		ret.append("\tELSE\n");
 		ret.append("\t\tIF format>1 THEN\n\t\t\tFOR i:=2 TO ");
 		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
@@ -240,7 +240,7 @@ public class mjc2wsl{
 		ret.append("\tFI\n");
 		ret.append("END\n");
 
-		ret.append("\nEND\n");
+		ret.append("\nEND");
 		return ret.toString();
 	}
 
@@ -392,7 +392,7 @@ public class mjc2wsl{
 		prl("SKIP;\n ACTIONS a" + (14 + mainAdr) + " :");
 		int op = get();
 		while (op >= 0) {
-			prl(" a" + counter + " == ");
+			prl(" a" + counter + " ==");
 			if (originalInComments)
 				prl(createComment(describeOpCode(op), C_OC));
 			if (genPrintForEachAddress) {
@@ -703,7 +703,7 @@ public class mjc2wsl{
 					prl("CALL a" + counter + "\n END");
 		}
 		prl("SKIP\n END\nENDACTIONS;\n");
-		prl(createStandardEnd());
+		pr(createStandardEnd());
 	}
 
 	public void convertFile(File f) {
