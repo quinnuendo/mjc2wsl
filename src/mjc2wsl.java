@@ -192,9 +192,7 @@ public class mjc2wsl{
 	public String createStandardStart(int numWords){
 		StringBuilder ret = new StringBuilder(
 			"C:\" This file automatically converted from microjava bytecode\";\n"
-			+"C:\" with mjc2wsl v "+versionN+"\";\n\n");
-
-		ret.append(createAsciiString());
+			+"C:\" with mjc2wsl v "+versionN+"\";\n");
 
 		ret.append("\nBEGIN");
 		ret.append("\nVAR <\n\t");
@@ -221,7 +219,7 @@ public class mjc2wsl{
 		ret.append("\nWHERE\n");
 		
 		ret.append("\nFUNCT CHR(num) ==:\n");
-		ret.append("\tSUBSTR(ascii,num,1)\n");
+		ret.append("\t@List_To_String(< num >)\n");
 		ret.append("END\n");
 
 		ret.append("\nPROC Print_MJ(val, format VAR)==\n");
@@ -232,13 +230,9 @@ public class mjc2wsl{
 
 		ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
 		ret.append(createComment("print spacing", C_SPEC));
-		ret.append("\n\tIF val=10 OR val=13 THEN\n");
-		ret.append("\t\tPRINT(\"\");\n");
-		ret.append("\tELSE\n");
-		ret.append("\t\tIF format>1 THEN\n\t\t\tFOR i:=2 TO ");
+		ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
 		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
-		ret.append("\t\tFI;\n\t\tPRINFLUSH(CHR(val))\n");
-		ret.append("\tFI\n");
+		ret.append("\tFI;\n\tPRINFLUSH(CHR(val))\n");
 		ret.append("END\n");
 
 		ret.append("\nEND");
