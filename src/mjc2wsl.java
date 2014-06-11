@@ -523,19 +523,23 @@ public class mjc2wsl{
 			}
 
 			case shl: {
+				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());
 				prl("VAR <tempres :=tempb, i:=1 >:");
 				prl("\tFOR i:=1 TO tempa STEP 1 DO tempres := tempres * 2 OD;");
 				prl(createToEStack("tempres"));
 				prl("ENDVAR;");
+				prl(createEndVar());
 				break;
 			}
 			case shr: {
+				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());
 				prl("VAR <tempres :=tempb, i:=1 >:");
 				prl("\tFOR i:=1 TO tempa STEP 1 DO tempres := tempres DIV 2 OD;");
 				prl(createToEStack("tempres"));
 				prl("ENDVAR;");
+				prl(createEndVar());
 				break;
 			}
 
@@ -556,16 +560,20 @@ public class mjc2wsl{
 			case newarray: {
 				get();// 0 - bytes, 1 - words; ignore for now
 				// TODO take into consideration 0/1
+				prl(createStartVar("tempa"));
 				prl(createTopEStack());
 				prl("mjvm_arrays := mjvm_arrays ++ < ARRAY(tempa,0) >;");
 				prl(createToEStack("LENGTH(mjvm_arrays)"));
+				prl(createEndVar());
 				break;
 			}
 
 			case aload:
 			case baload: {
+				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());
 				prl(createToEStack(createArray("tempb") + "[tempa+1]"));
+				prl(createEndVar());
 				break;
 			}
 			case astore:
@@ -578,24 +586,30 @@ public class mjc2wsl{
 				break;
 			}
 			case arraylength: {
+				prl(createStartVar("tempa", "tempb"));
 				prl(createTopEStack());
 				prl("tempb := LENGTH("+ createArray("tempa") + ");");
 				prl(createToEStack("tempb"));
+				prl(createEndVar());
 				break;
 			}
 
 			case dup: {
+				prl(createStartVar("tempa", "tempb"));
 				prl(createTopEStack());
 				prl(createToEStack("tempa"));
 				prl(createToEStack("tempa"));
+				prl(createEndVar());
 				break;
 			}
 			case dup2: {
+				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());
 				prl(createToEStack("tempb"));
 				prl(createToEStack("tempa"));
 				prl(createToEStack("tempb"));
 				prl(createToEStack("tempa"));
+				prl(createEndVar());
 				break;
 			}
 
