@@ -570,12 +570,11 @@ public class mjc2wsl{
 			}
 			case astore:
 			case bastore: {
+				prl(createStartVar("tempa", "tempb", "tempres"));
 				prl(createFromEStack("tempres"));
 				prl(createTopTwoEStack());
-				// we need to use a temparray as a pointer, WSL
-				// otherwise tries to access it as a list of lists and fails
-				prl("VAR < tempArray := " + createArray("tempb") + " > :");
-				prl("tempArray[tempa+1]:=tempres ENDVAR;");
+				prl("mjvm_arrays[tempb][tempa+1]:=tempres;");
+				prl(createEndVar());
 				break;
 			}
 			case arraylength: {
