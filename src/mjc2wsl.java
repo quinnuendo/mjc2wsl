@@ -455,6 +455,11 @@ public class mjc2wsl{
 				break;
 			}
 
+			case const_m1: {
+				prl(createToEStack(-1));
+				break;
+			}
+
 			case const_0:
 			case const_1:
 			case const_2:
