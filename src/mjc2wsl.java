@@ -436,17 +436,18 @@ public class mjc2wsl{
 
 			case getfield: {
 				int f = get2();
+				prl(createStartVar("tempa"));
 				prl(createTopEStack());
 				prl(createToEStack(createObject("tempa") + "[" + (f + 1) + "]"));
+				prl(createEndVar());
 				break;
 			}
 			case putfield: {
 				int f = get2();
-				// we need to use a temparray as a pointer, WSL
-				// otherwise tries to access it as a list of lists and fails
-				prl(createTopTwoEStack());
-				prl("VAR < tempArray := " + createObject("tempb") + " > :");
-				prl("tempArray[" + (f + 1) + "]:=tempa ENDVAR;");
+				prl(createStartVar("tempa", "tempb"));
+				prl(createTopTwoEStack());				
+				prl(createObject("tempb") + "[" + (f + 1) + "]:=tempa;");
+				prl(createEndVar());
 				break;
 			}
 
