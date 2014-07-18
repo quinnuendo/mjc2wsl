@@ -6,6 +6,11 @@
 *~
 *.bak
 
+# archives
+*.zip
+*.tar.gz
+*.tgz
+
 #temp folders
 samples-temp/*
 temp/*
