@@ -129,7 +129,7 @@
         </java>
     </target>
     
-    <target name="mj-samples" description="run the mj compiler on the samples">
+    <target name="mj-samples" description="run the mj compiler on the samples" depends="init">
         <foreach param="filename" target="mj-compile">
             <path>
             <fileset dir='${samples.temp.dir}'>
