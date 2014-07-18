@@ -45,11 +45,7 @@ MW_PROC @Process_Prog() ==
 			@Delete  
 		FI
 	OD;
-	FOREACH Statement DO
-		IF @Trans?(TR_Flag_Removal) THEN
-			@Trans(TR_Flag_Removal, "");
-		FI
-	OD;
+
 	C:"remove all the comments ";
 	FOREACH Statement DO
 	IF @ST(@I) = T_Comment THEN 
@@ -66,6 +62,11 @@ MW_PROC @Process_Prog() ==
 	FOREACH Statement DO
 		IF @Trans?(TR_Floop_To_While) THEN
 			@Trans(TR_Floop_To_While, "");
+		FI
+	OD;
+	FOREACH Statement DO
+		IF @Trans?(TR_Flag_Removal) THEN
+			@Trans(TR_Flag_Removal, "");
 		FI
 	OD;
 	C:"Go back to the start, and remove redundant";
