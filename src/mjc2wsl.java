@@ -38,6 +38,8 @@ public class mjc2wsl{
 		
 	private boolean genPopPush=false;
 	
+	private boolean genInlinePrint=false;
+
 	/** Constant used for marking a regular comment from the original file */
 	public static final char C_REG = ' ';
 	/**
@@ -222,18 +224,20 @@ public class mjc2wsl{
 		ret.append("\t@List_To_String(< num >)\n");
 		ret.append("END\n");
 
-		ret.append("\nPROC Print_MJ(val, format VAR)==\n");
-		ret.append(createComment("print spacing", C_SPEC));
-		ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
-		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
-		ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
+		if (!genInlinePrint) {
+				ret.append("\nPROC Print_MJ(val, format VAR)==\n");
+				ret.append(createComment("print spacing", C_SPEC));
+				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
+				ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
+				ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
 
-		ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
-		ret.append(createComment("print spacing", C_SPEC));
-		ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
-		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
-		ret.append("\tFI;\n\tPRINFLUSH(CHR(val))\n");
-		ret.append("END\n");
+				ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
+				ret.append(createComment("print spacing", C_SPEC));
+				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
+				ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
+				ret.append("\tFI;\n\tPRINFLUSH(CHR(val))\n");
+				ret.append("END\n");
+		}
 
 		ret.append("\nEND");
 		return ret.toString();
@@ -688,7 +692,11 @@ public class mjc2wsl{
 			case bprint: {
 				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());
-				prl("Print_MJ_CHAR(tempb,tempa);");
+				if (genInlinePrint){
+					prl(createComment("print spacing and transformation",C_SPEC));
+					prl("PRINFLUSH(SUBSTR(\"          \", 0, MIN(10, tempa - 1)), @List_To_String(< tempb >));");
+				} else
+					prl("Print_MJ_CHAR(tempb,tempa);");
 				prl(createEndVar());
 				break;
 			}
@@ -697,7 +705,12 @@ public class mjc2wsl{
 				prl(createStartVar("tempa", "tempb"));
 
 				prl(createTopTwoEStack());
-				prl("Print_MJ(tempb,tempa);");
+				if (genInlinePrint){
+					prl(createComment("print spacing",C_SPEC));
+					prl("PRINFLUSH(SUBSTR(\"          \", 0, MIN(10, tempa - 1)), tempb);");
+				}
+				else
+					prl("Print_MJ(tempb,tempa);");
 				prl(createEndVar());
 				break;
 			}
@@ -846,6 +859,8 @@ public class mjc2wsl{
 					genPauseAfterEachAddress = true;
 				} else if (args[i].compareToIgnoreCase("--genPopPush") == 0) {
 					genPopPush = true;
+				} else if (args[i].compareToIgnoreCase("--genInlinePrint") == 0) {
+					genInlinePrint = true;
 				}
 				i++;
 			}
