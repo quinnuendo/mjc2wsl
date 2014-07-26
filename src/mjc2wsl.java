@@ -28,8 +28,11 @@ import java.util.*;
  * @author Doni Pracner, http://perun.dmi.rs/pracner http://quemaster.com
  */
 public class mjc2wsl{
-	public static String versionN = "0.1.7";
+	//default version name, used if the file is not found
+	private static String versionN = "0.1.x";
 
+	private String versionFile = "version.properties";
+	
 	private TransMessages messages = new TransMessages();
 
 	private boolean genPauseAfterEachAddress=false, 
@@ -38,6 +41,8 @@ public class mjc2wsl{
 		
 	private boolean genPopPush=false;
 	
+	private boolean genInlinePrint=false;
+
 	/** Constant used for marking a regular comment from the original file */
 	public static final char C_REG = ' ';
 	/**
@@ -136,6 +141,24 @@ public class mjc2wsl{
 		return opMap;
 	}
 	
+	private Properties versionData;
+
+	private String getVersion() {
+		if (versionData == null) {
+			versionData = new Properties();
+			try {
+				versionData.load(getClass().getResourceAsStream(versionFile));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String ver = versionData.getProperty("version");
+		if (ver != null)
+			return ver;
+		else
+			return versionN;
+	}
+	
 	public String getOpString(int op) {
 		return getOpMap().get(op);
 	}
@@ -192,7 +215,7 @@ public class mjc2wsl{
 	public String createStandardStart(int numWords){
 		StringBuilder ret = new StringBuilder(
 			"C:\" This file automatically converted from microjava bytecode\";\n"
-			+"C:\" with mjc2wsl v "+versionN+"\";\n");
+			+"C:\" with mjc2wsl v "+getVersion()+"\";\n");
 
 		ret.append("\nBEGIN");
 		ret.append("\nVAR <\n\t");
@@ -222,18 +245,20 @@ public class mjc2wsl{
 		ret.append("\t@List_To_String(< num >)\n");
 		ret.append("END\n");
 
-		ret.append("\nPROC Print_MJ(val, format VAR)==\n");
-		ret.append(createComment("print spacing", C_SPEC));
-		ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
-		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
-		ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
+		if (!genInlinePrint) {
+				ret.append("\nPROC Print_MJ(val, format VAR)==\n");
+				ret.append(createComment("print spacing", C_SPEC));
+				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
+				ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
+				ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
 
-		ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
-		ret.append(createComment("print spacing", C_SPEC));
-		ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
-		ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
-		ret.append("\tFI;\n\tPRINFLUSH(CHR(val))\n");
-		ret.append("END\n");
+				ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
+				ret.append(createComment("print spacing", C_SPEC));
+				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
+				ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
+				ret.append("\tFI;\n\tPRINFLUSH(CHR(val))\n");
+				ret.append("END\n");
+		}
 
 		ret.append("\nEND");
 		return ret.toString();
@@ -436,22 +461,28 @@ public class mjc2wsl{
 
 			case getfield: {
 				int f = get2();
+				prl(createStartVar("tempa"));
 				prl(createTopEStack());
 				prl(createToEStack(createObject("tempa") + "[" + (f + 1) + "]"));
+				prl(createEndVar());
 				break;
 			}
 			case putfield: {
 				int f = get2();
-				// we need to use a temparray as a pointer, WSL
-				// otherwise tries to access it as a list of lists and fails
-				prl(createTopTwoEStack());
-				prl("VAR < tempArray := " + createObject("tempb") + " > :");
-				prl("tempArray[" + (f + 1) + "]:=tempa ENDVAR;");
+				prl(createStartVar("tempa", "tempb"));
+				prl(createTopTwoEStack());				
+				prl(createObject("tempb") + "[" + (f + 1) + "]:=tempa;");
+				prl(createEndVar());
 				break;
 			}
 
 			case const_: {
 				prl(createToEStack(get4()));
+				break;
+			}
+
+			case const_m1: {
+				prl(createToEStack(-1));
 				break;
 			}
 
@@ -682,7 +713,11 @@ public class mjc2wsl{
 			case bprint: {
 				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());
-				prl("Print_MJ_CHAR(tempb,tempa);");
+				if (genInlinePrint){
+					prl(createComment("print spacing and transformation",C_SPEC));
+					prl("PRINFLUSH(SUBSTR(\"          \", 0, MIN(10, MAX(0,tempa-1))), @List_To_String(< tempb >));");
+				} else
+					prl("Print_MJ_CHAR(tempb,tempa);");
 				prl(createEndVar());
 				break;
 			}
@@ -691,7 +726,12 @@ public class mjc2wsl{
 				prl(createStartVar("tempa", "tempb"));
 
 				prl(createTopTwoEStack());
-				prl("Print_MJ(tempb,tempa);");
+				if (genInlinePrint){
+					prl(createComment("print spacing",C_SPEC));
+					prl("PRINFLUSH(SUBSTR(\"          \", 0, MIN(10, MAX(0, tempa-SLENGTH(@String(tempb))))), tempb);");
+				}
+				else
+					prl("Print_MJ(tempb,tempa);");
 				prl(createEndVar());
 				break;
 			}
@@ -768,6 +808,10 @@ public class mjc2wsl{
 	public void printHelpDirectives(){
 		System.out.println("Alternatives for code generation:");
 		System.out.println("  --genPopPush generate POP/PUSH instead of TAIL/HEAD");
+		System.out.println("  --genHeadTail generate TAIL/HEAD instead of POP/PUSH ");
+		System.out.println();
+		System.out.println("  --genInlinePrint generate prints directly instead of procedure calls");
+		System.out.println("  --genProcedurePrint generate prints as custom procedure calls");
 	}
 
 	public void printHelpHelp() {
@@ -782,7 +826,7 @@ public class mjc2wsl{
 	}
 
 	public void printVersion() {
-		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
+		System.out.println("MicroJava bytecode to WSL converter. v " + getVersion()
 				+ ", by Doni Pracner");
 	}
 	
@@ -840,6 +884,12 @@ public class mjc2wsl{
 					genPauseAfterEachAddress = true;
 				} else if (args[i].compareToIgnoreCase("--genPopPush") == 0) {
 					genPopPush = true;
+				} else if (args[i].compareToIgnoreCase("--genInlinePrint") == 0) {
+					genInlinePrint = true;
+				} else if (args[i].compareToIgnoreCase("--genHeadTail") == 0) {
+					genPopPush = false;
+				} else if (args[i].compareToIgnoreCase("--genProcedurePrint") == 0) {
+					genInlinePrint = false;
 				}
 				i++;
 			}
