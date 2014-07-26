@@ -28,8 +28,11 @@ import java.util.*;
  * @author Doni Pracner, http://perun.dmi.rs/pracner http://quemaster.com
  */
 public class mjc2wsl{
-	public static String versionN = "0.1.7";
+	//default version name, used if the file is not found
+	private static String versionN = "0.1.x";
 
+	private String versionFile = "version.properties";
+	
 	private TransMessages messages = new TransMessages();
 
 	private boolean genPauseAfterEachAddress=false, 
@@ -138,6 +141,24 @@ public class mjc2wsl{
 		return opMap;
 	}
 	
+	private Properties versionData;
+
+	private String getVersion() {
+		if (versionData == null) {
+			versionData = new Properties();
+			try {
+				versionData.load(getClass().getResourceAsStream(versionFile));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String ver = versionData.getProperty("version");
+		if (ver != null)
+			return ver;
+		else
+			return versionN;
+	}
+	
 	public String getOpString(int op) {
 		return getOpMap().get(op);
 	}
@@ -194,7 +215,7 @@ public class mjc2wsl{
 	public String createStandardStart(int numWords){
 		StringBuilder ret = new StringBuilder(
 			"C:\" This file automatically converted from microjava bytecode\";\n"
-			+"C:\" with mjc2wsl v "+versionN+"\";\n");
+			+"C:\" with mjc2wsl v "+getVersion()+"\";\n");
 
 		ret.append("\nBEGIN");
 		ret.append("\nVAR <\n\t");
@@ -805,7 +826,7 @@ public class mjc2wsl{
 	}
 
 	public void printVersion() {
-		System.out.println("MicroJava bytecode to WSL converter. v " + versionN
+		System.out.println("MicroJava bytecode to WSL converter. v " + getVersion()
 				+ ", by Doni Pracner");
 	}
 	
