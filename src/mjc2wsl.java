@@ -787,6 +787,10 @@ public class mjc2wsl{
 	public void printHelpDirectives(){
 		System.out.println("Alternatives for code generation:");
 		System.out.println("  --genPopPush generate POP/PUSH instead of TAIL/HEAD");
+		System.out.println("  --genHeadTail generate TAIL/HEAD instead of POP/PUSH ");
+		System.out.println();
+		System.out.println("  --genInlinePrint generate prints directly instead of procedure calls");
+		System.out.println("  --genProcedurePrint generate prints as custom procedure calls");
 	}
 
 	public void printHelpHelp() {
