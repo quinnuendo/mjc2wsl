@@ -257,18 +257,24 @@
     
     <target name="test-run" 
     description="run .obj .wsl _t.wsl, given are ${file.dir}, ${file.name} (no extension) and an ${inputstring}">
-        <antcall target="mj-run">
+    	<record name="${file.dir}/${file.name}.out1"  emacsmode="true" />
+    	<antcall target="mj-run">
             <param name="filename" value="${file.dir}/${file.name}.obj" />
             <param name="inputstring" value="${inputstring}" />
         </antcall>
+    	<record name="${file.dir}/${file.name}.out1" action="stop" />
+    	<record name="${file.dir}/${file.name}.out2"  emacsmode="true" />
         <antcall target="wsl-run">
             <param name="filename" value="${file.dir}/${file.name}.wsl" />
             <param name="inputstring" value="${inputstring}" />
         </antcall>
+    	<record name="${file.dir}/${file.name}.out2" action="stop" />
+    	<record name="${file.dir}/${file.name}.out3" emacsmode="true" />
         <antcall target="wsl-run">
             <param name="filename" value="${file.dir}/${file.name}_t.wsl" />
             <param name="inputstring" value="${inputstring}" />
         </antcall>
+    	<record name="${file.dir}/${file.name}.out3" action="stop" />
     </target>
     
     <target name="test-run-samples-dir"
