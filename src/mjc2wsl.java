@@ -861,6 +861,10 @@ public class mjc2wsl{
 					genPopPush = true;
 				} else if (args[i].compareToIgnoreCase("--genInlinePrint") == 0) {
 					genInlinePrint = true;
+				} else if (args[i].compareToIgnoreCase("--genHeadTail") == 0) {
+					genPopPush = false;
+				} else if (args[i].compareToIgnoreCase("--genProcedurePrint") == 0) {
+					genInlinePrint = false;
 				}
 				i++;
 			}
