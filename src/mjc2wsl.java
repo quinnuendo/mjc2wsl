@@ -728,7 +728,7 @@ public class mjc2wsl{
 				prl(createTopTwoEStack());
 				if (genInlinePrint){
 					prl(createComment("print spacing",C_SPEC));
-					prl("PRINFLUSH(SUBSTR(\"          \", 0, MIN(10, MAX(0, tempa-1))), tempb);");
+					prl("PRINFLUSH(SUBSTR(\"          \", 0, MIN(10, MAX(0, tempa-SLENGTH(@String(tempb))))), tempb);");
 				}
 				else
 					prl("Print_MJ(tempb,tempa);");
