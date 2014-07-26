@@ -1,6 +1,7 @@
 # compiled versions
 *.class
 *.obj
+bin/*
 
 #backups
 *~
