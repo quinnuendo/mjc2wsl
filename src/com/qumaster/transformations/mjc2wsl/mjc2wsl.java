@@ -1,3 +1,4 @@
+package com.qumaster.transformations.mjc2wsl;
 /*
    Copyright (C) 2014  Doni Pracner
    
@@ -18,6 +19,8 @@
 */
 import java.io.*;
 import java.util.*;
+
+import com.qumaster.transformations.TransMessages;
 
 /**
  * This program converts file from compiled MicroJava bytecode to WSL language

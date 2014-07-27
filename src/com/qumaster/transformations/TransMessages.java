@@ -1,3 +1,4 @@
+package com.qumaster.transformations;
 /*
     Copyright (C) 2014  Doni Pracner
  
@@ -37,18 +38,18 @@ public class TransMessages {
 		this.messageCounters = new int[TransMessages.M_QUIET];
 	}
 
-	void message(String mes, int level){
+	public void message(String mes, int level){
 			if (level>=getPrintLevel()) {
 				outStream.println(mes);
 			}
 			messageCounters[level]++;
 	}
 
-	void printMessageCounters(PrintStream out){
+	public void printMessageCounters(PrintStream out){
 			out.println("total errors:"+messageCounters[TransMessages.M_ERR]+" warnings:"+messageCounters[TransMessages.M_WAR]);
 	}
 
-	void printMessageCounters(){
+	public void printMessageCounters(){
 			printMessageCounters(outStream);
 	}
 
