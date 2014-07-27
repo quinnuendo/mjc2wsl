@@ -212,8 +212,8 @@ public class mjc2wsl{
 		if (!genInlinePrint) {
 				ret.append("\nPROC Print_MJ(val, format VAR)==\n");
 				ret.append(createComment("print spacing", C_SPEC));
-				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
-				ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
+				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=1 TO ");
+				ret.append("MAX(0, format-SLENGTH(@String(tempb))) STEP 1 DO PRINFLUSH(\" \") OD\n");
 				ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
 
 				ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
@@ -670,7 +670,6 @@ public class mjc2wsl{
 				break;
 			}
 			case print: {
-				// TODO printing numbers needs different lengths of spacing
 				prl(createStartVar("tempa", "tempb"));
 
 				prl(createTopTwoEStack());
