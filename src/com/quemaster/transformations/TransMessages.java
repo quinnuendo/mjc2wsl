@@ -1,4 +1,4 @@
-package com.qumaster.transformations;
+package com.quemaster.transformations;
 /*
     Copyright (C) 2014  Doni Pracner
  

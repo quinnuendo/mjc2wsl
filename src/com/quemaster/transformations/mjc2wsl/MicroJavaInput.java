@@ -1,4 +1,4 @@
-package com.qumaster.transformations.mjc2wsl;
+package com.quemaster.transformations.mjc2wsl;
 
 /*
  Copyright (C) 2014  Doni Pracner
