@@ -17,8 +17,16 @@ package com.quemaster.transformations.mjc2wsl;
     You should have received a copy of the GNU General Public License
     along with mjc2wsl.  If not, see <http://www.gnu.org/licenses/>.
 */
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Calendar;
+import java.util.Properties;
 
 import com.quemaster.transformations.TransMessages;
 
@@ -827,7 +835,12 @@ public class mjc2wsl{
 				System.out.println("no filename supplied");
 				System.exit(2);
 			}
-			File f = new File(args[i]);
+
+			Path p = FileSystems.getDefault().getPath(args[i]);
+			if (!Files.exists(p)){
+				System.out.println("input file does not exist");
+				System.exit(1);
+			}
 
 			if (i + 1 < args.length) {
 				try {
@@ -846,16 +859,18 @@ public class mjc2wsl{
 					e.printStackTrace();
 				}
 			}
-			if (f.exists()) {
-				Calendar now = Calendar.getInstance();
-				convertFile(f);
-				long mili = Calendar.getInstance().getTimeInMillis()
-						- now.getTimeInMillis();
-				System.out.println("conversion time:" + mili + " ms");
-				messages.printMessageCounters();
-				out.close();
-			} else
-				System.out.println("file does not exist");
+			Calendar now = Calendar.getInstance();
+			try {
+				convertStream(Files.newInputStream(p));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			long mili = Calendar.getInstance().getTimeInMillis()
+					- now.getTimeInMillis();
+			System.out.println("conversion time:" + mili + " ms");
+			messages.printMessageCounters();
+			out.close();
 		}
 	}
 	
