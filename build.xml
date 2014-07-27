@@ -116,7 +116,7 @@
 
     <target name="mjc2wsl">
         <echo message="${filename}" />
-        <java classpath="${mjc2wsl.class.dir}:${res.dir}" classname="mjc2wsl">
+        <java classpath="${mjc2wsl.class.dir}:${res.dir}" classname="com.quemaster.transformations.mjc2wsl.mjc2wsl">
             <arg line="${mjc2wsl.options}" />
             <arg value="${filename}" />
         </java>
