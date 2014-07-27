@@ -42,7 +42,7 @@ public class mjc2wsl{
 	//default version name, used if the file is not found
 	private static String versionN = "0.1.x";
 
-	private String versionFile = "version.properties";
+	private String versionFile = "/version.properties";
 	
 	private TransMessages messages = new TransMessages();
 
@@ -52,7 +52,9 @@ public class mjc2wsl{
 		
 	private boolean genPopPush=false;
 	
-	private boolean genInlinePrint=false;
+	private boolean genInlinePrint = false;
+	
+	private boolean genLocalVars = true;
 
 	/** Constant used for marking a regular comment from the original file */
 	public static final char C_REG = ' ';
@@ -178,6 +180,9 @@ public class mjc2wsl{
 
 		ret.append("\nBEGIN");
 		ret.append("\nVAR <\n\t");
+		if (!genLocalVars){ 
+			ret.append("\n\ttempa := 0, tempb :=0, tempres := 0,");
+		}
 		ret.append("mjvm_locals := ARRAY(1,0),");
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0),");
 		ret.append("\n\tmjvm_arrays := < >,");
@@ -224,17 +229,23 @@ public class mjc2wsl{
 	}
 
 	private String createStartVar(String... vars){
-		StringBuilder ret = new StringBuilder("VAR < ");
-		ret.append(vars[0] + " := 0");
-		for (int i=1; i<vars.length; i++)
-				ret.append(", "+ vars[i] +" := 0");
-		ret.append(" > : ");
-		
-		return ret.toString();
+		if (genLocalVars) {
+			StringBuilder ret = new StringBuilder("VAR < ");
+			ret.append(vars[0] + " := 0");
+			for (int i = 1; i < vars.length; i++)
+				ret.append(", " + vars[i] + " := 0");
+			ret.append(" > : ");
+
+			return ret.toString();
+		}
+		return "";
 	}
 	
 	private String createEndVar(){
-		return "ENDVAR;";
+		if (genLocalVars)
+			return "ENDVAR;";
+		else
+			return "";
 	}
 	
 	private String createLocal(int i) {
@@ -743,12 +754,21 @@ public class mjc2wsl{
 	}
 
 	public void printHelpDirectives(){
-		System.out.println("Alternatives for code generation:");
-		System.out.println("  --genPopPush generate POP/PUSH instead of TAIL/HEAD");
-		System.out.println("  --genHeadTail generate TAIL/HEAD instead of POP/PUSH ");
+		System.out.println("Alternatives for code generation (* are the defaults):");
+		System.out.print(genPopPush?'*':' ');
+		System.out.println(" --genPopPush generate POP/PUSH instead of TAIL/HEAD");
+		System.out.print(!genPopPush?'*':' ');
+		System.out.println(" --genHeadTail generate TAIL/HEAD instead of POP/PUSH ");
 		System.out.println();
-		System.out.println("  --genInlinePrint generate prints directly instead of procedure calls");
-		System.out.println("  --genProcedurePrint generate prints as custom procedure calls");
+		System.out.print(genInlinePrint?'*':' ');
+		System.out.println(" --genInlinePrint generate prints directly instead of procedure calls");
+		System.out.print(!genInlinePrint?'*':' ');
+		System.out.println(" --genProcedurePrint generate prints as custom procedure calls");
+		System.out.println();
+		System.out.print(genLocalVars?'*':' ');
+		System.out.println(" --genLocalVars generate local VAR block for temp variables");
+		System.out.print(!genLocalVars?'*':' ');
+		System.out.println(" --genGlobalVars do NOT generate local VAR block for temp variables");
 	}
 
 	public void printHelpHelp() {
@@ -827,6 +847,10 @@ public class mjc2wsl{
 					genPopPush = false;
 				} else if (args[i].compareToIgnoreCase("--genProcedurePrint") == 0) {
 					genInlinePrint = false;
+				} else if (args[i].compareToIgnoreCase("--genLocalVars") == 0) {
+					genLocalVars = true;
+				} else if (args[i].compareToIgnoreCase("--genGlobalVars") == 0) {
+					genLocalVars = false;
 				}
 				i++;
 			}
