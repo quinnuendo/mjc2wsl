@@ -26,7 +26,7 @@ import java.io.PrintStream;
  */
 public class TransMessages {
 	private int printLevel;
-	public int[] messageCounters;
+	private int[] messageCounters;
 	public static final int M_DEB = 0;
 	public static final int M_WAR = 1;
 	public static final int M_ERR = 2;
@@ -43,6 +43,13 @@ public class TransMessages {
 				outStream.println(mes);
 			}
 			messageCounters[level]++;
+	}
+
+	public int getLevelMessageCount(int level){
+		if (level < messageCounters.length){
+			return messageCounters[level];
+		}
+		return 0;
 	}
 
 	public void printMessageCounters(PrintStream out){
