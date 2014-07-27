@@ -120,30 +120,6 @@ public class mjc2wsl{
 
 	private boolean originalInComments = false;	
 	
-	private HashMap<Integer,String> opMap = null;
-	
-	private String opCodeFile = "mj-bytecodes.properties";
-	
-	private HashMap<Integer, String> getOpMap() {
-		if (opMap == null) {
-			opMap = new HashMap<Integer, String>(60, 0.98f);
-			try {
-				BufferedReader in = new BufferedReader(new InputStreamReader(
-						getClass().getResourceAsStream(opCodeFile)));
-				String str = in.readLine();
-				while (str != null) {
-					String[] ss = str.split("=");
-					opMap.put(Integer.parseInt(ss[0]), ss[1]);
-					str = in.readLine();
-				}
-				in.close();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-		return opMap;
-	}
-	
 	private Properties versionData;
 
 	private String getVersion() {
@@ -162,17 +138,10 @@ public class mjc2wsl{
 			return versionN;
 	}
 	
-	public String getOpString(int op) {
-		return getOpMap().get(op);
-	}
+	MicroJavaInput mjInput = new MicroJavaInput();
 
-	public String describeOpCode(int op) {
-		return op + " (" + getOpString(op) + ")";
-	}
-	
-	private InputStream mainIn;
 	private PrintWriter out = null;
-	private int counter = -1;
+
 	
 	private void pr(int i){
 			out.print(i);
@@ -188,27 +157,6 @@ public class mjc2wsl{
 	
 	private void prl(String i){
 			out.println(i);
-	}
-	
-	private int get() {
-		int res = -1;
-		try {
-			res = mainIn.read();
-			if (res >= 0)
-				res = res << 24 >>> 24;
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		counter++;
-		return res;
-	}
-	
-	private int get2() {
-		return (get() * 256 + get()) << 16 >> 16;
-	}
-
-	private int get4() {
-		return (get2() << 16) + (get2() << 16 >>> 16);
 	}
 	
 	public String createStandardStart(){
@@ -384,48 +332,26 @@ public class mjc2wsl{
 		return createFromStack("mjvm_mstack", st);
 	}
 
-	private String getRelationFor(int opcode) throws Exception {
-		switch (opcode) {
-				case jeq: return "=";
-				case jne: return "<>";
-				case jlt: return "<";
-				case jle: return "<=";
-				case jgt: return ">";
-				case jge: return ">=";
-		}
-		throw new Exception("Wrong opcode for a relation");
-	}
-
-	private boolean isJumpCode(int opcode) {
-		return (opcode >= jmp) && (opcode <= jge);
-	}
-
 	public void convertStream(InputStream ins) throws Exception{
-		mainIn = ins;
+		mjInput.setStream(ins);
 		//process start 
-		byte m = (byte) get();
-		byte j = (byte) get();
-		if (m!='M' || j !='J') 
-				throw new Exception("Wrong start of bytecode file");
-		int codesize = get4();
-		int numberOfWords = get4();
-		int mainAdr = get4();
+		mjInput.processHeader(this);
 		
-		prl(createStandardStart(numberOfWords));
-		prl("SKIP;\n ACTIONS a" + (14 + mainAdr) + " :");
-		int op = get();
+		prl(createStandardStart(mjInput.getNumberOfWords(this)));
+		prl("SKIP;\n ACTIONS a" + (14 + mjInput.getMainAdr(this)) + " :");
+		int op = mjInput.get();
 		while (op >= 0) {
-			prl(" a" + counter + " ==");
+			prl(" a" + mjInput.getCounter() + " ==");
 			if (originalInComments)
-				prl(createComment(describeOpCode(op), C_OC));
+				prl(createComment(mjInput.describeOpCode(op), C_OC));
 			if (genPrintForEachAddress) {
-				prl("PRINT(\"a" + counter + "\");");
+				prl("PRINT(\"a" + mjInput.getCounter() + "\");");
 				if (genPauseAfterEachAddress)
 					prl("debug_disposable_string := @Read_Line(Standard_Input_Port);");
 			}
 			switch (op) {
 			case load: {
-				prl(createToEStack(createLocal(get())));
+				prl(createToEStack(createLocal(mjInput.get())));
 				break;
 			}
 			case load_0:
@@ -439,7 +365,7 @@ public class mjc2wsl{
 				break;
 			}
 			case store: {
-				prl(createFromEStack(createLocal(get())));
+				prl(createFromEStack(createLocal(mjInput.get())));
 				break;
 			}
 			case store_0:
@@ -454,16 +380,16 @@ public class mjc2wsl{
 			}
 
 			case getstatic: {
-				prl(createToEStack(createStatic(get2())));
+				prl(createToEStack(createStatic(mjInput.get2())));
 				break;
 			}
 			case putstatic: {
-				prl(createFromEStack(createStatic(get2())));
+				prl(createFromEStack(createStatic(mjInput.get2())));
 				break;
 			}
 
 			case getfield: {
-				int f = get2();
+				int f = mjInput.get2();
 				prl(createStartVar("tempa"));
 				prl(createTopEStack());
 				prl(createToEStack(createObject("tempa") + "[" + (f + 1) + "]"));
@@ -471,7 +397,7 @@ public class mjc2wsl{
 				break;
 			}
 			case putfield: {
-				int f = get2();
+				int f = mjInput.get2();
 				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());				
 				prl(createObject("tempb") + "[" + (f + 1) + "]:=tempa;");
@@ -480,7 +406,7 @@ public class mjc2wsl{
 			}
 
 			case const_: {
-				prl(createToEStack(get4()));
+				prl(createToEStack(mjInput.get4()));
 				break;
 			}
 
@@ -572,13 +498,13 @@ public class mjc2wsl{
 			}
 
 			case inc: {
-				int b1 = get(), b2 = get();
+				int b1 = mjInput.get(), b2 = mjInput.get();
 				prl(createLocal(b1) + " := " + createLocal(b1) + " + " + b2 + ";");
 				break;
 			}
 
 			case new_: {
-				int size = get2();
+				int size = mjInput.get2();
 				// TODO maybe objects and arrays should be in the same list?
 				prl("mjvm_objects := mjvm_objects ++ < ARRAY(" + size
 						+ ",0) >;");
@@ -586,7 +512,7 @@ public class mjc2wsl{
 				break;
 			}
 			case newarray: {
-				get();// 0 - bytes, 1 - words; ignore for now
+				mjInput.get();// 0 - bytes, 1 - words; ignore for now
 				// TODO take into consideration 0/1
 				prl(createStartVar("tempa"));
 				prl(createTopEStack());
@@ -647,7 +573,7 @@ public class mjc2wsl{
 			}
 
 			case jmp: {
-				prl("CALL a" + (counter + get2()) + ";");
+				prl("CALL a" + (mjInput.getCounter() + mjInput.get2()) + ";");
 				break;
 			}
 
@@ -659,34 +585,34 @@ public class mjc2wsl{
 			case jge: {
 				prl(createStartVar("tempa", "tempb"));
 				prl(createTopTwoEStack());
-				prl("IF tempb " + getRelationFor(op) 
+				prl("IF tempb " + mjInput.getRelationFor(op) 
 						+ " tempa THEN mjvm_flag_jump := 1"
 						+ " ELSE mjvm_flag_jump := 0" 
 						+ " FI;");
 				prl(createEndVar());
 				prl("IF mjvm_flag_jump = 1 THEN CALL a"
-						+ (counter + get2()) 
-						+ " ELSE CALL a" + (counter + 1)
+						+ (mjInput.getCounter() + mjInput.get2()) 
+						+ " ELSE CALL a" + (mjInput.getCounter() + 1)
 						+ " FI;");
 				
 				break;
 			}
 
 			case call: {
-				prl("CALL a" + (counter + get2()) + ";");
+				prl("CALL a" + (mjInput.getCounter() + mjInput.get2()) + ";");
 				break;
 			}
 
 			case return_: {
 				// we let the actions return
 				// there is nothing to clean up
-				prl("SKIP\n END\n b" + counter + " ==");
+				prl("SKIP\n END\n b" + mjInput.getCounter() + " ==");
 				break;
 			}
 			case enter: {
-				int parameters = get();
+				int parameters = mjInput.get();
 
-				int locals = get();
+				int locals = mjInput.get();
 				prl(createToMStack("mjvm_locals"));
 				prl("mjvm_locals := ARRAY(" + locals + ",0);");
 				for (int i = parameters - 1; i >= 0; i--)
@@ -740,7 +666,7 @@ public class mjc2wsl{
 			}
 
 			case trap: {
-				prl("ERROR(\"Runtime error: trap(" + get() + ")\");");
+				prl("ERROR(\"Runtime error: trap(" + mjInput.get() + ")\");");
 				break;
 			}
 
@@ -750,13 +676,13 @@ public class mjc2wsl{
 				break;
 			}
 
-			boolean wasJump = isJumpCode(op);
-			op = get();
+			boolean wasJump = mjInput.isJumpCode(op);
+			op = mjInput.get();
 			if (op >= 0)
 				if (wasJump)
 					prl("SKIP\n END");
 				else
-					prl("CALL a" + counter + "\n END");
+					prl("CALL a" + mjInput.getCounter() + "\n END");
 		}
 		prl("SKIP\n END\nENDACTIONS;\n");
 		pr(createStandardEnd());
@@ -936,4 +862,6 @@ public class mjc2wsl{
 	public static void main(String[] args) {
 		new mjc2wsl().run(args);
 	}
+
+
 }
