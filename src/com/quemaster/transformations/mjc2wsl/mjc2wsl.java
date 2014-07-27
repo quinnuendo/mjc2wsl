@@ -832,13 +832,13 @@ public class mjc2wsl{
 			}
 
 			if (i >= args.length) {
-				System.out.println("no filename supplied");
+				System.err.println("no filename supplied");
 				System.exit(2);
 			}
 
 			Path p = FileSystems.getDefault().getPath(args[i]);
 			if (!Files.exists(p)){
-				System.out.println("input file does not exist");
+				System.err.println("input file does not exist");
 				System.exit(1);
 			}
 
