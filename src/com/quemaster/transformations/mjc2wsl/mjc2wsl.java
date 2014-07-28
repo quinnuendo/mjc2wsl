@@ -182,11 +182,11 @@ public class mjc2wsl{
 		ret.append("\nVAR <\n\t");
 		if (!genLocalVars){ 
 			ret.append("\n\ttempa := 0, tempb :=0, tempres := 0,");
-		}
+		} else
+			ret.append("\n\tmjvm_flag_jump := 0,");
 		ret.append("mjvm_locals := ARRAY(1,0),");
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0),");
 		ret.append("\n\tmjvm_arrays := < >,");
-		ret.append("\n\tmjvm_flag_jump := 0,");
 		ret.append("\n\tmjvm_objects := < >,");
 		ret.append("\n\tmjvm_estack := < >, mjvm_mstack := < > > :");
 
@@ -602,18 +602,26 @@ public class mjc2wsl{
 			case jle:
 			case jgt:
 			case jge: {
-				prl(createStartVar("tempa", "tempb"));
-				prl(createTopTwoEStack());
-				prl("IF tempb " + mjInput.getRelationFor(op) 
-						+ " tempa THEN mjvm_flag_jump := 1"
-						+ " ELSE mjvm_flag_jump := 0" 
-						+ " FI;");
-				prl(createEndVar());
-				prl("IF mjvm_flag_jump = 1 THEN CALL a"
-						+ (mjInput.getCounter() + mjInput.get2()) 
-						+ " ELSE CALL a" + (mjInput.getCounter() + 1)
-						+ " FI;");
-				
+				if (genLocalVars) {
+						prl(createStartVar("tempa", "tempb"));
+						prl(createTopTwoEStack());
+						prl("IF tempb " + mjInput.getRelationFor(op)
+								+ " tempa THEN mjvm_flag_jump := 1"
+								+ " ELSE mjvm_flag_jump := 0"
+								+ " FI;");
+						prl(createEndVar());
+						prl("IF mjvm_flag_jump = 1 THEN CALL a"
+								+ (mjInput.getCounter() + mjInput.get2())
+								+ " ELSE CALL a" + (mjInput.getCounter() + 1)
+								+ " FI;");
+				} else {
+						prl(createTopTwoEStack());
+						prl("IF tempb " + mjInput.getRelationFor(op)
+								+ " tempa THEN CALL a"
+								+ (mjInput.getCounter() + mjInput.get2())
+								+ " ELSE CALL a" + (mjInput.getCounter() + 1)
+								+ " FI;");
+				}
 				break;
 			}
 
