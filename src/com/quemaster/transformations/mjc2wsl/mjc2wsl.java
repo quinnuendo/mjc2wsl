@@ -858,6 +858,8 @@ public class mjc2wsl{
 					genLocalVars = true;
 				} else if (args[i].compareToIgnoreCase("--genGlobalVars") == 0) {
 					genLocalVars = false;
+				} else {
+					System.err.println("unknown option: "+args[i]);
 				}
 				i++;
 			}
