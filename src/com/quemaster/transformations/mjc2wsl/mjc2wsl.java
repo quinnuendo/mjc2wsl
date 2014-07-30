@@ -366,7 +366,7 @@ public class mjc2wsl{
 			if (genPrintForEachAddress) {
 				prl("PRINT(\"a" + mjInput.getCounter() + "\");");
 				if (genPauseAfterEachAddress)
-					prl("debug_disposable_string := @Read_Line(Standard_Input_Port);");
+					prl("@Read_Line_Proc(VAR debug_disposable_string, Standard_Input_Port);");
 			}
 			switch (op) {
 			case load: {
@@ -659,7 +659,8 @@ public class mjc2wsl{
 			}
 			case read: {
 				prl(createStartVar("tempa"));
-				prl("tempa := @String_To_Num(@Read_Line(Standard_Input_Port));");
+				prl("@Read_Line_Proc(VAR tempa, Standard_Input_Port);");
+				prl("tempa := @String_To_Num(tempa);");
 				prl(createToEStack("tempa"));
 				prl(createEndVar());
 				break;
