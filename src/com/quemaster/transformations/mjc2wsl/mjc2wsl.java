@@ -653,9 +653,13 @@ public class mjc2wsl{
 
 			// read, print
 			case bread: {
-				// TODO make it a char for read
-				messages.message("char is read like a number", TransMessages.M_WAR);
-				prl(createComment("char is read like a number", C_SPEC));
+				// TODO maybe we'll need a bufer for multi chars!
+				prl(createStartVar("tempa"));
+				prl("@Read_Line_Proc(VAR tempa, Standard_Input_Port);");
+				prl("tempa := @String_To_List(tempa)[1];");
+				prl(createToEStack("tempa"));
+				prl(createEndVar());
+				break;
 			}
 			case read: {
 				prl(createStartVar("tempa"));
