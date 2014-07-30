@@ -23,5 +23,8 @@ transf.ini
 #local custom properties etc
 custom.properties
 
+#local instalation specifics, experiments etc
+local/
+
 #var local temp files etc
 .directory
