@@ -283,7 +283,46 @@
             <param name="file.dir" value="${samples.temp.dir}"/>
         </antcall>
     </target>
-    
+
+    <!-- output serveral versions of files -->
+
+    <target name="output-all-versions"
+        description="generate variations on the translations in the 'local' folder and tar them">
+        <antcall>
+            <target name="mj-samples"/>
+            <target name="mjc2wsl-samples"/>
+            <param name="samples.temp.dir" value="local/out/headTail-proc"/>
+            <param name="mjc2wsl.options" value=""/>
+        </antcall>
+        <antcall>
+            <target name="mj-samples"/>
+            <target name="mjc2wsl-samples"/>
+            <param name="samples.temp.dir" value="local/out/headTail-inline"/>
+            <param name="mjc2wsl.options" value="--genInlinePrint"/>
+        </antcall>
+        <antcall>
+            <target name="mj-samples"/>
+            <target name="mjc2wsl-samples"/>
+            <param name="samples.temp.dir" value="local/out/popPush-inline"/>
+            <param name="mjc2wsl.options" value="--genPopPush --genInlinePrint"/>
+        </antcall>
+        <antcall>
+            <target name="mj-samples"/>
+            <target name="mjc2wsl-samples"/>
+            <param name="samples.temp.dir" value="local/out/popPush-proc"/>
+            <param name="mjc2wsl.options" value="--genPopPush"/>
+        </antcall>
+        <antcall>
+            <target name="mj-samples"/>
+            <target name="mjc2wsl-samples"/>
+            <param name="samples.temp.dir" value="local/out/popPush-glob"/>
+            <param name="mjc2wsl.options" value="--genPopPush --genGlobalVars"/>
+        </antcall>
+        <tar basedir="local/out" compression="gzip"
+            destfile="local/mjc2wsl-samples.tgz"
+            includes="*/*.wsl"/>
+    </target>
+
     <!-- jedit specific flags; needs to be the first or the last 10 lines
     :noTabs=true:
     -->
