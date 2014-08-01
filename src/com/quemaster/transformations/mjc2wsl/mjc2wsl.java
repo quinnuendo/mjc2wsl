@@ -676,7 +676,7 @@ public class mjc2wsl{
 				prl(createTopTwoEStack());
 				if (genInlinePrint){
 					prl(createComment("print spacing and transformation",C_SPEC));
-					prl("PRINFLUSH(SUBSTR(\"          \", 0, MIN(10, MAX(0,tempa-1))), @List_To_String(< tempb >));");
+					prl("PRINFLUSH(@Format(tempa, @List_To_String(< tempb >)));");
 				} else
 					prl("Print_MJ_CHAR(tempb,tempa);");
 				prl(createEndVar());
@@ -688,7 +688,7 @@ public class mjc2wsl{
 				prl(createTopTwoEStack());
 				if (genInlinePrint){
 					prl(createComment("print spacing",C_SPEC));
-					prl("PRINFLUSH(SUBSTR(\"          \", 0, MIN(10, MAX(0, tempa-SLENGTH(@String(tempb))))), tempb);");
+					prl("PRINFLUSH(@Format(tempa,tempb));");
 				}
 				else
 					prl("Print_MJ(tempb,tempa);");
