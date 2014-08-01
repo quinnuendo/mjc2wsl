@@ -213,7 +213,7 @@ public class mjc2wsl{
 				ret.append("\nPROC Print_MJ(val, format VAR)==\n");
 				ret.append(createComment("print spacing", C_SPEC));
 				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=1 TO ");
-				ret.append("MAX(0, format-SLENGTH(@String(tempb))) STEP 1 DO PRINFLUSH(\" \") OD\n");
+				ret.append("MAX(0, format-SLENGTH(@String(val))) STEP 1 DO PRINFLUSH(\" \") OD\n");
 				ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
 
 				ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
