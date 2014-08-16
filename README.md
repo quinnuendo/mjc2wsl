@@ -22,7 +22,7 @@ Requirements
  - java JDK for compiling and running the mjc2wsl tool and the MJ compiler
 
  - ant for building and testing
- -- ant-contrib tasks are needed for some of the tasks
+  - ant-contrib tasks are needed for some of the tasks
 
  - FermaT for running the translated examples and applying the transformations
    (FermaT Maintanance Environment can be used)
