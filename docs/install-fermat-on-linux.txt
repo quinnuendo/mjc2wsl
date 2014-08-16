@@ -2,15 +2,15 @@
 How to install and use FermaT on a Linux machine
 ================================================
 
-The machine that this instructions were tested with was a fresh Ubuntu
-install, more precisely Lubuntu 14.04, 64 bit version.  It came with
-gcc 4.8.2 (4.8.2-19ubuntu1) installed.
-
-This should work on most distributions from the Debian family (Ubuntu,
-Mint, CrunchBang, ...)  and with small changes on any other Linux or
-BSD system. The main changes are in the usage of the package system -
+These instructions should work on most distributions from the Debian family
+(Ubuntu, Mint, CrunchBang, ...) and with small changes on any other Linux or
+BSD system.  The main changes are in the usage of the package system -
 debian uses ".deb" packages and the "apt-get" command, others use yum,
 packman etc.
+
+The machine that these instructions were tested with was a fresh Ubuntu
+install, more precisely Lubuntu 14.04, 64 bit version.  It came with gcc
+4.8.2 (4.8.2-19ubuntu1) installed.
 
 
 Dependencies
@@ -141,7 +141,7 @@ Alternatively you can make a copy of the file (let's call it myDOIT.bash)
 and change the line "Fermat=`pwd` to refer to the install folder directly,
 for instance if we extracted fermat3 in our home:
 
-FermaT=/home/user/fermat3
+FermaT=$HOME/fermat3
 
 You can then run that file from anywhere and it will setup the values
 properly. For instance you can put this file somewhere on the PATH. A
