@@ -8,26 +8,28 @@ folder. More about the tools can be found in the "docs" folder.
 Quick build and test
 --------------------
 
-Running ant in the folder should compile the tool as well as the MJ compiler
-and then do a test - compile all of the sample MicroJava codes into MJ
-bytecode, translate them to WSL and then apply the given transformations in
-MetaWSL to the programs.
+Running ant in the folder should compile the tool and then do a test -
+compile all of the sample MicroJava codes into MJ bytecode, translate them
+to WSL and then apply the given transformations in MetaWSL to the programs.
 
 Look in the "docs" folder for more details about running the available ant
-tasks.
+tasks, configurations, installations etc.
 
 
 Requirements
 ------------
 
-- java JDK for compiling and running the mjc2wsl tool and the MJ compiler
+ - java JDK for compiling and running the mjc2wsl tool and the MJ compiler
 
-- ant for building and testing
--- ant-contrib tasks are needed for some of the tasks
+ - ant for building and testing
+ -- ant-contrib tasks are needed for some of the tasks
 
-- FermaT for running the translated examples and applying the transformations
-(FermaT Maintanance Environment can be used)
-Downloads available at http://www.cse.dmu.ac.uk/~mward/fermat.html
+ - FermaT for running the translated examples and applying the transformations
+   (FermaT Maintanance Environment can be used)
+   Downloads available at http://www.cse.dmu.ac.uk/~mward/fermat.html
+
+Check the docs folder for a more detailed tutorial on how to install
+FermaT under Linux.
 
 
 Setting the FermaT dir
