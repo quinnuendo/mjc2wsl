@@ -1,0 +1,125 @@
+How to install and use FermaT on a Linux machine
+================================================
+
+The machine that this instructions were tested with was a fresh Ubuntu
+install, more precisely Lubuntu 14.04, 64 bit version.  It came with
+gcc 4.8.2 (4.8.2-19ubuntu1) installed.
+
+This should work on most distributions from the Debian family (Ubuntu,
+Mint, CrunchBang, ...)  and with small changes on any other Linux or
+BSD system. The main changes are in the usage of the package system -
+debian uses ".deb" packages and the "apt-get" command, others use yum,
+packman etc.
+
+
+Dependencies
+============
+
+GNU Compiler Collection (C)
+-----------------------------
+
+For building FermaT you need a working C compiler, GCC recommended. In
+Ubuntu there is a convenient package "build-essential" that will
+install most of the needed packages for building software.
+
+use:
+
+ sudo apt-get install build-essential 
+
+When trying to build FermaT it migh complain about a missing
+"sys/cdefs.h". This file can be found in libc6-dev package, but you
+might also need to install "libc6-dev-i386" (even though it is a 64
+bit system, the shared file is in the old library).
+
+
+Perl
+------
+
+Perl is included by default, but you also need some extra modules -
+Bit::Vector and Set::IntRange.
+
+If these modules are not installed WSL will work in most cases, but
+not all. To be sure everything is ok run "make test" and check that
+all the tests succeeded.
+
+You can use "cpanm" command from the "cpanminus" package for
+installing modules. It will automatically find and install any missing
+module dependencies.
+
+You can install them globally on the system with 
+
+ sudo cpanm Bit::Vector
+ sudo cpanm Set::IntRange
+
+If you don't want to (or can't) install them globally, you can
+configure local modules. Try running cpanm without sudo for
+suggestions how to do this.
+
+
+Main build
+===========
+
+You need to download and extract fermat3:
+
+ wget http://www.cse.dmu.ac.uk/~mward/fermat3.tar.gz
+ tar -xf fermat3.tar.gz
+
+
+Once you are inside the folder you need to "source" the appropriate
+DOIT file. This will set up a few environment variables that are
+needed for FermaT to work and are also needed for the build process.
+
+For Ubuntu this will probably be bash:
+
+ cd fermat3
+ source DOIT.bash
+
+After that you can start the build and test process with
+
+  make test
+
+If everything is already built it will skip straith to the
+testing. You want to see all tests pass.
+
+You can alternatively start the build process directly with:
+
+  make-fermat
+
+
+If everything is ok you should be able to enter "wsl" in the command
+line and get a usage message.
+
+
+Running WSL
+============
+
+FermaT does not install system-wide on it's own. If you want to use it
+in a command line you need to source DOIT again.  Since DOIT.bash uses
+pwd (print working directory) you need to run it in the fermat3
+directory.
+
+Alternatively you can make a copy of the file (let's call it
+myDOIT.bash) and change the line "Fermat=`pwd` to include the install
+folder directly, for instance if we extracted fermat3 in our home:
+
+Fermat=/home/username/fermat3
+
+You can then run that file from anywhere and it will setup the values
+properly. For instance you can put this file somewhere on the PATH. A
+convenient place is to make a "bin" folder in your home if there isn't
+one already. This will be included by bash automatically. Then
+you could run 
+
+ source myDOIT.bash
+
+from any terminal that you want to run WSL in.
+
+If you want to have access to wsl in all of the shells you can add
+these lines to your .bashrc file (in the home directory).
+
+
+End notes
+=========
+
+Copyright (C) 2014 Doni Pracner; Released under the GNU Free Documentation
+Licence https://www.gnu.org/licenses/fdl.html
