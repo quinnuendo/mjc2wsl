@@ -211,17 +211,12 @@ public class mjc2wsl{
 
 		if (!genInlinePrint) {
 				ret.append("\nPROC Print_MJ(val, format VAR)==\n");
-				ret.append(createComment("print spacing", C_SPEC));
-				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=1 TO ");
-				ret.append("MAX(0, format-SLENGTH(@String(val))) STEP 1 DO PRINFLUSH(\" \") OD\n");
-				ret.append("\tFI;\n\tPRINFLUSH(val)\nEND\n");
+				ret.append("PRINFLUSH(@Format(format, val ))");
+				ret.append("\nEND\n");
 
 				ret.append("\nPROC Print_MJ_CHAR(val, format VAR)==\n");
-				ret.append(createComment("print spacing", C_SPEC));
-				ret.append("\n\tIF format>1 THEN\n\t\tFOR i:=2 TO ");
-				ret.append("format STEP 1 DO PRINFLUSH(\" \") OD\n");
-				ret.append("\tFI;\n\tPRINFLUSH(CHR(val))\n");
-				ret.append("END\n");
+				ret.append("PRINFLUSH(@Format(format, CHR(val)))");
+				ret.append("\nEND\n");
 		}
 
 		ret.append("\nEND");
