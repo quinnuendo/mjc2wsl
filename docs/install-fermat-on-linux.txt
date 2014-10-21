@@ -11,7 +11,8 @@ packman etc.
 The machine that these instructions were tested with was a fresh Ubuntu
 install, more precisely Lubuntu 14.04, 64 bit version.  It came with gcc
 4.8.2 (4.8.2-19ubuntu1) installed.
-
+It was also tested on a fresh install of CrunchBang Waldorf (based on
+Debian Wheezy), 64 bit version. It came with gcc (Debian 4.7.2-5) 4.7.2.
 
 Dependencies
 ============
