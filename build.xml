@@ -255,7 +255,7 @@
     
     <!-- Testing tasks -->
     
-    <target name="test-run" 
+    <target name="manual-test-run" 
     description="run .obj .wsl _t.wsl, given are ${file.dir}, ${file.name} (no extension) and an ${inputstring}">
     	<record name="${file.dir}/${file.name}.out1"  emacsmode="true" />
     	<antcall target="mj-run">
@@ -277,9 +277,9 @@
     	<record name="${file.dir}/${file.name}.out3" action="stop" />
     </target>
     
-    <target name="test-run-samples-dir"
+    <target name="manual-test-run-samples-dir"
     description="run .obj .wsl _t.wsl, in the samples-temp directory; given ${file.name} (no extension) and an ${inputstring}">
-        <antcall target="test-run">
+        <antcall target="manual-test-run">
             <param name="file.dir" value="${samples.temp.dir}"/>
         </antcall>
     </target>
