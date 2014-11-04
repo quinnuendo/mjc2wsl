@@ -42,6 +42,7 @@
     <property name="log.dir" value="logs" />
     <property name="log.file.transformations" value="${log.dir}/transformations" />
     <property name="log.file.mjc2wsl" value="${log.dir}/mjc2wsl" />
+    <property name="log.file.tests.m" value="${log.dir}/tests-mj" />
 
     <description>
         Builder script for mjc2wsl and related tools, runs test
@@ -398,8 +399,9 @@
         </foreach>
     </target>
     
-    <target name="test-all-m" depends="init-compare"
+    <target name="test-all-m" depends="init-compare,init-time"
     description="Run all the tests from the test directory to compare MJ and WSL" >
+        <record name="${log.file.tests.m}${time}.txt" emacsmode="true" />
         <foreach param="filename" target="test-fn" inheritall="true">
             <path>
             <fileset dir='${samples.temp.dir}'>
@@ -407,6 +409,9 @@
             </fileset>
             </path>
         </foreach>
+        <record name="${log.file.tests}${time}.txt" action="stop" />
+        <move file="${log.file.tests.m}.txt" tofile="${log.file.tests.m}-previous.txt" failonerror="false"/>
+        <copy file="${log.file.tests.m}${time}.txt" tofile="${log.file.tests.m}.txt"/>        
     </target>
 
     <target name="test-all-t" depends="init-compare"
