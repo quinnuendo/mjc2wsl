@@ -1,7 +1,7 @@
 <project name="mjc2wsl" default="all">
     <property file="custom.properties"/>
     <property environment="env"/>
-    
+
      <condition property="fermat.dir" value="C:\fermat3">
        <os family="windows" />
      </condition>
@@ -10,7 +10,7 @@
        <not><os family="windows" /></not>
      </condition>
 
-    
+
     <property name="java.encoding" value="utf-8" />
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
     
@@ -55,7 +55,7 @@
         <include name="**/*.wsl"/>
         <exclude name="**/*${transf.wsl.ext}"/>
     </patternset>
-    
+
     <!-- general tasks -->
 
     <target name="init" depends="init-time">
@@ -89,37 +89,37 @@
             <fileset dir="${log.dir}"/>
         </delete>
     </target>
-	
-	<!-- version tasks
-	based on ideas by Jesper Öqvist http://llbit.se/?p=1876 -->
     
-	<!-- this target is only run if the 'version' property is undefined -->
-	
-	<target name="update-version-string" unless="version">
-	        <!-- get a new version string using git describe if possible -->
-	        <echo message="Updating version string..."/>
-	        <exec executable="git" outputproperty="version"
-	                failifexecutionfails="false">
-	                <arg value="describe"/>
-	        </exec>
-	        <antcall target="-store-version-string"/>
-	        <!-- ensure version is defined even if git was not available -->
-	        <property file="${res.dir}/version.properties"/>
-	</target>
+    <!-- version tasks
+    based on ideas by Jesper Öqvist http://llbit.se/?p=1876 -->
     
-	<target name="-store-version-string" if="version">
-	        <!-- store the new  version string in the correct property file -->
-	        <echo message="version=${version}"/>
-	        <propertyfile file="${res.dir}/version.properties">
-	                <entry key="version" value="${version}"/>
-	        </propertyfile>
-	        <exec executable="git" failifexecutionfails="false">
-	                <arg value="update-index"/>
-	                <arg value="--assume-unchanged"/>
-	                <arg value="${res.dir}/version.properties"/>
-	        </exec>
-	</target>
-	
+    <!-- this target is only run if the 'version' property is undefined -->
+    
+    <target name="update-version-string" unless="version">
+            <!-- get a new version string using git describe if possible -->
+            <echo message="Updating version string..."/>
+            <exec executable="git" outputproperty="version"
+                    failifexecutionfails="false">
+                    <arg value="describe"/>
+            </exec>
+            <antcall target="-store-version-string"/>
+            <!-- ensure version is defined even if git was not available -->
+            <property file="${res.dir}/version.properties"/>
+    </target>
+    
+    <target name="-store-version-string" if="version">
+            <!-- store the new  version string in the correct property file -->
+            <echo message="version=${version}"/>
+            <propertyfile file="${res.dir}/version.properties">
+                    <entry key="version" value="${version}"/>
+            </propertyfile>
+            <exec executable="git" failifexecutionfails="false">
+                    <arg value="update-index"/>
+                    <arg value="--assume-unchanged"/>
+                    <arg value="${res.dir}/version.properties"/>
+            </exec>
+    </target>
+    
     <!-- mjc2wsl related tasks -->
     
     <target name="build" depends="init,update-version-string" description="build the mjc2wsl tool">
@@ -280,24 +280,24 @@
     
     <target name="manual-test-run" 
     description="run .obj .wsl ${transf.wsl.ext}, given are ${file.dir}, ${file.name} (no extension) and an ${inputstring}">
-    	<record name="${file.dir}/${file.name}.out1"  emacsmode="true" />
-    	<antcall target="mj-run">
+        <record name="${file.dir}/${file.name}.out1"  emacsmode="true" />
+        <antcall target="mj-run">
             <param name="filename" value="${file.dir}/${file.name}.obj" />
             <param name="inputstring" value="${inputstring}" />
         </antcall>
-    	<record name="${file.dir}/${file.name}.out1" action="stop" />
-    	<record name="${file.dir}/${file.name}.out2"  emacsmode="true" />
+        <record name="${file.dir}/${file.name}.out1" action="stop" />
+        <record name="${file.dir}/${file.name}.out2"  emacsmode="true" />
         <antcall target="wsl-run">
             <param name="filename" value="${file.dir}/${file.name}.wsl" />
             <param name="inputstring" value="${inputstring}" />
         </antcall>
-    	<record name="${file.dir}/${file.name}.out2" action="stop" />
-    	<record name="${file.dir}/${file.name}.out3" emacsmode="true" />
+        <record name="${file.dir}/${file.name}.out2" action="stop" />
+        <record name="${file.dir}/${file.name}.out3" emacsmode="true" />
         <antcall target="wsl-run">
             <param name="filename" value="${file.dir}/${file.name}${transf.wsl.ext}" />
             <param name="inputstring" value="${inputstring}" />
         </antcall>
-    	<record name="${file.dir}/${file.name}.out3" action="stop" />
+        <record name="${file.dir}/${file.name}.out3" action="stop" />
     </target>
     
     <target name="manual-test-run-samples-dir"
