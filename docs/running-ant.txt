@@ -15,7 +15,11 @@ doing some of the above taks on their own.
 
 Many of these can be given parameters, such as 
 
-ant mjc2wsl -Dfilename=temp/Rek1.obj -Dmjc2wsl.options=-q
+  ant mjc2wsl -Dfilename=temp/Rek1.obj -Dmjc2wsl.options=-q
+
+Alternatively parameters can be specified in a file named
+"custom.properties" in the root folder of the project (next 
+to "build.xml").
 
 
 General tasks
@@ -85,6 +89,34 @@ transformations results from earlier).
 
 Testing tasks
 -------------
+
+There are two sets of tasks for comparing outputs of
+different versions of programs. 
+
+The fist set compares the original MicroJava code compiled
+into bytecode with the version translated into WSL (using
+mjc2wsl). These are "test-all-m" and "test-fn-m".
+
+The second set compared the translated WSL with the
+transformed version. These are "test-all-t" and "test-fn-t".
+
+In either case, the two versions of the program are run with
+inputs from the "${tests.dir}", the outputs are recordered
+and automatically compared (using customized perl scripts in
+the first version). For a given ${file.name} of the program,
+it will be run with inputs from any files that match
+"${file.name}*.txt". If there are none, then the program
+will not be tested.
+
+Obviously this could prove to be problematic if some
+programs have names that are longer versions of other
+program names (like "chars" and "chars-and-numbers", where
+any test for the later would be (wrongly!) ran for the
+former as well).
+
+
+Manual testing helper tasks
+---------------------------
 
 test-run - run sequentially the '.obj', '.wsl' and '_t.wsl'
 versions of the same program. given are "file.dir" and
