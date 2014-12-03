@@ -182,13 +182,14 @@
 
     <target name="mj-decode" description="decode a MJ obj file given in ${filename}">
         <echo message="${filename}" />
-        <java classpath="${compiler.class.dir}:${compiler.class.jar}" classname="${compiler.classname.decoder}">
+        <java classpath="${compiler.class.dir}:${compiler.class.jar}" 
+              classname="${compiler.classname.decoder}"
+              output="${filename}.decoded" >
             <arg value="${filename}" />
         </java>
     </target>
     
-    <target name="mj-decode-samples" description="decode all of the compiled samples and save into file 'decoded.txt'">
-        <record name="${samples.temp.dir}/decoded.txt" emacsmode="true" loglevel="info"/>
+    <target name="mj-decode-samples" description="decode all of the obj files in ${samples.temp.dir}">
         <foreach param="filename" target="mj-decode">
             <path>
             <fileset dir='${samples.temp.dir}'>
@@ -196,7 +197,6 @@
             </fileset>
             </path>
         </foreach>
-        <record name="${samples.temp.dir}/decoded.txt" action="stop"/>
     </target>
     
     <target name="mj-run" description="run a MJ obj file given in ${filename} with ${inputstring}">
