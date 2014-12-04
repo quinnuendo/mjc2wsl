@@ -16,6 +16,7 @@ bin/*
 samples-temp/*
 temp/*
 logs/*
+temp2/*
 
 #temp files used by scripts
 transf.ini
