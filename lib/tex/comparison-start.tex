@@ -1,0 +1,81 @@
+\documentclass[a4paper,landscape]{article}
+
+\usepackage[top=2cm, bottom=1.5cm, left=1cm, right=1cm]{geometry}
+
+\usepackage{graphicx}
+
+\usepackage{listings}
+
+\usepackage{paracol}
+
+\usepackage{courier}
+
+\usepackage[bookmarks,pdffitwindow=false,unicode=true]{hyperref}
+
+
+\lstloadlanguages{Java}
+
+\lstdefinelanguage{wsl}{
+	morekeywords = {CALL,IF,THEN,ELSE,FI,SKIP,ACTIONS,ENDACTIONS,PRINT,END,WHILE,VAR,ARRAY,PRINFLUSH,HEAD,TAIL,BEGIN,POP,PUSH,DO,OD,WHERE,ENDVAR,PROC},
+    comment=[s]{C:"}{"},
+	sensitive = true
+}
+
+\lstset{
+	basicstyle=\footnotesize\ttfamily,
+        breaklines=true,
+        keywordstyle=\textbf,
+        columns=[l]fixed,
+        tabsize=2,
+%        breakatwhitespace=true
+%        prebreak=\P,
+%        postbreak=\ding{229}\space,
+	showstringspaces=true
+}
+
+\lstdefinestyle{mj}{
+  %style=codeblock,
+  numbers=left,
+  language=Java
+}
+
+\lstdefinestyle{decoded}{
+  %style=codeblock,
+	breakatwhitespace=false
+}
+
+\lstdefinestyle{wsl}{
+  	language=wsl,
+  	basicstyle=\scriptsize\ttfamily
+}
+
+\lstdefinestyle{wslt}{
+  style=wsl,
+  basicstyle=\footnotesize\ttfamily
+}
+
+\columnratio{0.2, 0.1,0.4,0.3}
+
+\title{Comparison of various stages of code in MJC2WSL}
+
+\author{automatically generated}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\emph{Outputs longer than 200 lines are cut off.}
+
+\begin{paracol}{4}
+Original code - MicroJava
+\switchcolumn
+Compiled into bytecode and decoded
+\switchcolumn
+Translated bytecode to WSL
+\switchcolumn
+Automatically transformed WSL
+\end{paracol}

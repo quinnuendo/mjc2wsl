@@ -472,6 +472,48 @@
             includes="*/*.wsl"/>
     </target>
 
+
+    <!-- output a comparison Latex file and compile it -->
+
+    <target name="output-comparison-pdf-single">
+        <basename property="file.name" file="${filename}" suffix=".obj"/>
+        <echo append='true' file="${samples.temp.dir}/tex/comparison.tex">
+        \section{${file.name}}
+        \begin{paracol}{4}
+        \lstinputlisting[style=mj]{../${file.name}.mj}
+        \switchcolumn
+        \lstinputlisting[style=decoded]{../${file.name}.obj.decoded}
+        \switchcolumn
+        \lstinputlisting[style=wsl,lastline=200]{../${file.name}.wsl}
+        \switchcolumn
+        \lstinputlisting[style=wslt,lastline=200]{../${file.name}${transf.wsl.ext}}
+        \end{paracol}
+        </echo>
+    </target>
+    
+    <target name="output-comparison-pdf"
+        description="Makes a parallel display in Latex and produces a pdf (tex dir in temp dir)" >
+
+        <copy file="lib/tex/comparison-start.tex" overwrite="true" 
+            tofile="${samples.temp.dir}/tex/comparison.tex"/>
+        <foreach param="filename" target="output-comparison-pdf-single" inheritall="true">
+            <path>
+            <fileset dir='${samples.temp.dir}'>
+                <include name="*.obj"/>
+            </fileset>
+            </path>
+        </foreach>
+        <concat destfile="${samples.temp.dir}/tex/comparison.tex" append="true">
+            <filelist dir="lib/tex" files="comparison-end.tex"/>
+        </concat>
+        <antcall target="output-comparison-compile"/>
+    </target>
+    
+    <target name="output-comparison-compile">
+        <exec command="pdflatex comparison.tex"
+              dir="${samples.temp.dir}/tex"/>
+    </target>
+
     <!-- jedit specific flags; needs to be the first or the last 10 lines
     :noTabs=true:
     -->
