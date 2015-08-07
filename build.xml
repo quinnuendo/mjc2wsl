@@ -1,7 +1,17 @@
 <project name="mjc2wsl" default="all">
+    <description>
+        Builder script for mjc2wsl and related tools, runs tests
+        on given samples.
+    </description>
+
+    <!-- use this file for any custom local needs -->
     <property file="custom.properties"/>
     <property environment="env"/>
 
+    <!-- try and detect the fermat.dir based on the operating system
+        should be set as a custom value in "custom.properties"
+        if it's in a non default location.
+    -->
      <condition property="fermat.dir" value="C:\fermat3">
        <os family="windows" />
      </condition>
@@ -13,16 +23,23 @@
 
     <property name="java.encoding" value="utf-8" />
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
-    
+
+
+    <!-- **************************************** -->
+    <!-- main variables that can be altered in the
+        properties file or through command line switches.
+    -->
+    <!-- **************************************** -->
+
     <!-- when using multiple threads there is a problem with logging!-->
     <property name="global.max.threads" value="1" />
-    
+
     <property name="mjc2wsl.class.dir" value="bin" />
     <property name="mjc2wsl.src.dir" value="src" />
     <property name="mjc2wsl.options" value="" />
 
     <property name="res.dir" value="res" />
-    
+
     <property name="compiler.class.jar" value="lib/mj.jar" />
     <property name="compiler.class.dir" value="lib/compiler-bin" />
     <property name="compiler.src.dir" value="lib/compiler-src" />
@@ -36,7 +53,7 @@
     <property name="transf.wsl.file" value="src-wsl/transf-min.wsl" />
     <property name="transf.wsl.ini" value="transf.ini" />
     <property name="transf.wsl.ext" value="_t.wsl" />
-    
+
     <property name="metrics.wsl.file" value="src-wsl/metrics.wsl" />
     <property name="metrics.extension" value=".met" />
 
@@ -48,12 +65,9 @@
     <property name="log.file.tests.m" value="${log.dir}/tests-mj" />
     <property name="log.file.tests.t" value="${log.dir}/tests-wsl" />
 
-    <description>
-        Builder script for mjc2wsl and related tools, runs test
-        on given samples.
-        
-        Also gives options to chain the tools on individual files.
-    </description>
+    <!-- **************************************** -->
+    <!-- patterns -->
+    <!-- **************************************** -->
 
     <patternset id="non.transformed.sources">
         <include name="**/*.wsl"/>
@@ -64,7 +78,9 @@
         <include name="**/*${transf.wsl.ext}"/>
     </patternset>
 
+    <!-- **************************************** -->
     <!-- general tasks -->
+    <!-- **************************************** -->
 
     <target name="init" depends="init-time">
         <mkdir dir="${mjc2wsl.class.dir}"/>
@@ -86,9 +102,9 @@
 
     <target name="all" depends='mj-samples,mjc2wsl-samples,wsl-transf-samples'
         description="build the tools, run them on the samples to check">
-    
+
     </target>
-    
+
     <target name="clean" description="clean up all the generated content">
         <delete includeemptydirs="true">
             <fileset dir="${mjc2wsl.class.dir}"/>
@@ -97,12 +113,14 @@
             <fileset dir="${log.dir}"/>
         </delete>
     </target>
-    
+
+    <!-- **************************************** -->
     <!-- version tasks
     based on ideas by Jesper Öqvist http://llbit.se/?p=1876 -->
-    
+    <!-- **************************************** -->
+
     <!-- this target is only run if the 'version' property is undefined -->
-    
+
     <target name="update-version-string" unless="version">
             <!-- get a new version string using git describe if possible -->
             <echo message="Updating version string..."/>
@@ -114,7 +132,7 @@
             <!-- ensure version is defined even if git was not available -->
             <property file="${res.dir}/version.properties"/>
     </target>
-    
+
     <target name="-store-version-string" if="version">
             <!-- store the new  version string in the correct property file -->
             <echo message="version=${version}"/>
@@ -127,9 +145,11 @@
                     <arg value="${res.dir}/version.properties"/>
             </exec>
     </target>
-    
+
+    <!-- **************************************** -->
     <!-- mjc2wsl related tasks -->
-    
+    <!-- **************************************** -->
+
     <target name="build" depends="init,update-version-string" description="build the mjc2wsl tool">
         <javac srcdir="${mjc2wsl.src.dir}" destdir="${mjc2wsl.class.dir}" includeAntRuntime='no' />
     </target>
@@ -141,7 +161,7 @@
             <arg value="${filename}" />
         </java>
     </target>
-    
+
     <target name="mjc2wsl-samples" depends="build,init-time" description="run the mjc2wsl tool on the samples">
         <record name="${log.file.mjc2wsl}${time}.txt" emacsmode="true" />
         <echo>Used options:${mjc2wsl.options}</echo>
@@ -155,7 +175,7 @@
         <record name="${log.file.mjc2wsl}${time}.txt" action="stop" />
         <copy file="${log.file.mjc2wsl}${time}.txt" tofile="${log.file.mjc2wsl}.txt"/>
     </target>
-    
+
     <target name="mjc2wsl-samples1" depends="build">
     <!-- simplistic version when antlib (foreach) is not available -->
         <antcall target="mjc2wsl">
@@ -164,20 +184,22 @@
     </target>
 
 
+    <!-- **************************************** -->
     <!-- MicroJava related tasks -->
+    <!-- **************************************** -->
 
 
     <target name="mj-build" depends="init" description="build the mj compiler">
         <javac srcdir="${compiler.src.dir}" destdir="${compiler.class.dir}" includeAntRuntime='no' />
     </target>
-    
+
     <target name="mj-compile" description="compile a MJ into obj file; given ${filename}">
         <echo message="${filename}" />
         <java classpath="${compiler.class.dir}:${compiler.class.jar}" classname="${compiler.classname.compiler}">
             <arg value="${filename}" />
         </java>
     </target>
-    
+
     <target name="mj-samples" description="run the mj compiler on the samples" depends="init">
         <foreach param="filename" target="mj-compile"  parallel="true" maxthreads="${global.max.threads}">
             <path>
@@ -190,13 +212,13 @@
 
     <target name="mj-decode" description="decode a MJ obj file given in ${filename}">
         <echo message="${filename}" />
-        <java classpath="${compiler.class.dir}:${compiler.class.jar}" 
+        <java classpath="${compiler.class.dir}:${compiler.class.jar}"
               classname="${compiler.classname.decoder}"
               output="${filename}.decoded" >
             <arg value="${filename}" />
         </java>
     </target>
-    
+
     <target name="mj-decode-samples" description="decode all of the obj files in ${samples.temp.dir}">
         <foreach param="filename" target="mj-decode">
             <path>
@@ -206,7 +228,7 @@
             </path>
         </foreach>
     </target>
-    
+
     <target name="mj-run" description="run a MJ obj file given in ${filename} with ${inputstring}">
         <echo message="${filename}" />
         <java classpath="${compiler.class.dir}:${compiler.class.jar}" classname="${compiler.classname.interpreter}" inputstring="${inputstring}">
@@ -228,7 +250,9 @@
     </target>
 
 
+    <!-- **************************************** -->
     <!-- wsl related tasks -->
+    <!-- **************************************** -->
 
     <target name="wsl-run" >
         <property name="args" value=""/>
@@ -242,16 +266,16 @@
             <arg line="${filename} ${args}"/>
         </exec>
     </target>
-    
-    <target name="wsl-transf" 
+
+    <target name="wsl-transf"
         description="transform (simplify) a single wsl file generated by mjc2wsl">
-        
+
         <antcall target="wsl-run">
             <param name="filename" value="${transf.wsl.file}" />
             <param name="args" value="${transf.filename}" />
         </antcall>
     </target>
-    
+
     <target name="wsl-transf-samples" depends="init"
     description="transform (simplify) the wsl files generated by mjc2wsl" >
         <record name="${log.file.transformations}${time}.txt" emacsmode="true" />
@@ -275,20 +299,23 @@
         <record name="${log.file.transformations}${time}i.txt" action="stop" />
         <copy file="${log.file.transformations}${time}i.txt" tofile="${log.file.transformations}.txt"/>
     </target>
-    
+
     <target name="make-transf-ini-samples">
         <fileset dir="${samples.temp.dir}" casesensitive="no" id="generated-wsl-fileset">
                 <patternset refid="non.transformed.sources"/>
         </fileset>
-        <pathconvert pathsep="${line.separator}" 
+        <pathconvert pathsep="${line.separator}"
             property="generated-wsl-files" refid="generated-wsl-fileset" />
 
         <echo file="${transf.wsl.ini}">${generated-wsl-files}</echo>
     </target>
-    
+
+
+    <!-- **************************************** -->
     <!-- Testing tasks -->
-    
-    <target name="manual-test-run" 
+    <!-- **************************************** -->
+
+    <target name="manual-test-run"
     description="run .obj .wsl ${transf.wsl.ext}, given are ${file.dir}, ${file.name} (no extension) and an ${inputstring}">
         <record name="${file.dir}/${file.name}.out1"  emacsmode="true" />
         <antcall target="mj-run">
@@ -309,31 +336,31 @@
         </antcall>
         <record name="${file.dir}/${file.name}.out3" action="stop" />
     </target>
-    
+
     <target name="manual-test-run-samples-dir"
     description="run .obj .wsl ${transf.wsl.ext}, in the samples-temp directory; given ${file.name} (no extension) and an ${inputstring}">
         <antcall target="manual-test-run">
             <param name="file.dir" value="${samples.temp.dir}"/>
         </antcall>
     </target>
-    
+
     <target name="init-compare">
         <mkdir dir="${samples.temp.dir}/outputs"/>
     </target>
-        
+
     <target name="test-m-w">
-    
+
     <basename property="file.out" file="${inputfile}" suffix=".txt"/>
-    
-        <java classpath="${compiler.class.dir}:${compiler.class.jar}" 
-        classname="${compiler.classname.interpreter}" 
+
+        <java classpath="${compiler.class.dir}:${compiler.class.jar}"
+        classname="${compiler.classname.interpreter}"
         input="${inputfile}"
         error="${samples.temp.dir}/outputs/${file.out}.errmj"
         output="${samples.temp.dir}/outputs/${file.out}.outmj">
             <arg value="${file.dir}/${file.name}.obj" />
         </java>
-        
-        <exec executable="${fermat.dir}/bin/wsl" 
+
+        <exec executable="${fermat.dir}/bin/wsl"
         input="${inputfile}"
         error="${samples.temp.dir}/outputs/${file.out}.errwsl"
         output="${samples.temp.dir}/outputs/${file.out}.outwsl" >
@@ -343,20 +370,20 @@
             <env key="SCM_INIT_PATH" path="${fermat.dir}/scm/Init5e7.scm" />
             <arg value="${file.dir}/${file.name}.wsl"/>
         </exec>
-        
+
         <exec executable="perl" resultproperty="ook">
             <arg value="lib/compare-m-w.pl"/>
             <arg value="${file.dir}/outputs"/>
             <arg value="${file.out}"/>
         </exec>
-        
+
     </target>
-    
+
     <target name="test-w-wt">
-    
+
     <basename property="file.out" file="${inputfile}" suffix=".txt"/>
-    
-        <exec executable="${fermat.dir}/bin/wsl" 
+
+        <exec executable="${fermat.dir}/bin/wsl"
         input="${inputfile}"
         error="${samples.temp.dir}/outputs/${file.out}.errwsl"
         output="${samples.temp.dir}/outputs/${file.out}.outwsl" >
@@ -366,8 +393,8 @@
             <env key="SCM_INIT_PATH" path="${fermat.dir}/scm/Init5e7.scm" />
             <arg value="${file.dir}/${file.name}.wsl"/>
         </exec>
-        
-        <exec executable="${fermat.dir}/bin/wsl" 
+
+        <exec executable="${fermat.dir}/bin/wsl"
         input="${inputfile}"
         error="${samples.temp.dir}/outputs/${file.out}.errwslt"
         output="${samples.temp.dir}/outputs/${file.out}.outwslt" >
@@ -377,7 +404,7 @@
             <env key="SCM_INIT_PATH" path="${fermat.dir}/scm/Init5e7.scm" />
             <arg value="${file.dir}/${file.name}${transf.wsl.ext}"/>
         </exec>
-        
+
         <exec executable="perl">
             <arg value="lib/compare-w-wt.pl"/>
             <arg value="${file.dir}/outputs"/>
@@ -396,7 +423,7 @@
             </path>
         </foreach>
     </target>
-    
+
     <target name="test-fn-t">
         <basename property="file.name" file="${filename}" suffix="${transf.wsl.ext}"/>
         <dirname property="file.dir" file="${filename}"/>
@@ -408,7 +435,7 @@
             </path>
         </foreach>
     </target>
-    
+
     <target name="test-all-m" depends="init-compare,init-time"
     description="Run all the tests from the test directory to compare MJ and WSL" >
         <record name="${log.file.tests.m}${time}.txt" emacsmode="true" />
@@ -421,7 +448,7 @@
         </foreach>
         <record name="${log.file.tests.m}${time}.txt" action="stop" />
         <move file="${log.file.tests.m}.txt" tofile="${log.file.tests.m}-previous.txt" failonerror="false"/>
-        <copy file="${log.file.tests.m}${time}.txt" tofile="${log.file.tests.m}.txt"/>        
+        <copy file="${log.file.tests.m}${time}.txt" tofile="${log.file.tests.m}.txt"/>
     </target>
 
     <target name="test-all-t" depends="init-compare,init-time"
@@ -438,7 +465,7 @@
         <move file="${log.file.tests.t}.txt" tofile="${log.file.tests.t}-previous.txt" failonerror="false"/>
         <copy file="${log.file.tests.t}${time}.txt" tofile="${log.file.tests.t}.txt"/>
     </target>
-    
+
     <target name="q-test">
     <!-- for quick tests -->
         <antcall target="test-fn">
@@ -447,7 +474,10 @@
         </antcall>
     </target>
 
+
+    <!-- **************************************** -->
     <!-- metrics -->
+    <!-- **************************************** -->
 
     <target name="metrics-compare-wsl">
         <basename property="metrics.temp.name" file="${metrics.run.filename}" suffix="${transf.wsl.ext}"/>
@@ -458,9 +488,6 @@
 
         </antcall>
 
-        <!--
-        <echo>-o ${metrics.temp.name}.met -c ${metrics.temp.name}.wsl ${metrics.temp.name}${transf.wsl.ext}</echo>
-        -->
     </target>
 
     <target name="metrics-samples-compare-wsl" depends="init"
@@ -485,7 +512,10 @@
         </concat>
     </target>
 
+
+    <!-- **************************************** -->
     <!-- output serveral versions of files -->
+    <!-- **************************************** -->
 
     <target name="output-all-versions"
         description="generate variations on the translations in the 'local' folder and tar them">
@@ -525,7 +555,9 @@
     </target>
 
 
+    <!-- **************************************** -->
     <!-- output a comparison Latex file and compile it -->
+    <!-- **************************************** -->
 
     <target name="output-comparison-pdf-single">
         <basename property="file.name" file="${filename}" suffix=".mj"/>
@@ -542,11 +574,11 @@
         \end{paracol}
         </echo>
     </target>
-    
+
     <target name="output-comparison-pdf"
         description="Makes a parallel display in Latex and produces a pdf (tex dir in temp dir)" >
 
-        <copy file="lib/tex/comparison-start.tex" overwrite="true" 
+        <copy file="lib/tex/comparison-start.tex" overwrite="true"
             tofile="${samples.temp.dir}/tex/comparison.tex"/>
         <foreach param="filename" target="output-comparison-pdf-single" inheritall="true">
             <path>
@@ -560,7 +592,7 @@
         </concat>
         <antcall target="output-comparison-compile"/>
     </target>
-    
+
     <target name="output-comparison-compile">
         <exec command="pdflatex comparison.tex"
               dir="${samples.temp.dir}/tex"/>
