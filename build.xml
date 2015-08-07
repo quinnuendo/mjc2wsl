@@ -57,6 +57,10 @@
         <exclude name="**/*${transf.wsl.ext}"/>
     </patternset>
 
+    <patternset id="transformed.sources">
+        <include name="**/*${transf.wsl.ext}"/>
+    </patternset>
+
     <!-- general tasks -->
 
     <target name="init" depends="init-time">
