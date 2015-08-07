@@ -126,6 +126,23 @@ test-run-samples-dir - same as above, presumes that
 "file.dir" is "samples.temp.dir".
 
 
+Metrics tasks
+-------------
+
+these tasks generate comparison outputs for transformed
+versions of WSL programs in a CSV file using the custom
+metrics script given in the `src-wsl` directory.
+
+
+Visual comparison tasks
+-----------------------
+
+currently there is a task that can generate LaTeX sources
+and compile them into a pdf showing in parralel how
+the program looks in MicroJava, bytecode, translated WSL
+and transformed WSL.
+
+
 Logging
 ------------------------------------------------------------
 
@@ -140,3 +157,5 @@ wsl-transf-samples is logged in
 "transformations-TIMESTAMP.txt". The last run is always
 copied to "transformations.txt" (property
 "log.file.transformations")
+
+similarly the testing tasks are logged.
