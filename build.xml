@@ -37,6 +37,9 @@
     <property name="transf.wsl.ini" value="transf.ini" />
     <property name="transf.wsl.ext" value="_t.wsl" />
     
+    <property name="metrics.wsl.file" value="src-wsl/metrics.wsl" />
+    <property name="metrics.extension" value=".met" />
+
     <property name="tests.dir" value="tests" />
 
     <property name="log.dir" value="logs" />
@@ -443,7 +446,45 @@
             <param name="file.dir" value="${samples.temp.dir}"/>
         </antcall>
     </target>
-    
+
+    <!-- metrics -->
+
+    <target name="metrics-compare-wsl">
+        <basename property="metrics.temp.name" file="${metrics.run.filename}" suffix="${transf.wsl.ext}"/>
+        <dirname property="metrics.temp.dir" file="${metrics.run.filename}"/>
+        <antcall target="wsl-run">
+            <param name="filename" value="${metrics.wsl.file}" />
+            <param name="args" value="-o ${metrics.temp.dir}/${metrics.temp.name}${metrics.extension} -c ${metrics.temp.dir}/${metrics.temp.name}.wsl ${metrics.temp.dir}/${metrics.temp.name}${transf.wsl.ext}" />
+
+        </antcall>
+
+        <!--
+        <echo>-o ${metrics.temp.name}.met -c ${metrics.temp.name}.wsl ${metrics.temp.name}${transf.wsl.ext}</echo>
+        -->
+    </target>
+
+    <target name="metrics-samples-compare-wsl" depends="init"
+    description="metrics on transformed wsl files (csv file)" >
+
+        <antcall target="wsl-run">
+            <param name="filename" value="${metrics.wsl.file}" />
+            <param name="args" value="-o ${samples.temp.dir}/0000-header${metrics.extension} -HC" />
+
+        </antcall>
+
+        <foreach param="metrics.run.filename" target="metrics-compare-wsl" parallel="true" maxthreads="${global.max.threads}">
+            <path>
+            <fileset dir='${samples.temp.dir}'>
+                <patternset refid="transformed.sources"/>
+            </fileset>
+            </path>
+        </foreach>
+
+        <concat destfile="${samples.temp.dir}/metrics-wsl-compare.csv">
+          <fileset dir="${samples.temp.dir}" includes="*${metrics.extension}"/>
+        </concat>
+    </target>
+
     <!-- output serveral versions of files -->
 
     <target name="output-all-versions"
