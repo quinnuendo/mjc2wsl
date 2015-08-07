@@ -1,0 +1,198 @@
+C:"This program generates metrics for WSL programs,
+including options for comparing two programs (mainly ment to
+compare different versions) and output differences as direct
+numbers and percentages in a CSV type of format.
+
+One of the goals was to enable this to be used both in the
+command line for quick checks but also to be used for
+automation and creation of CSV files for collections of
+programs.";
+
+C:"Doni Pracner (c) 2015";
+
+C:"Released under the terms of the GPL v3 or later";
+
+C:"usage {option} {filename}";
+
+C:"Options";
+C:" -h or --help - help screen";
+C:" -H or --header - print header for metrics";
+C:" -c 'file1' 'file2' - compare two files and print the metrics";
+C:" -HC print header for comparison";
+C:" -o 'file' - set output for the print";
+C:" -s 'separator' - set the separator in outputs (default comma)";
+C:" otherwise print the metrics of the given file(s)";
+
+C:"options are processed in sequence, so you can have
+for instance multiple outputs during the execution and
+run it for different programs";
+
+C:"examples;
+
+'filename' 'file2' 'file3' 
+	- just output the metrics all files on the screen,
+	each in it's own row
+
+-c 'f1' 'f2' 
+	- compare two files and output the differences on the
+	screen
+	
+-o res.tmp -HC -c 'f1' 'f1a' -c 'f2' 'f2a'
+	- output a header row and two rows comparing the given
+	files in the specified file
+";
+
+C:"
+This program is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public
+License along with this program. If not, see
+<http://www.gnu.org/licenses/>.
+==========================================================";
+
+Field_Separator := ",";
+
+MW_PROC @Get_New_Name(VAR str) == 
+	IF @Ends_With?(str, ".wsl") THEN
+		str := SUBSTR(str, 0, SLENGTH(str)-4)
+	FI;
+	str := str ++ ".met"
+END;
+
+MW_PROC @Process_File(filename VAR metricslist) ==
+		metricslist := < >;
+		IF @File_Exists?(filename) THEN
+			@New_Program(@Parse_File(filename, T_Statements));
+			
+			C:"add them in reverse to the start of the list";
+			metricslist := < @Struct_Metric(@Program) > ++ metricslist ;
+			metricslist := < @Total_Size(@Program) > ++ metricslist ;
+			metricslist := < @CFDF_Metric(@Program) > ++ metricslist ;
+			metricslist := < @Gen_Type_Count("T_Expression",@Program) > ++ metricslist ;
+			metricslist := < @Stat_Count(@Program) > ++ metricslist ;
+			metricslist := < @Essential(@Program) > ++ metricslist ;
+			metricslist := < @McCabe(@Program) > ++ metricslist			
+		ELSE
+			PRINT("ERROR: File ",filename," not found");
+		FI		
+END;
+
+MW_PROC @Write_Metrics(metrics VAR) ==
+			FOR met IN metrics DO
+				@WS(Field_Separator);
+				@WN(met)
+			OD
+END;
+
+MW_PROC @Write_Metrics_List() ==
+			@WS("McCabe Cyclo");@WS(Field_Separator);
+			@WS("McCabe Essential");@WS(Field_Separator);
+			@WS("Statements");@WS(Field_Separator);
+			@WS("Expressions");@WS(Field_Separator);
+			@WS("CFDF");@WS(Field_Separator);
+			@WS("Size");@WS(Field_Separator);
+			@WS("Structure")
+END;
+
+MW_PROC @Metrics_Main() ==
+VAR< prog := < >,  
+	filename:="", filename2 := "",
+	metrics := < >, met2 := < >,
+	opened := 0,
+	Argv := @Argv 
+>:
+C:"First one is the script name that is being executed";
+Argv := TAIL(Argv);
+
+IF Argv = < > THEN 
+		PRINT("no arguments passed; supply a filename to make metrics for ");
+ELSE
+	WHILE Argv <> < > DO
+		POP(filename,Argv);
+		IF filename = "-h" OR filename = "--help" THEN
+			PRINT("HELP - for now in the comments at the start of the script");
+			PRINT("options: --header or -H | -c | -HC | -o | -s");
+			SKIP
+		ELSE IF filename = "-H" OR filename = "--header" THEN
+			@WS("filename");@WS(Field_Separator);
+			@Write_Metrics_List();
+			@WL("");
+		ELSE IF filename = "-HC" THEN
+			C:"Header for comparison";
+			@WS("filename");@WS(Field_Separator);
+			@Write_Metrics_List();@WS(Field_Separator);
+			@Write_Metrics_List();@WS(Field_Separator);
+			@WS("DIF");@Write_Metrics_List();@WS(Field_Separator);
+			@WS("%");@Write_Metrics_List();
+			@WL("");
+		ELSE IF filename = "-o" THEN
+			C:"set output";
+			IF Argv = < > THEN
+				PRINT("argument needed after -o")
+			ELSE
+				POP(filename, Argv);
+				opened := opened + 1;
+				@Write_To(filename)
+			FI			
+		ELSE IF filename = "-s" THEN
+			C:"set separator";
+			IF Argv = < > THEN
+				PRINT("argument needed after -s")
+			ELSE
+				POP(Field_Separator, Argv);
+			FI			
+		ELSE IF filename = "-c" THEN
+			C:"compare two files and dump the comparison";
+			IF LENGTH(Argv) < 2 THEN
+				PRINT("two arguments needed after -c")
+			ELSE
+				POP(filename, Argv);
+				
+				@Process_File(filename VAR metrics);
+				@WS(filename);
+				@Write_Metrics(metrics);
+
+				POP(filename2,Argv);
+				@Process_File(filename2 VAR met2);
+				@Write_Metrics(met2);
+				
+				C:"calculate the differences";
+				FOR i := 1 TO LENGTH(metrics) STEP 1 DO
+					met2[i] := metrics[i] - met2[i];
+					IF metrics[i] <> 0 THEN
+						metrics[i] := met2[i] * 100 DIV metrics[i]
+					FI
+				OD;
+				@Write_Metrics(met2);
+				@Write_Metrics(metrics);
+				
+				@WL("");
+			FI;
+			SKIP
+		ELSE
+			@Process_File(filename VAR metrics);
+			@WS(filename);
+			@Write_Metrics(metrics);
+			@WL("");
+			SKIP
+		FI FI FI FI FI FI
+	OD;
+	C:"be nice and close all the opened writes";
+	FOR count := 1 TO opened STEP 1 DO
+		@End_Write
+	OD
+FI
+ENDVAR
+END;
+
+@Metrics_Main()
