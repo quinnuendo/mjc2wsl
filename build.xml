@@ -229,7 +229,9 @@
 
     <target name="wsl-run" >
         <property name="args" value=""/>
-        <exec executable="${fermat.dir}/bin/wsl" inputstring="${inputstring}">
+        <property name="wslrun.workdir" value=""/>
+        <exec executable="${fermat.dir}/bin/wsl" inputstring="${inputstring}"
+            dir="${wslrun.workdir}" >
             <env key="PATH" path="${fermat.dir}/bin:${env.PATH}"/>
             <env key="FermaT" path="${fermat.dir}" />
             <env key="SCHEME_LIBRARY_PATH" path="${fermat.dir}/slib/" />
