@@ -487,7 +487,7 @@
     <!-- output a comparison Latex file and compile it -->
 
     <target name="output-comparison-pdf-single">
-        <basename property="file.name" file="${filename}" suffix=".obj"/>
+        <basename property="file.name" file="${filename}" suffix=".mj"/>
         <echo append='true' file="${samples.temp.dir}/tex/comparison.tex">
         \section{${file.name}}
         \begin{paracol}{4}
@@ -510,7 +510,7 @@
         <foreach param="filename" target="output-comparison-pdf-single" inheritall="true">
             <path>
             <fileset dir='${samples.temp.dir}'>
-                <include name="*.obj"/>
+                <include name="*.mj"/>
             </fileset>
             </path>
         </foreach>
