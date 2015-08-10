@@ -25,7 +25,7 @@ Requirements
       - ant-contrib tasks are needed for some of the tasks
 
  - FermaT for running the translated examples and applying the transformations
-   (FermaT Maintanance Environment can be used)
+   (FermaT Maintenance Environment can be used)
    Downloads available at http://www.cse.dmu.ac.uk/~mward/fermat.html
 
 Check the docs folder for a more detailed tutorial on how to install
@@ -39,7 +39,7 @@ It should be noted that although everything *should* work
 on Windows or Mac or whatever else can run the dependencies,
 it is only (at this point) extensively tested under Linux.
 Feel free to ask about problems running it, suggestions for
-improving the platform independance are welcom.
+improving the platform Independence are welcome.
 
 
 Setting the FermaT dir
