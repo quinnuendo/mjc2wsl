@@ -1,0 +1,142 @@
+C:"
+Copyright (C) 2015 Doni Pracner http://perun.dmi.rs/pracner
+
+This program is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public
+License along with this program. If not, see
+<http://www.gnu.org/licenses/>.
+==========================================================";
+
+C:"This version was used for some experiments with stacks.
+
+It is left in here as an example of how some transformations
+can be applied.";
+MW_PROC @Process_Prog() ==
+	
+	had_trans := 1;
+	WHILE had_trans > 0 DO
+	
+	had_trans := 0;
+	
+	C:"start of the program";
+	@Goto(< >);
+	C:"'manual' navigating to find the procedures";
+	DO IF @Spec_Type(@Item) = T_Proc THEN 
+		IF @Trans?(TR_Stack_To_Par) THEN
+			had_trans := 1; PRINT("----- STACK TO PAR -------"); @Trans(TR_Stack_To_Par, "") FI; FI;
+     IF @Down? THEN @Down
+     ELSIF @Right? THEN @Right
+     ELSIF @Up?
+       THEN @Up; WHILE @Up? AND NOT @Right? DO @Up OD;
+	    IF @Right? THEN @Right ELSE EXIT(1) FI
+       ELSE EXIT(1) FI OD
+	;
+	
+	ATEACH Statement DO
+	      IF @Trans?(TR_Stack_To_Var) THEN
+			had_trans := 1; PRINT("----- STACK TO VAR -------"); @Trans(TR_Stack_To_Var,"")
+	      FI
+	OD
+	OD;
+	SKIP
+END;
+
+C:"Here are some pieces that are not used, but could be
+useful in some experiments later";
+MW_PROC @Not_Used() ==
+	@Goto(< >);
+	IF @Trans?(TR_Remove_Redundant_Vars) THEN
+		@Trans(TR_Remove_Redundant_Vars,"") FI;
+	SKIP
+END;
+
+C:"----------------------------------------";
+
+C:"The rest of the code is loaders and similar procedures,
+very similar to other transf programs.";
+
+MW_PROC @Process_File(filename) ==
+		IF @File_Exists?(filename) THEN
+			@New_Program(@Parse_File(filename, T_Statements));
+			PRINT("Processing: ", filename);
+			prog := @Program;
+			@Process_Prog();
+			@Get_New_Name(VAR filename);
+			@PP_Item(@Program, 80, filename);
+			PRINT("<Metrics>");
+			PRINT(filename);
+			@Prog_Stat_Comp(prog, @Program);
+			PRINT("</Metrics>")
+		ELSE
+			PRINT("ERROR: File ",filename," not found");
+		FI
+END;
+
+MW_PROC @Get_New_Name(VAR str) == 
+	IF @Ends_With?(str, ".wsl") THEN
+		str := SUBSTR(str, 0, SLENGTH(str)-4)
+	FI;
+	str := str ++ "_t.wsl"
+END;
+
+MW_PROC @Prog_Stat_Comp(Pro, After VAR)==
+  VAR < ma := 0, mb :=1 > :
+  ma := @McCabe(Pro);
+  mb := @McCabe(After);
+  PRINT ("McCabe ", ma, "  ", mb, "  ",(mb-ma));
+  ma := @Stat_Count(Pro);
+  mb := @Stat_Count(After);
+  PRINT ("Statem ", ma, "  ",mb, "  ",(mb-ma));
+  ma := @CFDF_Metric(Pro);
+  mb := @CFDF_Metric(After);
+  PRINT ("CF/DF  ", ma,"  ", mb,"  ", (mb-ma));
+  ma := @Total_Size(Pro);
+  mb := @Total_Size(After);
+  PRINT ("Size   ", ma,"  ", mb, "  ",(mb-ma));
+  ma := @Struct_Metric(Pro);
+  mb := @Struct_Metric(After);
+  PRINT ("Struct ", ma, "  ",mb, "  ",(mb-ma));
+  SKIP
+  ENDVAR
+END;
+
+VAR< prog := < >, inifilename := "transf.ini", 
+	filename:="", file := "", inifile:= "",
+	Argv := @Argv 
+>:
+C:"First one is the script name that is being executed";
+Argv := TAIL(Argv);
+
+IF Argv = < > THEN 
+		PRINT("no arguments passed; using ",inifilename);
+		IF @File_Exists?(inifilename) THEN
+			inifile := @Open_Input_File(inifilename);
+			filename := @Read_Line(inifile);
+			WHILE NOT @EOF?(filename) DO
+				PRINT("");
+				@Process_File(filename);
+				filename := @Read_Line(inifile)
+			OD;
+			@Close_Input_Port(inifile);
+		ELSE
+			PRINT("ini file (",inifilename,") not found.",
+			" it should contain a list of filenames to be converted");
+			PRINT("OR you can give command line arguments to be processed");
+		FI
+ELSE
+	FOR arg IN Argv DO
+		@Process_File(arg);
+	OD
+FI
+ENDVAR
