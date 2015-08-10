@@ -31,6 +31,16 @@ Requirements
 Check the docs folder for a more detailed tutorial on how to install
 FermaT under Linux.
 
+This project should work correctly regardless of operating
+system, that is it should work fine if you have the above
+requirements setup properly (java-ant-fermat).
+
+It should be noted that although everything *should* work
+on Windows or Mac or whatever else can run the dependencies,
+it is only (at this point) extensively tested under Linux.
+Feel free to ask about problems running it, suggestions for
+improving the platform independance are welcom.
+
 
 Setting the FermaT dir
 ----------------------
