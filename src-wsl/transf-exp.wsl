@@ -1,5 +1,5 @@
 C:"
-Copyright (C) 2012,2014 Doni Pracner http://perun.dmi.rs/pracner
+Copyright (C) 2012,2014,2015 Doni Pracner http://perun.dmi.rs/pracner
 
 This program is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public
@@ -28,77 +28,134 @@ C:"set the following so that Action Systems are not automaticaly treated as regu
 Assume_A_S_Regular := 0;
 
 MW_PROC @Process_Prog() ==
-	FOREACH Statement DO
-		IF @Trans?(TR_Push_Pop) THEN
-			@Trans(TR_Push_Pop, "");
-		FI
-	OD;
-	@Trans(TR_Constant_Propagation, "");
-	FOREACH Statement DO
-		IF @ST(@I) = T_A_S THEN 
-			C:"don't need to test for this, works for T_A_S";
-			@Trans(TR_Simplify_Action_System, "");
-			IF @Trans?(TR_Collapse_Action_System) THEN
-				@Trans(TR_Collapse_Action_System, "");
-			FI;
-		ELSIF @Trans?(TR_Remove_All_Redundant_Vars) THEN
-			@Trans(TR_Remove_All_Redundant_Vars, "");
-		ELSIF @ST(@I) = T_Skip THEN 
-			@Delete  
-		FI
-	OD;
+
+	C:"start with a few 'sure' ones, that don't need to be repeated";
+
+	@Trans(TR_Delete_All_Skips, "");
 
 	C:"remove all the comments ";
 	FOREACH Statement DO
-	IF @ST(@I) = T_Comment THEN 
-			@Delete
-	FI
-	OD;
-	FOREACH Statement DO
-	      IF @Trans?(TR_Simplify_Item) THEN
-		@Trans(TR_Simplify_Item,"")
-	      FI
+		IF @ST(@I) = T_Comment THEN
+				@Delete
+		FI
 	OD;
 
-	C:"Convert DO loops into WHILE loops";
-	FOREACH Statement DO
-		IF @Trans?(TR_Floop_To_While) THEN
-			@Trans(TR_Floop_To_While, "");
-		FI
+	old := < >;
+	anotherrun := 1;
+	C:"main loop that applies transformations while we have changes";
+	WHILE anotherrun > 0 DO
+
+		C:"remember the previous version of the program";
+		old := @Program;
+
+		FOREACH Statement DO
+			IF @Trans?(TR_Simplify_Item) THEN
+				@Trans(TR_Simplify_Item,"")
+			FI
+		OD;
+
+		C:"Convert DO loops into WHILE loops";
+		FOREACH Statement DO
+			IF @Trans?(TR_Floop_To_While) THEN
+				@Trans(TR_Floop_To_While, "");
+			FI
+		OD;
+		FOREACH Statement DO
+			IF @Trans?(TR_Flag_Removal) THEN
+				@Trans(TR_Flag_Removal, "");
+			FI
+		OD;
+		C:"Go back to the start, and remove redundant";
+		@Goto(< >);
+		IF @Trans?(TR_Delete_All_Redundant) THEN
+			@Trans(TR_Delete_All_Redundant, "");
+		FI;
+		IF @Trans?(TR_Constant_Propagation) THEN
+			@Trans(TR_Constant_Propagation, "");
+		FI;
+
+
+		FOREACH Statement DO
+			IF @ST(@I) = T_A_S THEN
+				IF @Trans?(TR_Simplify_Action_System) THEN
+					@Trans(TR_Simplify_Action_System, "")
+				FI;
+				IF @Trans?(TR_Collapse_Action_System) THEN
+					@Trans(TR_Collapse_Action_System, "");
+				FI;
+			FI
+		OD;
+
+		ATEACH Statement DO
+			  IF @Trans?(TR_Stack_To_Var) THEN
+				@Trans(TR_Stack_To_Var,"")
+			  FI
+		OD;
+
+		FOREACH Statement DO
+			IF @Trans?(TR_Push_Pop) THEN
+				@Trans(TR_Push_Pop, "");
+			FI
+		OD;
+
+		C:"test if there were actuall changes from the
+		transformations and decide to go anotherrun";
+		IF @Equal?(old,@Program) THEN
+			anotherrun := 0;
+		ELSE
+			anotherrun := 1;
+		FI;
+
 	OD;
+
+	C:"This makes sense after all of the other
+	transformations, there are probably no procedures at
+	the start of the process";
+
+	C:"start of the program";
+	@Goto(< >);
+	C:"'manual' navigating to find the procedures";
+
 	FOREACH Statement DO
-		IF @Trans?(TR_Flag_Removal) THEN
-			@Trans(TR_Flag_Removal, "");
-		FI
-	OD;
-	C:"Go back to the start, and remove redundant";
-	@GOTO(< >);
-	@Trans(TR_Delete_All_Redundant, "");
+		IF @ST(@I) = T_Where
+			THEN @Down_To(2); @Down; C:" to first defn ";
+				DO IF @ST(@I) = T_Proc THEN
+					IF @Trans?(TR_Stack_To_Par) THEN
+						@Trans(TR_Stack_To_Par, "") FI;
+					FI;
+				IF @Right? THEN @Right ELSE EXIT(1) FI OD;
+			@Up; @Up FI OD;
+
+
+	IF @Trans?(TR_Remove_All_Redundant_Vars) THEN
+		@Trans(TR_Remove_All_Redundant_Vars, "");
+	FI;
+
 	SKIP
 END;
 
 MW_PROC @Prog_Stat_Comp(Pro, After VAR)==
-  VAR < ma := 0, mb :=1 > :
-  ma := @McCabe(Pro);
-  mb := @McCabe(After);
-  PRINT ("McCabe ", ma, "  ", mb, "  ",(mb-ma));
-  ma := @Stat_Count(Pro);
-  mb := @Stat_Count(After);
-  PRINT ("Statem ", ma, "  ",mb, "  ",(mb-ma));
-  ma := @CFDF_Metric(Pro);
-  mb := @CFDF_Metric(After);
-  PRINT ("CF/DF  ", ma,"  ", mb,"  ", (mb-ma));
-  ma := @Total_Size(Pro);
-  mb := @Total_Size(After);
-  PRINT ("Size   ", ma,"  ", mb, "  ",(mb-ma));
-  ma := @Struct_Metric(Pro);
-  mb := @Struct_Metric(After);
-  PRINT ("Struct ", ma, "  ",mb, "  ",(mb-ma));
-  SKIP
-  ENDVAR
+	VAR < ma := 0, mb :=1 > :
+	ma := @McCabe(Pro);
+	mb := @McCabe(After);
+	PRINT ("McCabe ", ma, "  ", mb, "  ",(mb-ma));
+	ma := @Stat_Count(Pro);
+	mb := @Stat_Count(After);
+	PRINT ("Statem ", ma, "  ",mb, "  ",(mb-ma));
+	ma := @CFDF_Metric(Pro);
+	mb := @CFDF_Metric(After);
+	PRINT ("CF/DF  ", ma,"  ", mb,"  ", (mb-ma));
+	ma := @Total_Size(Pro);
+	mb := @Total_Size(After);
+	PRINT ("Size   ", ma,"  ", mb, "  ",(mb-ma));
+	ma := @Struct_Metric(Pro);
+	mb := @Struct_Metric(After);
+	PRINT ("Struct ", ma, "  ",mb, "  ",(mb-ma));
+	SKIP
+	ENDVAR
 END;
 
-MW_PROC @Get_New_Name(VAR str) == 
+MW_PROC @Get_New_Name(VAR str) ==
 	IF @Ends_With?(str, ".wsl") THEN
 		str := SUBSTR(str, 0, SLENGTH(str)-4)
 	FI;
@@ -122,15 +179,15 @@ MW_PROC @Process_File(filename) ==
 		FI
 END;
 
-BEGIN
-VAR< prog := < >, inifilename := "transf.ini", 
+C:"Main program - processes the arguments";
+VAR< prog := < >, inifilename := "transf.ini",
 	filename:="", file := "", inifile:= "",
-	Argv := @Argv 
+	Argv := @Argv
 >:
 C:"First one is the script name that is being executed";
 Argv := TAIL(Argv);
 
-IF Argv = < > THEN 
+IF Argv = < > THEN
 		PRINT("no arguments passed; using ",inifilename);
 		IF @File_Exists?(inifilename) THEN
 			inifile := @Open_Input_File(inifilename);
@@ -152,22 +209,3 @@ ELSE
 	OD
 FI
 ENDVAR
-WHERE
-
-PROC Prog_Stat(Pro VAR)==
-  PRINT ("Mc ", @McCabe(Pro));
-  PRINT ("Statements ", @Stat_Count(Pro));
-  PRINT ("Control/data Flow ", @CFDF_Metric(Pro));
-  PRINT ("Size(nodes) ", @Total_Size(Pro));
-  PRINT ("Struct ", @Struct_Metric(Pro));
-  SKIP
-END
-
-PROC Get_Before_Name(VAR str) == 
-	IF @Ends_With?(str, ".wsl") THEN
-		str := SUBSTR(str, 0, SLENGTH(str)-4)
-	FI;
-	str := str ++ "_b.wsl"
-END
-
-END
