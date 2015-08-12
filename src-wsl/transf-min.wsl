@@ -73,7 +73,7 @@ MW_PROC @Process_Prog() ==
 		FI
 	OD;
 	C:"Go back to the start, and remove redundant";
-	@GOTO(< >);
+	@Goto(< >);
 	@Trans(TR_Delete_All_Redundant, "");
 	SKIP
 END;
