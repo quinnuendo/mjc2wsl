@@ -123,11 +123,11 @@ ELSE
 			PRINT("HELP - for now in the comments at the start of the script");
 			PRINT("options: --header or -H | -c | -HC | -o | -s");
 			SKIP
-		ELSE IF filename = "-H" OR filename = "--header" THEN
+		ELSIF filename = "-H" OR filename = "--header" THEN
 			@WS("filename");@WS(Field_Separator);
 			@Write_Metrics_List();
 			@WL("");
-		ELSE IF filename = "-HC" THEN
+		ELSIF filename = "-HC" THEN
 			C:"Header for comparison";
 			@WS("filename");@WS(Field_Separator);
 			@Write_Metrics_List();@WS(Field_Separator);
@@ -135,7 +135,7 @@ ELSE
 			@WS("DIF");@Write_Metrics_List();@WS(Field_Separator);
 			@WS("%");@Write_Metrics_List();
 			@WL("");
-		ELSE IF filename = "-o" THEN
+		ELSIF filename = "-o" THEN
 			C:"set output";
 			IF Argv = < > THEN
 				PRINT("argument needed after -o")
@@ -144,14 +144,14 @@ ELSE
 				opened := opened + 1;
 				@Write_To(filename)
 			FI			
-		ELSE IF filename = "-s" THEN
+		ELSIF filename = "-s" THEN
 			C:"set separator";
 			IF Argv = < > THEN
 				PRINT("argument needed after -s")
 			ELSE
 				POP(Field_Separator, Argv);
 			FI			
-		ELSE IF filename = "-c" THEN
+		ELSIF filename = "-c" THEN
 			C:"compare two files and dump the comparison";
 			IF LENGTH(Argv) < 2 THEN
 				PRINT("two arguments needed after -c")
@@ -185,7 +185,7 @@ ELSE
 			@Write_Metrics(metrics);
 			@WL("");
 			SKIP
-		FI FI FI FI FI FI
+		FI
 	OD;
 	C:"be nice and close all the opened writes";
 	FOR count := 1 TO opened STEP 1 DO
