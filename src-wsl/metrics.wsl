@@ -1,3 +1,22 @@
+C:"Doni Pracner (c) 2015";
+C:"
+This program is free software; you can redistribute it
+and/or modify it under the terms of the GNU General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public
+License along with this program. If not, see
+<http://www.gnu.org/licenses/>.
+==========================================================";
+
 C:"This program generates metrics for WSL programs,
 including options for comparing two programs (mainly ment to
 compare different versions) and output differences as direct
@@ -7,10 +26,6 @@ One of the goals was to enable this to be used both in the
 command line for quick checks but also to be used for
 automation and creation of CSV files for collections of
 programs.";
-
-C:"Doni Pracner (c) 2015";
-
-C:"Released under the terms of the GPL v3 or later";
 
 C:"usage {option} {filename}";
 
@@ -41,24 +56,6 @@ C:"examples;
 	- output a header row and two rows comparing the given
 	files in the specified file
 ";
-
-C:"
-This program is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public
-License as published by the Free Software Foundation; either
-version 3 of the License, or (at your option) any later
-version.
-
-This program is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied
-warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE. See the GNU General Public License for more
-details.
-
-You should have received a copy of the GNU General Public
-License along with this program. If not, see
-<http://www.gnu.org/licenses/>.
-==========================================================";
 
 Field_Separator := ",";
 
