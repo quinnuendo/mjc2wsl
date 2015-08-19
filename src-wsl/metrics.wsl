@@ -128,9 +128,12 @@ ELSE
 			C:"Header for comparison";
 			@WS("filename");@WS(Field_Separator);
 			@Write_Metrics_List();@WS(Field_Separator);
+			@WS("P2 ");
 			@Write_Metrics_List();@WS(Field_Separator);
-			@WS("DIF");@Write_Metrics_List();@WS(Field_Separator);
-			@WS("%");@Write_Metrics_List();
+			@WS("DIF ");
+			@Write_Metrics_List();@WS(Field_Separator);
+			@WS("% ");
+			@Write_Metrics_List();
 			@WL("");
 		ELSIF filename = "-o" THEN
 			C:"set output";
