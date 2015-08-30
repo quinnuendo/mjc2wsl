@@ -806,7 +806,7 @@ public class mjc2wsl{
 			printHelp();
 		} else {
 			int i = 0;
-			while (i < args.length && args[i].charAt(0) == '-') {
+			while (i < args.length && args[i].length() > 0 && args[i].charAt(0) == '-') {
 				if (args[i].compareTo("-h") == 0) {
 					printHelp();
 					return;
@@ -870,7 +870,7 @@ public class mjc2wsl{
 			}
 
 			Path p = FileSystems.getDefault().getPath(args[i]);
-			if (!Files.exists(p)){
+			if (!Files.isRegularFile(p)){
 				System.err.println("input file does not exist");
 				System.exit(1);
 			}
