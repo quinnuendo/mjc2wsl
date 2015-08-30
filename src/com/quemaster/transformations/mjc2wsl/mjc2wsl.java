@@ -40,7 +40,7 @@ import com.quemaster.transformations.TransMessages;
  */
 public class mjc2wsl{
 	//default version name, used if the file is not found
-	private static String versionN = "0.2.x";
+	private static String versionN = "v0.2.x";
 
 	private String versionFile = "/version.properties";
 	
@@ -176,7 +176,7 @@ public class mjc2wsl{
 	public String createStandardStart(int numWords){
 		StringBuilder ret = new StringBuilder(
 			"C:\" This file automatically converted from microjava bytecode\";\n"
-			+"C:\" with mjc2wsl v "+getVersion()+"\";\n");
+			+"C:\" with mjc2wsl "+getVersion()+"\";\n");
 
 		ret.append("\nBEGIN");
 		ret.append("\nVAR <\n\t");
@@ -790,7 +790,7 @@ public class mjc2wsl{
 	}
 
 	public void printVersion() {
-		System.out.println("MicroJava bytecode to WSL converter. v " + getVersion()
+		System.out.println("MicroJava bytecode to WSL converter " + getVersion()
 				+ ", by Doni Pracner");
 	}
 	
