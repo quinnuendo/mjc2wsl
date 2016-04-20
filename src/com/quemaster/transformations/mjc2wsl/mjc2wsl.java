@@ -56,6 +56,9 @@ public class mjc2wsl{
 	
 	private boolean genLocalVars = true;
 
+	// make an array for all local variables OTHERWISE make them separate
+	private boolean genLocalsAsArray = true;
+
 	/** Constant used for marking a regular comment from the original file */
 	public static final char C_REG = ' ';
 	/**
@@ -185,7 +188,10 @@ public class mjc2wsl{
 			ret.append("\n\ttempa := 0, tempb :=0, tempres := 0,");
 		} else
 			ret.append("\n\tmjvm_flag_jump := 0,");
-		ret.append("mjvm_locals := ARRAY(1,0),");
+
+		if (genLocalsAsArray)
+			ret.append("mjvm_locals := ARRAY(1,0),");
+
 		ret.append("\n\tmjvm_statics := ARRAY("+numWords+",0),");
 		ret.append("\n\tmjvm_arrays := < >,");
 		ret.append("\n\tmjvm_objects := < >,");
@@ -246,7 +252,10 @@ public class mjc2wsl{
 	
 	private String createLocal(int i) {
 		// arrays start at 1 in WSL, so we need an offset
-		return "mjvm_locals[" + (i + 1) + "]";
+		if (genLocalsAsArray)
+			return "mjvm_locals[" + (i + 1) + "]";
+		else
+			return "mjvm_locals_" + i;
 	}
 
 	private String createStatic(int i) {
@@ -354,6 +363,10 @@ public class mjc2wsl{
 		
 		prl(createStandardStart(mjInput.getNumberOfWords(this)));
 		prl("SKIP;\n ACTIONS a" + (14 + mjInput.getMainAdr(this)) + " :");
+
+		// the number of Locals for procedures; need to remember it for exits
+		int numberOfLocals = 0;
+
 		int op = mjInput.get();
 		while (op >= 0) {
 			prl(" a" + mjInput.getCounter() + " ==");
@@ -635,15 +648,29 @@ public class mjc2wsl{
 			case enter: {
 				int parameters = mjInput.get();
 
-				int locals = mjInput.get();
-				prl(createToMStack("mjvm_locals"));
-				prl("mjvm_locals := ARRAY(" + locals + ",0);");
+				numberOfLocals = mjInput.get();
+				if (genLocalsAsArray) {
+					prl(createToMStack("mjvm_locals"));
+					prl("mjvm_locals := ARRAY(" + numberOfLocals + ",0);");
+				} else {
+					// TODO maybe we should generate VAR block for these somewhere
+					for (int i = 0; i < numberOfLocals; i++) {
+						prl(createToMStack(createLocal(i)));
+					}
+				}
+
 				for (int i = parameters - 1; i >= 0; i--)
 					prl(createFromEStack(createLocal(i)));
 				break;
 			}
 			case exit: {
-				prl(createFromMStack("mjvm_locals"));
+				if (genLocalsAsArray) {
+					prl(createFromMStack("mjvm_locals"));
+				} else {
+					// there are as many locals as defined in the last enter
+					for (int i = numberOfLocals -1; i >= 0; i--)
+						prl(createFromMStack(createLocal(i)));
+				}
 				break;
 			}
 
@@ -777,6 +804,11 @@ public class mjc2wsl{
 		System.out.println(" --genLocalVars generate local VAR block for temp variables");
 		System.out.print(!genLocalVars?'*':' ');
 		System.out.println(" --genGlobalVars do NOT generate local VAR block for temp variables");
+		System.out.println();
+		System.out.print(genLocalsAsArray?'*':' ');
+		System.out.println(" --genLocalsAsArray generate local variables as an array");
+		System.out.print(!genLocalsAsArray?'*':' ');
+		System.out.println(" --genLocalsSeparate generate local variables as separate entities");
 	}
 
 	public void printHelpHelp() {
@@ -859,6 +891,10 @@ public class mjc2wsl{
 					genLocalVars = true;
 				} else if (args[i].compareToIgnoreCase("--genGlobalVars") == 0) {
 					genLocalVars = false;
+				} else if (args[i].compareToIgnoreCase("--genLocalsAsArray") == 0) {
+					genLocalsAsArray = true;
+				} else if (args[i].compareToIgnoreCase("--genLocalsSeparate") == 0) {
+					genLocalsAsArray = false;
 				} else {
 					System.err.println("unknown option: "+args[i]);
 				}
