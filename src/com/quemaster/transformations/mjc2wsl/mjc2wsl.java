@@ -1,6 +1,6 @@
 package com.quemaster.transformations.mjc2wsl;
 /*
-   Copyright (C) 2014,2015  Doni Pracner
+   Copyright (C) 2014,2015, 2016  Doni Pracner
    
     This file is part of mjc2wsl.
 
