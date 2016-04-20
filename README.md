@@ -81,13 +81,13 @@ at the same time. Efforts are made that master is always in sync.
 
 mjc2wsl has a primary git repo on svarog.pmf.uns.ac.rs:
 
-    http://svarog.pmf.uns.ac.rs/gitweb/?p=mjc2wsl.git
+ - http://svarog.pmf.uns.ac.rs/gitweb/?p=mjc2wsl.git
 
 mirrors are also available:
 
-    https://bitbucket.org/quinnuendo/mjc2wsl
+ - https://bitbucket.org/quinnuendo/mjc2wsl
 
-    https://github.com/quinnuendo/mjc2wsl
+ - https://github.com/quinnuendo/mjc2wsl
 
 
 Contact
