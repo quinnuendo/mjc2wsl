@@ -576,6 +576,12 @@
             <param name="samples.temp.dir" value="local/out/popPush-glob"/>
             <param name="mjc2wsl.options" value="--genPopPush --genGlobalVars"/>
         </antcall>
+        <antcall>
+            <target name="mj-samples"/>
+            <target name="mjc2wsl-samples"/>
+            <param name="samples.temp.dir" value="local/out/popPush-loc-separate"/>
+            <param name="mjc2wsl.options" value="--genPopPush --genInlinePrint --genLocalsSeparate --genLocalVars"/>
+        </antcall>
         <tar basedir="local/out" compression="gzip"
             destfile="local/mjc2wsl-samples.tgz"
             includes="*/*.wsl"/>
