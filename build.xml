@@ -20,10 +20,8 @@
        <not><os family="windows" /></not>
      </condition>
 
-
     <property name="java.encoding" value="utf-8" />
     <taskdef resource="net/sf/antcontrib/antlib.xml"/>
-
 
     <!-- **************************************** -->
     <!-- main variables that can be altered in the
@@ -39,6 +37,7 @@
     <property name="mjc2wsl.options" value="" />
 
     <property name="res.dir" value="res" />
+    <property name="dist.dir" value="dist" />
 
     <property name="compiler.class.jar" value="lib/mj.jar" />
     <property name="compiler.class.dir" value="lib/compiler-bin" />
@@ -65,6 +64,8 @@
     <property name="log.file.tests.m" value="${log.dir}/tests-mj" />
     <property name="log.file.tests.t" value="${log.dir}/tests-wsl" />
 
+    <property name="version.file" value="${res.dir}/version.properties" />
+
     <!-- **************************************** -->
     <!-- patterns -->
     <!-- **************************************** -->
@@ -87,6 +88,7 @@
         <mkdir dir="${compiler.class.dir}"/>
         <mkdir dir="${samples.temp.dir}"/>
         <mkdir dir="${log.dir}"/>
+        <mkdir dir="${dist.dir}"/>
         <copy todir="${samples.temp.dir}">
             <fileset dir="${samples.main.dir}">
                 <include name="*.mj"/>
@@ -114,6 +116,27 @@
         </delete>
     </target>
 
+    <target name="pack.jar" depends="build,update-version-string"
+            description="Packs the binaries in a jar and place it in ${dist.dir}">
+
+        <mkdir dir="${dist.dir}"/>
+        <jar destfile="${dist.dir}/mjc2wsl.jar"
+             includes="**">
+            <manifest>
+              <attribute name="Built-By" value="${user.name}"/>
+              <attribute name="Implementation-Vendor"
+              value="Doni Pracner"/>
+              <attribute name="Implementation-Title"
+               value="MicroJava bytecode to WSL"/>
+              <attribute name="Implementation-Version" value="${version}"/>
+              <attribute name="Main-Class" value="com.quemaster.transformations.mjc2wsl.mjc2wsl"/>
+            </manifest>
+            <fileset dir="${mjc2wsl.class.dir}"/>
+            <fileset dir="${res.dir}"/>
+        </jar>
+
+    </target>
+
     <!-- **************************************** -->
     <!-- version tasks
     based on ideas by Jesper Öqvist http://llbit.se/?p=1876 -->
@@ -130,19 +153,19 @@
             </exec>
             <antcall target="-store-version-string"/>
             <!-- ensure version is defined even if git was not available -->
-            <property file="${res.dir}/version.properties"/>
+            <property file="${version.file}"/>
     </target>
 
     <target name="-store-version-string" if="version">
             <!-- store the new  version string in the correct property file -->
             <echo message="version=${version}"/>
-            <propertyfile file="${res.dir}/version.properties">
+            <propertyfile file="${version.file}">
                     <entry key="version" value="${version}"/>
             </propertyfile>
             <exec executable="git" failifexecutionfails="false">
                     <arg value="update-index"/>
                     <arg value="--assume-unchanged"/>
-                    <arg value="${res.dir}/version.properties"/>
+                    <arg value="${version.file}"/>
             </exec>
     </target>
 
