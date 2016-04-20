@@ -206,7 +206,7 @@ public class mjc2wsl{
 		ret.append("\nWHERE\n");
 		
 		ret.append("\nFUNCT CHR(num) ==:\n");
-		ret.append("\t@List_To_String(< num >)\n");
+		ret.append("\t(@List_To_String(< num >))\n");
 		ret.append("END\n");
 
 		if (!genInlinePrint) {
