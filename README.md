@@ -70,6 +70,26 @@ A functional compiler is distributed in the lib folder for ease of testing
 and evaluating.  Check the folder for further details.
 
 
+Git status and mirrors
+----------------------
+
+The `master` branch should hold a stable version at all times.  The `work`
+branch is usually the current status of the tool, probably stable as well,
+but more experimental and untested. There is a possibility of other feature
+branches appearing here and there. These are not neccessarily on all mirrors
+at the same time. Efforts are made that master is always in sync.
+
+mjc2wsl has a primary git repo on svarog.pmf.uns.ac.rs:
+
+    http://svarog.pmf.uns.ac.rs/gitweb/?p=mjc2wsl.git
+
+mirrors are also available:
+
+    https://bitbucket.org/quinnuendo/mjc2wsl
+
+    https://github.com/quinnuendo/mjc2wsl
+
+
 Contact
 -------
 
