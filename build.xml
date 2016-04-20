@@ -64,7 +64,7 @@
     <property name="log.file.tests.m" value="${log.dir}/tests-mj" />
     <property name="log.file.tests.t" value="${log.dir}/tests-wsl" />
 
-    <property name="version.file" value="${res.dir}/version.properties" />
+    <property name="version.file" value="${res.dir}/com/quemaster/transformations/mjc2wsl/version.properties" />
 
     <!-- **************************************** -->
     <!-- patterns -->
@@ -159,6 +159,8 @@
     <target name="-store-version-string" if="version">
             <!-- store the new  version string in the correct property file -->
             <echo message="version=${version}"/>
+            <dirname file="${version.file}" property="version.file.dir"/>
+            <mkdir dir="${version.file.dir}" />
             <propertyfile file="${version.file}">
                     <entry key="version" value="${version}"/>
             </propertyfile>

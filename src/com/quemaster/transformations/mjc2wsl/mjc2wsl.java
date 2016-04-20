@@ -42,7 +42,7 @@ public class mjc2wsl{
 	//default version name, used if the file is not found
 	private static String versionN = "v0.2.x";
 
-	private String versionFile = "/version.properties";
+	private String versionFile = "version.properties";
 	
 	private TransMessages messages = new TransMessages();
 
@@ -137,8 +137,9 @@ public class mjc2wsl{
 			versionData = new Properties();
 			try {
 				versionData.load(getClass().getResourceAsStream(versionFile));
-			} catch (IOException e) {
-				e.printStackTrace();
+			} catch (IOException | NullPointerException e) {
+				// it doesn't matter
+				//e.printStackTrace();
 			}
 		}
 		String ver = versionData.getProperty("version");
