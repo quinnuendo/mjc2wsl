@@ -132,7 +132,6 @@
               <attribute name="Main-Class" value="com.quemaster.transformations.mjc2wsl.mjc2wsl"/>
             </manifest>
             <fileset dir="${mjc2wsl.class.dir}"/>
-            <fileset dir="${res.dir}"/>
         </jar>
 
     </target>
@@ -177,6 +176,9 @@
 
     <target name="build" depends="init,update-version-string" description="build the mjc2wsl tool">
         <javac srcdir="${mjc2wsl.src.dir}" destdir="${mjc2wsl.class.dir}" includeAntRuntime='no' />
+        <copy todir="${mjc2wsl.class.dir}">
+            <fileset dir="${res.dir}"/>
+        </copy>
     </target>
 
     <target name="mjc2wsl">
