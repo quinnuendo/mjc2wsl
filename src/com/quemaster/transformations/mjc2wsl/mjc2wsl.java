@@ -179,8 +179,15 @@ public class mjc2wsl{
 
 	public String createStandardStart(int numWords){
 		StringBuilder ret = new StringBuilder(
-			"C:\" This file automatically converted from microjava bytecode\";\n"
-			+"C:\" with mjc2wsl "+getVersion()+"\";\n");
+			"C:\" This file was automatically converted from microjava bytecode\n"
+			+"    using mjc2wsl "+getVersion()+"\n");
+
+		ret.append("   -options:");
+		ret.append("\n    localsAsArrays:"+genLocalsAsArray);
+		ret.append("\n    localVarBlocks:"+genLocalVars);
+		ret.append("\n    popPush:"+genPopPush);
+		ret.append("\n    inlinePrint:"+genInlinePrint);
+		ret.append("\n\";\n");
 
 		ret.append("\nBEGIN");
 		ret.append("\nVAR <\n\t");
