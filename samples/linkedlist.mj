@@ -1,0 +1,85 @@
+program linkedlist
+	class Element {
+		int info;
+		Element next;
+	}
+	Element first;
+{
+	void add(int i) 
+	Element newone;
+	{	
+		newone = new Element;
+		newone.info = i;
+		newone.next = first;
+		first = newone;	
+	}
+
+	void printlist() 
+	Element cur;
+	{
+		cur = first;
+		while (cur != null) {
+			print(cur.info);
+			cur = cur.next;
+		}
+	}
+
+	int exists(int i) Element cur; {
+		cur = first;
+		while (cur != null && cur.info != i)
+			cur = cur.next;
+		if (cur != null)
+			return 1;
+		else
+			return 0;
+	}	
+
+	int count(int i) Element cur; int c;{
+		cur = first;
+		c = 0;
+		while (cur != null) {
+			if (cur.info == i)
+				c++;
+			cur = cur.next;
+		}
+		return c;
+	}	
+
+	void main()
+	int num; int in; int c; {
+		print('l');
+		print('?');
+		read(num);
+		// demo
+		if (num<0) {
+			add(1);
+			add(2);
+			add(3);
+			add(2);
+			printlist();
+			print(exists(7));
+			print(count(2));
+		} else {
+			c = 0;
+			while (c<num) {
+				print(c);
+				print('?');
+				read(in);
+				add(in);
+				c++;
+			}
+			printlist();
+
+			print('e');
+			print('?');
+
+			read(in);
+			print(exists(in));
+
+			print('c');
+			print('?');
+			read(in);
+			print(count(in));
+		}
+	}
+}
