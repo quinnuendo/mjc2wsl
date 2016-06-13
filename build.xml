@@ -546,6 +546,10 @@
 
     <target name="output-all-versions"
         description="generate variations on the translations in the 'local' folder and tar them">
+        <delete>
+                <fileset dir="local/out/"/>
+        </delete>
+        <mkdir dir="local/out"/>
         <antcall>
             <target name="mj-samples"/>
             <target name="mjc2wsl-samples"/>
