@@ -52,6 +52,8 @@
     <property name="transf.wsl.file" value="src-wsl/transf-min.wsl" />
     <property name="transf.wsl.ini" value="transf.ini" />
     <property name="transf.wsl.ext" value="_t.wsl" />
+    <!-- args can be used to send additional arguments to a script -->
+    <property name="transf.wsl.args" value="" />
 
     <property name="metrics.wsl.file" value="src-wsl/metrics.wsl" />
     <property name="metrics.extension" value=".met" />
@@ -299,7 +301,7 @@
 
         <antcall target="wsl-run">
             <param name="filename" value="${transf.wsl.file}" />
-            <param name="args" value="${transf.filename}" />
+            <param name="args" value="${transf.wsl.args} ${transf.filename}" />
         </antcall>
     </target>
 
