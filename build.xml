@@ -58,7 +58,7 @@
 
     <property name="tests.dir" value="tests" />
 
-    <property name="log.dir" value="logs" />
+    <property name="log.dir" value="${basedir}/logs" />
     <property name="log.file.transformations" value="${log.dir}/transformations" />
     <property name="log.file.mjc2wsl" value="${log.dir}/mjc2wsl" />
     <property name="log.file.tests.m" value="${log.dir}/tests-mj" />
