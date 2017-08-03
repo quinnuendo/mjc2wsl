@@ -310,6 +310,7 @@
             <path>
             <fileset dir='${samples.temp.dir}'>
                 <patternset refid="non.transformed.sources"/>
+                <depth max="0"/>
             </fileset>
             </path>
         </foreach>
