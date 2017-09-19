@@ -91,14 +91,14 @@ MW_PROC @Write_Metrics(metrics VAR) ==
 			OD
 END;
 
-MW_PROC @Write_Metrics_List() ==
-			@WS("McCabe Cyclo");@WS(Field_Separator);
-			@WS("McCabe Essential");@WS(Field_Separator);
-			@WS("Statements");@WS(Field_Separator);
-			@WS("Expressions");@WS(Field_Separator);
-			@WS("CFDF");@WS(Field_Separator);
-			@WS("Size");@WS(Field_Separator);
-			@WS("Structure")
+MW_PROC @Write_Metrics_List(prefix VAR) ==
+			@WS(prefix);@WS("McCabe Cyclo");@WS(Field_Separator);
+			@WS(prefix);@WS("McCabe Essential");@WS(Field_Separator);
+			@WS(prefix);@WS("Statements");@WS(Field_Separator);
+			@WS(prefix);@WS("Expressions");@WS(Field_Separator);
+			@WS(prefix);@WS("CFDF");@WS(Field_Separator);
+			@WS(prefix);@WS("Size");@WS(Field_Separator);
+			@WS(prefix);@WS("Structure")
 END;
 
 MW_PROC @Metrics_Main() ==
@@ -122,18 +122,15 @@ ELSE
 			SKIP
 		ELSIF filename = "-H" OR filename = "--header" THEN
 			@WS("filename");@WS(Field_Separator);
-			@Write_Metrics_List();
+			@Write_Metrics_List("");
 			@WL("");
 		ELSIF filename = "-HC" THEN
 			C:"Header for comparison";
 			@WS("filename");@WS(Field_Separator);
-			@Write_Metrics_List();@WS(Field_Separator);
-			@WS("P2 ");
-			@Write_Metrics_List();@WS(Field_Separator);
-			@WS("DIF ");
-			@Write_Metrics_List();@WS(Field_Separator);
-			@WS("% ");
-			@Write_Metrics_List();
+			@Write_Metrics_List("P1-");@WS(Field_Separator);
+			@Write_Metrics_List("P2-");@WS(Field_Separator);
+			@Write_Metrics_List("DIFF-");@WS(Field_Separator);
+			@Write_Metrics_List("%-");
 			@WL("");
 		ELSIF filename = "-o" THEN
 			C:"set output";
