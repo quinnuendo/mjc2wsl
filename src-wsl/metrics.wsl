@@ -106,7 +106,7 @@ VAR< prog := < >,
 	filename:="", filename2 := "",
 	metrics := < >, met2 := < >,
 	opened := 0,
-	Argv := @Argv 
+	Argv := ARGV 
 >:
 C:"First one is the script name that is being executed";
 Argv := TAIL(Argv);

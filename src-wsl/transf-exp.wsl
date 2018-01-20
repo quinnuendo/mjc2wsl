@@ -182,7 +182,7 @@ END;
 C:"Main program - processes the arguments";
 VAR< prog := < >, inifilename := "transf.ini",
 	filename:="", file := "", inifile:= "",
-	Argv := @Argv
+	Argv := ARGV
 >:
 C:"First one is the script name that is being executed";
 Argv := TAIL(Argv);
