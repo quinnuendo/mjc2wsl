@@ -55,7 +55,7 @@
     <!-- args can be used to send additional arguments to a script -->
     <property name="transf.wsl.args" value="" />
 
-    <property name="metrics.wsl.file" value="src-wsl/metrics.wsl" />
+    <property name="metrics.wsl.file" value="src-wsl/metrics_csv.wsl" />
     <property name="metrics.extension" value=".met" />
 
     <property name="tests.dir" value="tests" />
