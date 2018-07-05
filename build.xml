@@ -100,7 +100,7 @@
 
     <target name="init-time">
         <tstamp>
-          <format property="time" pattern="yy-MM-dd--HH-mm-ss"/>
+          <format property="time" pattern="yy-MM-dd--HH-mm-ss-SSS"/>
         </tstamp>
     </target>
 
