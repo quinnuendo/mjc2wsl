@@ -374,6 +374,7 @@ public class Mjc2wsl{
 
 		int op = mjInput.get();
 		while (op >= 0) {
+			messages.message("Processing "+mjInput.describeOpCode(op)+ " at " + mjInput.getCounter(), TransMessages.M_DEB);
 			prl(" a" + mjInput.getCounter() + " ==");
 			if (originalInComments)
 				prl(createComment(mjInput.describeOpCode(op), C_OC));
@@ -925,6 +926,9 @@ public class Mjc2wsl{
 					System.err.println("error in opening out file:");
 					e.printStackTrace();
 				}
+				if (i + 2 < args.length) {
+					messages.message("additional parameters ignored, starting from:'"+args[i+2]+"'", TransMessages.M_ERR);
+				}
 			}
 			if (out == null) {
 				// if not set to screen, or a file, make a default filename
@@ -944,7 +948,7 @@ public class Mjc2wsl{
 			}
 			long mili = Calendar.getInstance().getTimeInMillis()
 					- now.getTimeInMillis();
-			System.out.println("conversion time:" + mili + " ms");
+			messages.message("conversion time:" + mili + " ms");
 			messages.printMessageCounters();
 			out.close();
 		}

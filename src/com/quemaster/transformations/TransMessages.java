@@ -1,6 +1,6 @@
 package com.quemaster.transformations;
 /*
-    Copyright (C) 2014  Doni Pracner
+    Copyright (C) 2014, 2018  Doni Pracner
  
     This file is part of mjc2wsl.
 
@@ -29,8 +29,9 @@ public class TransMessages {
 	private int[] messageCounters;
 	public static final int M_DEB = 0;
 	public static final int M_WAR = 1;
-	public static final int M_ERR = 2;
-	public static final int M_QUIET = 3;
+	public static final int M_NOTIFY = 2;
+	public static final int M_ERR = 5;
+	public static final int M_QUIET = 10;
 	private PrintStream outStream = System.out;
 
 	public TransMessages() {
@@ -45,6 +46,10 @@ public class TransMessages {
 			messageCounters[level]++;
 	}
 
+	public void message(String string) {
+		message(string,M_NOTIFY);
+	}
+
 	public int getLevelMessageCount(int level){
 		if (level < messageCounters.length){
 			return messageCounters[level];
@@ -53,7 +58,11 @@ public class TransMessages {
 	}
 
 	public void printMessageCounters(PrintStream out){
-			out.println("total errors:"+messageCounters[TransMessages.M_ERR]+" warnings:"+messageCounters[TransMessages.M_WAR]);
+		if (printLevel < M_QUIET)
+			out.println("total errors:" + messageCounters[TransMessages.M_ERR] 
+					+ " warnings:" + messageCounters[TransMessages.M_WAR]
+					+ " notifications:"	+ messageCounters[TransMessages.M_NOTIFY]
+							);
 	}
 
 	public void printMessageCounters(){
@@ -67,4 +76,5 @@ public class TransMessages {
 	public void setPrintLevel(int printLevel) {
 		this.printLevel = printLevel;
 	}
+
 }
