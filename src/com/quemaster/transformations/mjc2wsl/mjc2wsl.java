@@ -1,6 +1,6 @@
 package com.quemaster.transformations.mjc2wsl;
 /*
-   Copyright (C) 2014,2015, 2016  Doni Pracner
+   Copyright (C) 2014,2015, 2016, 2018  Doni Pracner
    
     This file is part of mjc2wsl.
 
@@ -152,7 +152,7 @@ public class mjc2wsl{
 			return versionN;
 	}
 	
-	MicroJavaInput mjInput = new MicroJavaInput();
+	private MicroJavaInput mjInput;
 
 	private PrintWriter out = null;
 
@@ -364,12 +364,10 @@ public class mjc2wsl{
 	}
 
 	public void convertStream(InputStream ins) throws Exception{
-		mjInput.setStream(ins);
-		//process start 
-		mjInput.processHeader(this);
-		
-		prl(createStandardStart(mjInput.getNumberOfWords(this)));
-		prl("SKIP;\n ACTIONS a" + (14 + mjInput.getMainAdr(this)) + " :");
+		mjInput = new MicroJavaInput(ins);
+
+		prl(createStandardStart(mjInput.getNumberOfWords()));
+		prl("SKIP;\n ACTIONS a" + (14 + mjInput.getMainAdr()) + " :");
 
 		// the number of Locals for procedures; need to remember it for exits
 		int numberOfLocals = 0;

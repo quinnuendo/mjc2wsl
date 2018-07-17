@@ -35,8 +35,9 @@ public class MicroJavaInput {
 	int numberOfWords;
 	private int codesize;
 
-	public MicroJavaInput() {
-
+	public MicroJavaInput(InputStream input) throws Exception {
+		mainIn = input;
+		processHeader();
 	}
 
 	public int get() {
@@ -60,19 +61,16 @@ public class MicroJavaInput {
 		return (get2() << 16) + (get2() << 16 >>> 16);
 	}
 
-	public void processHeader(mjc2wsl mjc2wsl) throws Exception {
+	public void processHeader() throws Exception {
 		byte m = (byte) get();
 		byte j = (byte) get();
 		if (m != 'M' || j != 'J')
 			throw new Exception("Wrong start of bytecode file");
 		codesize = get4();
-		setNumberOfWords(get4());
-		setMainAdr(get4());
+		this.numberOfWords = get4();
+		this.mainAdr = get4();
 	}
 
-	public void setStream(InputStream ins) {
-		mainIn = ins;
-	}
 
 	public int getCounter() {
 		return counter;
@@ -82,20 +80,12 @@ public class MicroJavaInput {
 		return codesize;
 	}
 
-	public int getMainAdr(mjc2wsl mjc2wsl) {
+	public int getMainAdr() {
 		return mainAdr;
 	}
 
-	public int getNumberOfWords(mjc2wsl mjc2wsl) {
+	public int getNumberOfWords() {
 		return numberOfWords;
-	}
-
-	void setNumberOfWords(int numberOfWords) {
-		this.numberOfWords = numberOfWords;
-	}
-
-	void setMainAdr(int mainAdr) {
-		this.mainAdr = mainAdr;
 	}
 
 	String getRelationFor(int opcode) throws Exception {
