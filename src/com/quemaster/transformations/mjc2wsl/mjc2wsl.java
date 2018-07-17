@@ -901,7 +901,8 @@ public class mjc2wsl{
 				} else if (args[i].compareToIgnoreCase("--genLocalsSeparate") == 0) {
 					genLocalsAsArray = false;
 				} else {
-					System.err.println("unknown option: "+args[i]);
+					System.err.println("unknown option, refusing to continue: "+args[i]);
+					System.exit(1);
 				}
 				i++;
 			}
