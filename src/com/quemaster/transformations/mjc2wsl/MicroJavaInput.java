@@ -90,24 +90,24 @@ public class MicroJavaInput {
 
 	String getRelationFor(int opcode) throws Exception {
 		switch (opcode) {
-		case mjc2wsl.jeq:
+		case Mjc2wsl.jeq:
 			return "=";
-		case mjc2wsl.jne:
+		case Mjc2wsl.jne:
 			return "<>";
-		case mjc2wsl.jlt:
+		case Mjc2wsl.jlt:
 			return "<";
-		case mjc2wsl.jle:
+		case Mjc2wsl.jle:
 			return "<=";
-		case mjc2wsl.jgt:
+		case Mjc2wsl.jgt:
 			return ">";
-		case mjc2wsl.jge:
+		case Mjc2wsl.jge:
 			return ">=";
 		}
 		throw new Exception("Wrong opcode for a relation");
 	}
 
 	boolean isJumpCode(int opcode) {
-		return (opcode >= mjc2wsl.jmp) && (opcode <= mjc2wsl.jge);
+		return (opcode >= Mjc2wsl.jmp) && (opcode <= Mjc2wsl.jge);
 	}
 
 	private HashMap<Integer, String> getOpMap() {

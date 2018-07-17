@@ -38,7 +38,7 @@ import com.quemaster.transformations.TransMessages;
  * 
  * @author Doni Pracner, http://perun.dmi.rs/pracner http://quemaster.com
  */
-public class mjc2wsl{
+public class Mjc2wsl{
 	//default version name, used if the file is not found
 	private static String versionN = "v0.2.x";
 
@@ -951,7 +951,7 @@ public class mjc2wsl{
 	}
 	
 	public static void main(String[] args) {
-		new mjc2wsl().run(args);
+		new Mjc2wsl().run(args);
 	}
 
 

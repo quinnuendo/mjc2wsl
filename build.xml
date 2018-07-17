@@ -35,6 +35,7 @@
     <property name="mjc2wsl.class.dir" value="bin" />
     <property name="mjc2wsl.src.dir" value="src" />
     <property name="mjc2wsl.options" value="" />
+    <property name="mjc2wsl.main" value="com.quemaster.transformations.mjc2wsl.Mjc2wsl" />
 
     <property name="res.dir" value="res" />
     <property name="dist.dir" value="dist" />
@@ -131,7 +132,7 @@
               <attribute name="Implementation-Title"
                value="MicroJava bytecode to WSL"/>
               <attribute name="Implementation-Version" value="${version}"/>
-              <attribute name="Main-Class" value="com.quemaster.transformations.mjc2wsl.mjc2wsl"/>
+              <attribute name="Main-Class" value="${mjc2wsl.main}"/>
             </manifest>
             <fileset dir="${mjc2wsl.class.dir}"/>
         </jar>
@@ -185,7 +186,7 @@
 
     <target name="mjc2wsl">
         <echo message="${filename}" />
-        <java classpath="${mjc2wsl.class.dir}:${res.dir}" classname="com.quemaster.transformations.mjc2wsl.mjc2wsl">
+        <java classpath="${mjc2wsl.class.dir}:${res.dir}" classname="${mjc2wsl.main}">
             <arg line="${mjc2wsl.options}" />
             <arg value="${filename}" />
         </java>
