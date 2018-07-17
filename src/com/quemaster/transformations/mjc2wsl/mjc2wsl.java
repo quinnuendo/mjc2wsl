@@ -681,7 +681,7 @@ public class mjc2wsl{
 
 			// read, print
 			case bread: {
-				// TODO maybe we'll need a bufer for multi chars!
+				// TODO maybe we'll need a buffer for multi chars!
 				prl(createStartVar("tempa"));
 				prl("@Read_Line_Proc(VAR tempa, Standard_Input_Port);");
 				prl("tempa := @String_To_List(tempa)[1];");
