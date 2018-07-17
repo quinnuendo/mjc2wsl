@@ -939,7 +939,7 @@ public class mjc2wsl{
 			try {
 				convertStream(Files.newInputStream(p));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				System.err.println("Failed converting the stream");
 				e.printStackTrace();
 			}
 			long mili = Calendar.getInstance().getTimeInMillis()
