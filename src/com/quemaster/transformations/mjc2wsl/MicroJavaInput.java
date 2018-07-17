@@ -1,7 +1,7 @@
 package com.quemaster.transformations.mjc2wsl;
 
 /*
- Copyright (C) 2014,2015  Doni Pracner
+ Copyright (C) 2014,2015,2018  Doni Pracner
 
  This file is part of mjc2wsl.
 
@@ -26,7 +26,7 @@ import java.util.HashMap;
 
 public class MicroJavaInput {
 	private HashMap<Integer, String> opMap;
-	public String opCodeFile = "/mj-bytecodes.properties";
+	public String opCodeFile = "mj-bytecodes.properties";
 	private InputStream mainIn;
 	int counter = -1;
 
