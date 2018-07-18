@@ -40,7 +40,7 @@ import com.quemaster.transformations.TransMessages;
  */
 public class Mjc2wsl{
 	//default version name, used if the file is not found
-	private static String versionN = "v0.2.x";
+	private static String versionN = "v1.0.x";
 
 	private String versionFile = "version.properties";
 	
