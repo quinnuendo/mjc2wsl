@@ -75,7 +75,7 @@ MW_PROC @Process_File(filename VAR metricslist) ==
 			metricslist := < @Struct_Metric(@Program) > ++ metricslist ;
 			metricslist := < @Total_Size(@Program) > ++ metricslist ;
 			metricslist := < @CFDF_Metric(@Program) > ++ metricslist ;
-			metricslist := < @Gen_Type_Count("T_Expression",@Program) > ++ metricslist ;
+			metricslist := < @Gen_Type_Count(T_Expression,@Program) > ++ metricslist ;
 			metricslist := < @Stat_Count(@Program) > ++ metricslist ;
 			metricslist := < @Essential(@Program) > ++ metricslist ;
 			metricslist := < @McCabe(@Program) > ++ metricslist			
