@@ -105,7 +105,7 @@
         </tstamp>
     </target>
 
-    <target name="all" depends='mj-samples,mjc2wsl-samples,wsl-transf-samples'
+    <target name="all" depends='mj-samples,mjc2wsl-samples,wsl-transf-samples,metrics-samples-compare-wsl'
         description="build the tools, run them on the samples to check">
 
     </target>
