@@ -47,8 +47,8 @@
     <property name="compiler.classname.interpreter" value="MJ.Run" />
     <property name="compiler.classname.decoder" value="MJ.Decode" />
 
-    <property name="samples.main.dir" value="samples" />
-    <property name="samples.temp.dir" value="temp" />
+    <property name="samples.main.dir" value="samples/alpha-mj" />
+    <property name="samples.temp.dir" value="temp/alpha-mj" />
 
     <property name="transf.wsl.file" value="src-wsl/hill_climbing.wsl" />
     <property name="transf.wsl.ini" value="transf.ini" />
