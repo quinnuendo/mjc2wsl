@@ -50,9 +50,9 @@
     <property name="samples.main.dir" value="samples" />
     <property name="samples.temp.dir" value="temp" />
 
-    <property name="transf.wsl.file" value="src-wsl/transf-min.wsl" />
+    <property name="transf.wsl.file" value="src-wsl/hill_climbing.wsl" />
     <property name="transf.wsl.ini" value="transf.ini" />
-    <property name="transf.wsl.ext" value="_t.wsl" />
+    <property name="transf.wsl.ext" value="_tr.wsl" />
     <!-- args can be used to send additional arguments to a script -->
     <property name="transf.wsl.args" value="" />
 
