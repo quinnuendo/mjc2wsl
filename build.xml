@@ -173,6 +173,28 @@
             </exec>
     </target>
 
+    <target name="git-version-string" if="version">
+            <!-- explicitly store the new  version string in git -->
+            <!-- needs the version set already, preferably from the command line -->
+            <echo message="version=${version}"/>
+            <dirname file="${version.file}" property="version.file.dir"/>
+            <mkdir dir="${version.file.dir}" />
+            <propertyfile file="${version.file}">
+                    <entry key="version" value="${version}"/>
+            </propertyfile>
+	    <!-- remove the first line with the date if you can.
+		 for whatever reason Java Properties always writes this
+	      -->
+	    <exec executable="sed" failifexecutionfails="false">
+	      <arg line="-e '1d' -i ${version.file}"/>
+	    </exec>
+            <exec executable="git" failifexecutionfails="false">
+                    <arg value="update-index"/>
+                    <arg value="--no-assume-unchanged"/>
+                    <arg value="${version.file}"/>
+            </exec>
+    </target>
+
     <!-- **************************************** -->
     <!-- mjc2wsl related tasks -->
     <!-- **************************************** -->
