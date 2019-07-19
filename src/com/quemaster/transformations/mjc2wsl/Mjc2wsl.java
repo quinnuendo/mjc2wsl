@@ -1,6 +1,6 @@
 package com.quemaster.transformations.mjc2wsl;
 /*
-   Copyright (C) 2014,2015, 2016, 2018  Doni Pracner
+   Copyright (C) 2014,2015, 2016, 2018, 2019  Doni Pracner
    
     This file is part of mjc2wsl.
 
@@ -50,7 +50,7 @@ public class Mjc2wsl{
 		genPrintForEachAddress = false,
 		genPrintEStackOnChange = false;
 		
-	private boolean genPopPush=false;
+	private boolean genPopPush = true;
 	
 	private boolean genInlinePrint = false;
 	
@@ -183,10 +183,10 @@ public class Mjc2wsl{
 			+"    using mjc2wsl "+getVersion()+"\n");
 
 		ret.append("   -options:");
-		ret.append("\n    localsAsArrays:"+genLocalsAsArray);
-		ret.append("\n    localVarBlocks:"+genLocalVars);
-		ret.append("\n    popPush:"+genPopPush);
-		ret.append("\n    inlinePrint:"+genInlinePrint);
+		ret.append("\n    popPush        (pp/ht):"+genPopPush);
+		ret.append("\n    localVarBlocks (lo/gl):"+genLocalVars);
+		ret.append("\n    localsAsArrays (ar/sp):"+genLocalsAsArray);
+		ret.append("\n    inlinePrint:           "+genInlinePrint);
 		ret.append("\n\";\n");
 
 		ret.append("\nBEGIN");
@@ -797,9 +797,9 @@ public class Mjc2wsl{
 	public void printHelpDirectives(){
 		System.out.println("Alternatives for code generation (* are the defaults):");
 		System.out.print(genPopPush?'*':' ');
-		System.out.println(" --genPopPush generate POP/PUSH instead of TAIL/HEAD");
+		System.out.println(" --genPopPush generate POP/PUSH instead of TAIL/HEAD (pp)");
 		System.out.print(!genPopPush?'*':' ');
-		System.out.println(" --genHeadTail generate TAIL/HEAD instead of POP/PUSH ");
+		System.out.println(" --genHeadTail generate TAIL/HEAD instead of POP/PUSH (ht)");
 		System.out.println();
 		System.out.print(genInlinePrint?'*':' ');
 		System.out.println(" --genInlinePrint generate prints directly instead of procedure calls");
@@ -807,14 +807,14 @@ public class Mjc2wsl{
 		System.out.println(" --genProcedurePrint generate prints as custom procedure calls");
 		System.out.println();
 		System.out.print(genLocalVars?'*':' ');
-		System.out.println(" --genLocalVars generate local VAR block for temp variables");
+		System.out.println(" --genLocalVars generate local VAR block for temp variables (lo)");
 		System.out.print(!genLocalVars?'*':' ');
-		System.out.println(" --genGlobalVars do NOT generate local VAR block for temp variables");
+		System.out.println(" --genGlobalVars do NOT generate local VAR block for temp variables (gl)");
 		System.out.println();
 		System.out.print(genLocalsAsArray?'*':' ');
-		System.out.println(" --genLocalsAsArray generate local variables as an array");
+		System.out.println(" --genLocalsAsArray generate local variables as an array (ar)");
 		System.out.print(!genLocalsAsArray?'*':' ');
-		System.out.println(" --genLocalsSeparate generate local variables as separate entities");
+		System.out.println(" --genLocalsSeparate generate local variables as separate entities (sp)");
 	}
 
 	public void printHelpHelp() {
