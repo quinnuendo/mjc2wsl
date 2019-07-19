@@ -1,0 +1,260 @@
+C:"
+==========================================================================
+Hill Climbing Automated Transformation Selection program
+Copyright (C) 2018 Martin Ward (martin@gkc.org.uk)
+                   Doni Pracner (doni.pracner@dmi.uns.ac.rs)
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+==========================================================================";
+
+MW_PROC @HC_Main() ==
+  VAR < trs := ARRAY(200, 0), i := 0, wanted := < >, whole := < >,
+        pre_trans := < >,  tr := 0,
+        prog := "simple5.wsl", base := "", result := "",
+        count := 1000, done := 0, Argv := ARGV,
+        hc_version_string := "hc-18-jan-1",
+        log_failure := 1,
+        minimal_output := 1,
+        total_transformations_tried := 0, writeout_mod := 100,
+        temp_folder := "hc-temp-versions/", use_temp_folder := 1, last := 0 >:
+
+  C:" Transformations to use: (not sure about TR_Collapse_Action_System!) ";
+
+  wanted := @Make_Set(<
+
+    TR_Absorb_Left, TR_Absorb_Right,
+    TR_Add_Assertion, TR_Add_Left,
+    TR_Add_Loop_To_Action, TR_Align_Nested_Statements,
+    TR_Collapse_Action_System, TR_Combine_Wheres, TR_Constant_Propagation,
+    TR_D_Do_To_Floop, TR_Decrement_Statement, TR_Delete_All_Assertions,
+    TR_Delete_All_Skips, TR_Delete_Item,
+    TR_Delete_Redundant_Statement, TR_Delete_Unreachable_Code,
+    TR_Delete_What_Follows, TR_Double_To_Single_Loop,
+    TR_Else_If_To_Elsif, TR_Elsif_To_Else_If,
+    TR_Expand_And_Separate, TR_Expand_Call,
+    TR_Expand_Forward, TR_Floop_To_While,
+    TR_For_In_To_Reduce, TR_For_To_While, TR_Force_Double_To_Single_Loop,
+    TR_Fully_Absorb_Right, TR_Fully_Expand_Forward, TR_Increment_Statement,
+    TR_Insert_Assertion, TR_Join_All_Cases, TR_Join_Cases_Left,
+    TR_Join_Cases_Right, TR_Make_Loop, TR_Make_Reducible,
+    TR_Merge_Calls_In_Action, TR_Merge_Calls_In_System, TR_Merge_Cond_Right,
+    TR_Merge_Left, TR_Merge_Right, TR_Move_Comment_Left,
+    TR_Move_Comment_Right, TR_Move_Comments, TR_Move_To_Left,
+    TR_Move_To_Right, TR_Partially_Join_Cases, TR_Push_Pop,
+    TR_Recursion_To_Loop, TR_Reduce_Loop, TR_Reduce_Multiple_Loops,
+    TR_Remove_Dummy_Loop, TR_Remove_Redundant_Vars, TR_Reverse_Order,
+    TR_Roll_Loop, TR_Separate_Both, TR_Separate_Exit_Code, TR_Separate_Left,
+    TR_Separate_Right, TR_Simplify, TR_Simplify_Action_System,
+    TR_Simplify_If, TR_Simplify_Item, TR_Substitute_And_Delete,
+    TR_Take_Out_Left, TR_Take_Out_Of_Loop, TR_Take_Out_Right,
+    TR_Unroll_Loop, TR_Use_Assertion,
+    TR_Stack_To_Var, TR_Stack_To_Par,
+    TR_Proc_To_Funct, TR_Stack_To_Return, TR_Array_To_Vars,
+    TR_While_To_Abort, TR_While_To_Floop, TR_While_To_For_In, TR_While_To_Reduce
+
+  >);
+
+  C:" Transformations which only make sense when applied to the whole program: ";
+
+  whole := @Make_Set(< TR_Constant_Propagation, TR_Simplify, TR_Delete_All_Redundant >);
+
+  C:" Transformations which are potentially useful preparation for ";
+  C:" another transformation: ";
+
+  trans1 := @Make_Set(<
+    TR_Absorb_Left, TR_Absorb_Right, TR_Constant_Propagation,
+    TR_Make_Loop, TR_Move_To_Left, TR_Remove_Redundant_Vars,
+    TR_Separate_Both, TR_Separate_Right, TR_Substitute_And_Delete,
+    TR_While_To_Floop
+  >);
+
+  trans2 := @Make_Set(<
+    TR_Absorb_Left, TR_Absorb_Right, TR_Constant_Propagation,
+    TR_Delete_Redundant_Statement,
+    TR_Remove_Redundant_Vars, TR_Substitute_And_Delete
+  >);
+
+  IF minimal_output = 0 THEN PRINT("Found ", LENGTH(wanted), " transformations.") FI;
+
+  Argv := TAIL(Argv);
+  IF Argv = < > THEN Argv := <prog> FI;
+
+  FOR prog IN Argv DO
+
+    base := prog;
+    IF SLENGTH(base) > 4 AND SUBSTR(base, SLENGTH(base) - 4, 4) = ".wsl"
+      THEN base := SUBSTR(base, 0, SLENGTH(base) - 4) FI;
+    result := base ++ "_tr.wsl";
+    @Write_To(base ++ ".log");
+
+    IF use_temp_folder = 1 THEN
+       C:"other versions should go to the temp folder";
+
+       C:"check for folders in path, set temp folder";
+       last := @Last_Index(base,"/");
+       IF last > 0 THEN
+		temp_folder := SUBSTR(base,0,last+1) ++ temp_folder;
+		base := temp_folder ++ SUBSTR(base,last+1);
+	ELSE
+		base := temp_folder ++ base; FI;
+	@Create_Folder(temp_folder) FI;
+
+    @WL("Hill Climbing");
+    @WL("version:" ++ hc_version_string);
+    @WL("Input file: " ++ prog);
+    @WL("Output file: " ++ result);
+
+    @New_Program(@Parse_File(prog, T_Statements));
+
+
+    @WL("Found " ++ @String(LENGTH(wanted)) ++ " transformations.");
+    @WL("");
+
+    done := 0;
+    WHILE done >= 0 DO
+      WHILE done >= 0 DO
+        PRINT("----------------- Level 1 ---------------");
+        @WL  ("----------------- Level 1 ---------------");
+        WHILE done >= 0 DO
+          @HC_Test_All(1, whole, @Program, < > VAR done, count) OD;
+        done := 0;
+        PRINT("----------------- Level 2 ---------------");
+        @WL  ("----------------- Level 2 ---------------");
+        @HC_Test_All(2, whole, @Program, < > VAR done, count) OD;
+      done := 0;
+      VAR < trans1 := wanted, trans2 := wanted >:
+      PRINT("----------------- Level 3 ---------------");
+      @WL  ("----------------- Level 3 ---------------");
+      @HC_Test_All(2, whole, @Program, < > VAR done, count) ENDVAR OD;
+
+    @Checkpoint(result);
+    @WL("transformations tried:" ++ @String(total_transformations_tried));
+    PRINT("total transformations tried:", total_transformations_tried);
+    @WL("");
+    @End_Write();
+
+    SKIP OD ENDVAR .;
+
+
+C:" Return TRUE if I1 is better than I2 according to the defined metrics ";
+
+MW_BFUNCT @HC_Better?(I1, I2) == :
+  SKIP;
+  (@Struct_Metric(I1) < @Struct_Metric(I2)) .;
+
+
+MW_PROC @HC_Checkpoint(tr, prev VAR count) ==
+  C:" Keep this version ";
+  count := count + 1;
+  @Checkpoint(base ++ "-" ++ @String(count) ++ ".wsl");
+  IF minimal_output =0
+    THEN PRINT(TRs_Name[tr], " at ", posn) FI;
+  @WS(@String(count) ++ ": Success:");
+  VAR < L :=  REVERSE(<<tr, posn>> ++ prev) >:
+  WHILE NOT EMPTY?(L) DO
+    pair := HEAD(L); L := TAIL(L);
+    @WS(TRs_Name[pair[1]] ++ ": at <");
+    @WL(@Join(",", MAP("@String", pair[2])) ++ ">");
+    IF NOT EMPTY?(L) THEN @WS("   +: Success:") FI OD ENDVAR;
+  IF minimal_output = 0 THEN
+	  @HC_Metrics("old:  ", old);
+	  @HC_Metrics("orig: ", orig);
+	  @HC_Metrics("new:  ", @Program) FI .;
+
+
+MW_PROC @HC_Metrics(str, I) ==
+  PRINFLUSH(str);
+  FOR n IN < @Struct_Metric(I),
+             @Spec_Type_Count(T_Action, I), @Spec_Type_Count(T_Call, I),
+             @Spec_Type_Count(T_A_Proc_Call, I), @McCabe(I),
+	     @Stat_Count(I), @Gen_Type_Count(T_Expression, I) > DO
+    PRINFLUSH(n, " ") OD;
+  PRINT("") .;
+
+
+MW_PROC @HC_Test_All(depth, whole, orig, prev VAR done, count) ==
+  VAR < tr := 0, trs := < >, old := @Program, posn := < > >:
+  @Goto(< >);
+  IF depth = 1 AND EMPTY?(prev)
+    THEN trs := wanted
+  ELSIF depth = 2 AND EMPTY?(prev)
+    THEN trs := trans1
+  ELSIF depth = 1 AND NOT EMPTY?(prev)
+    THEN trs := trans2
+    ELSE PRINT("depth = ", depth, " prev = ", LENGTH(prev));
+         ERROR("-- not yet implemented") FI;
+  IF EMPTY?(trs) THEN ERROR("Empty transformation list!") FI;
+  tr := HEAD(trs);
+  DO IF FALSE
+       THEN PRINT(depth, " testing ", TRs_Name[tr], " at ", @Posn) FI;
+     IF tr IN whole AND @Up?
+       THEN SKIP
+     ELSIF @GT(@I) IN <T_Expression, T_Condition, T_Lvalue,
+                       T_Expressions, T_Lvalues>
+       THEN SKIP
+     ELSIF @Trans?(tr)
+       THEN posn := @Posn;
+            @Trans(tr, "");
+            total_transformations_tried := total_transformations_tried + 1;
+            IF total_transformations_tried MOD writeout_mod = 0 
+              THEN PRINT("*** transformations tried:", total_transformations_tried) FI;
+            IF @ST(@I) = T_Assignment AND @Size(@I) > 1
+              THEN C:" don't generate parallel assignments "
+            ELSIF @HC_Better?(@Program, orig)
+              THEN done := tr;
+	           @HC_Checkpoint(tr, prev VAR count);
+                   EXIT(1)
+            ELSIF depth > 1 AND NOT @Equal?(@Program, orig)
+              THEN IF minimal_output = 0 THEN PRINT("== Sub-test after ", TRs_Name[tr], " at ", posn) FI;
+                   @HC_Test_All(depth - 1, whole, orig, <<tr, posn>> ++ prev
+		                VAR done, count);
+                   IF done > 0
+                     THEN EXIT(1) FI FI;
+            IF log_failure = 1 
+              THEN @WL("- Depth:" ++ @String(depth) ++ " Tried:" ++ TRs_Name[tr]) FI;
+            C:" Revert program ";
+            @New_Program(old);
+            @Goto(posn) FI;
+     C:" Move to new position. ";
+     C:" Do not descend into these types: ";
+     IF @Down? AND @GT(@I) NOTIN <T_Expression, T_Condition, T_Lvalue,
+                                  T_Expressions, T_Lvalues>
+       THEN @Down
+     ELSIF @Right?
+       THEN @Right
+       ELSE WHILE @Up? AND NOT @Right? DO @Up OD;
+            IF @Right?
+              THEN @Right
+              ELSE C:" Next transformation ";
+	           trs := TAIL(trs);
+	           IF EMPTY?(trs) THEN done := -1; EXIT(1) FI;
+		   tr := HEAD(trs);
+                   @Goto(< >) FI FI OD ENDVAR .;
+
+MW_FUNCT @Last_Index(string, sep) ==
+VAR< last := SLENGTH(string) - 1 >:
+
+	WHILE last > 0 AND SUBSTR(string,last,1) <> sep DO
+		last := last - 1; OD;
+
+(last) END;
+
+C:" Call the main routine after all other routines have been defined: ";
+
+@HC_Main;
+
+
+SKIP
+
+
