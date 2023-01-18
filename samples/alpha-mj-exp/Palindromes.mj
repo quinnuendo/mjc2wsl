@@ -1,0 +1,171 @@
+program Palindromes {
+    // return a palindrome if it can be generated from given letters
+
+    char[] load() 
+		char[] res;
+        char in;
+		int c, num; {
+		print('l');
+		print('?');
+		read(num);
+		res = new char[num];
+                c = 0;
+                while (c<num) {
+                        print(c);
+                        print('?');
+                        read(in);
+                        if (ord(in) == 10) {
+                            read(in);
+                        }
+                        res[c] = in;
+                        c++;
+                }
+		return res;
+	}
+
+    char[] reverse(char[] arr) 
+    int i;
+    char[] res;
+    {
+        res = new char[len(arr)];
+        i = 0;
+        while (i < len(arr)) {
+            res[i] = arr[len(arr) - i - 1];
+            i++;
+        }
+        return res;
+    }
+
+    void printArr(char[] arr) 
+    int i;
+    {
+        print('[');
+        if (arr != null) {
+            i = 0;
+            while (i < len(arr)) {
+                print(arr[i], 3);
+                i++;
+            }
+        }    
+        print(']', 3);
+        print('\n');    
+    }   
+
+    char[] concatA(char[] arr1, char[] arr2) 
+    char[] res;
+    int i;
+    {
+        res = new char[len(arr1) + len(arr2)];
+        i = 0;
+        while (i < len(arr1)) {
+            res[i] = arr1[i];
+            i++;
+        }
+        while (i < len(res)) {
+            res[i] = arr2[i - len(arr1)];
+            i++;
+        }
+        
+        return res;
+    }
+
+    char[] copy(char[] arr, int counter) 
+    int i;
+    char[] res;
+    {
+        res = new char[counter];
+        i = 0;
+        while (i < len(res)) {
+            res[i] = arr[i];
+            i++;
+        }
+
+        return res;
+    }
+
+    char[] concatC(char[] arr, char character) 
+    char[] res;
+    int i;
+    {
+        res = new char[len(arr) + 1];
+        i = 0;
+        while (i < len(arr)) {
+            res[i] = arr[i];
+            i++;
+        }
+        res[i] = character;
+
+        return res;
+    }
+
+    char[] findPalindrome(char[] s) 
+    int[] letters;
+    int i, j, counter, ret;
+    char ch, oddChar;
+    char[] palindrome, palindromeRes;
+    {
+        letters = new int[26];
+        
+        i = 0;
+        while (i < len(letters)) {
+            letters[i] = 0;
+            i++;
+        }
+        
+        i = 0;
+        while (i < len(s)) {
+            if (ord(s[i]) >= 97 && ord(s[i]) <= 122) {
+                letters[ord(s[i]) - 97]++;
+            }
+            i++;
+        }
+        
+        oddChar = ' ';
+        palindrome = new char[len(s)];
+        counter = 0;
+        
+        i = 0;
+        ret = 1;
+        while (i < len(letters) && ret != 0) {
+            if (letters[i] > 0 && letters[i] % 2 == 0) {
+                j = 1;
+                while (j <= letters[i] / 2) {
+                    palindrome[counter] = chr(i + 97);
+                    counter++;
+                    j++;
+                }
+            } else if (letters[i] > 0 && oddChar == ' ') {
+                oddChar = chr(i + 97);
+                j = 1;
+                while (j <= letters[i] / 2) {
+                    palindrome[counter] = chr(i + 97);
+                    counter++;
+                    j++;
+                }
+            } else if (letters[i] % 2 != 0 && oddChar != ' ') {
+                ret = 0;
+            }
+
+            i++;
+        }
+
+        palindromeRes = copy(palindrome, counter);
+        
+        if (ret == 0) {
+            return null;
+        } else if (oddChar != ' ') {
+            return concatA(concatC(palindromeRes, oddChar), reverse(palindromeRes));
+        } else {
+            return concatA(palindromeRes, reverse(palindromeRes));
+        }
+    }
+    
+    void main() 
+    char[] input;
+    int response;
+    {
+        input = load();
+        printArr(input);
+        printArr(findPalindrome(input));
+    }
+}

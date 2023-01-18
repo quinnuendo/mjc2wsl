@@ -1,0 +1,44 @@
+program Parentheses 
+{
+    // generate all possibilities of n pairs of parentheses
+    // so that they are valid (open - closed)
+    
+    void parentheses(char[] solution, int pos, int left, int right, int num) 
+    int i;
+    {
+        if (right == num) {
+            i = 0;
+            while (i < len(solution)) {
+                print(solution[i]);
+                print(' ');
+                i++;
+            }
+            print('\n');
+        } 
+        if (left < num) {
+            solution[pos] = '(';
+            parentheses(solution, pos+1, left+1, right, num);
+        }
+        if (left > right) {
+            solution[pos] = ')';
+            parentheses(solution, pos+1, left, right+1, num);
+        }
+    }
+
+    void pars(char[] sln, int num) {
+        if (num > 0) {
+            parentheses(sln, 0, 0, 0, num);
+        }
+    }
+
+    void main() 
+    int i, dimension;
+    char[] solution;
+    {
+        print('d');
+        print('?');
+        read(dimension);
+        solution = new char[2*dimension];
+        pars(solution, dimension);
+    }
+}

@@ -1,0 +1,64 @@
+program SortColors {
+    // array with n objects colored red, white or blue
+    // sort so that the same colored objects are adjacent
+    // red, white, blue = 0, 1, 2 (values in array)
+
+    void sortColors(int[] nums) 
+    int p0, p1, p2, temp;
+    {
+        p0 = 0;
+        p1 = 0;
+        p2 = len(nums) - 1;
+
+        while (p1 <= p2) {
+            if (nums[p1] == 0) {
+                temp = nums[p0];
+                nums[p0] = nums[p1];
+                nums[p1] = temp;
+                p0 = p0 + 1;
+                p1 = p1 + 1;
+            } else if (nums[p1] == 1) {
+                p1 = p1 + 1;
+            } else {
+                temp = nums[p1];
+                nums[p1] = nums[p2];
+                nums[p2] = temp;
+                p2 = p2 - 1;
+            }
+        }
+    }
+
+    void printArr(int[] nums) 
+    int i;
+    {
+        i = 0;
+        print('\n');
+        print('[');
+        while (i < len(nums)) {
+            print(nums[i], 2);
+            i++;
+        }
+        print(']', 2);
+    }
+
+    void main()
+    int n, i;
+    int[] nums;
+    {
+        print('n');
+        print('?');
+        read(n);
+        nums = new int[n];
+        i = 0;
+        while (i < n) {
+            print('n');
+            print(i);
+            print('?');
+            print(' ');
+            read(nums[i]);
+            i++;
+        }
+        sortColors(nums);
+        printArr(nums);
+    }
+}

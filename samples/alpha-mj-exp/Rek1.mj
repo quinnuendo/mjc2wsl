@@ -1,0 +1,11 @@
+program Rek1{
+	void func(int i){
+		print(i);
+		if (i>0) 
+			func(i-1);
+	}
+	
+	void main() {
+		func(5);
+	}
+}

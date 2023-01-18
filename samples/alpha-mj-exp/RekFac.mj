@@ -1,0 +1,17 @@
+program RekFac{
+
+	int factorial(int f)
+	{
+		if (f<0) 
+			return 0;
+		if (f<=1) 
+			return 1;
+		return factorial(f-1) * f ;
+	}
+	
+	void main()
+	{
+		print(factorial(3),3);
+		print(factorial(10),10);
+	}
+}

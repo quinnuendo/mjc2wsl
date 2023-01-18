@@ -1,0 +1,60 @@
+// load an array of ints and print the maximum
+program max_arr {
+	int[] load() 
+		int[] res;
+		int c,num,in; {
+		print('l');
+		print('e');
+		print('n');
+		print('g');
+		print('t');
+		print('h');
+		print('?');
+		read(num);
+		res = new int[num];
+                c = 0;
+                while (c<num) {
+                        print(c);
+                        print('?');
+                        read(in);
+                        res[c] = in;
+                        c++;
+                }
+		return res;
+	}
+
+	void printar(int[] arr) 
+		int c;
+	{
+		c = 0;
+		while (c < len(arr)) {
+			print(arr[c]);
+			print(' ');
+			c++;
+		}
+		print(chr(10));	
+	}
+
+	int max(int[] arr)
+	    	int c, max;
+	{
+		if (len(arr) == 0)
+		   return 0;
+		max = arr[0];
+		c = 1;
+		while (c < len(arr)) {
+		      if (max < arr[c])
+		      	 max = arr[c];
+		      c++;
+		}
+		return max;
+	}
+	
+	void main() 
+		int[] arr;
+	{
+		arr = load();
+		printar(arr);	
+		print(max(arr));
+	}
+}

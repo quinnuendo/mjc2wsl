@@ -1,0 +1,18 @@
+program RekFib{
+
+	int fib(int f)
+	{
+		if (f==0) 
+			return 0;
+		if (f==1) 
+			return 1;
+		return fib(f-2)+fib(f-1) ;
+	}
+	
+	void main()
+	{
+		print(fib(0),3);
+		print(fib(2),3);
+		print(fib(7),3);
+	}
+}

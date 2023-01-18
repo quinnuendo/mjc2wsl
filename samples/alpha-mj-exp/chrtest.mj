@@ -1,0 +1,11 @@
+program P
+{
+	void main()
+	{
+			print(chr(65),5);
+			print('A',5);
+			print(chr(10),2);
+			print(ord('a'),5);
+			print('a',5);
+	}
+}

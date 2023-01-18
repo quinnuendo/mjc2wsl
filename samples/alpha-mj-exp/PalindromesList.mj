@@ -1,0 +1,116 @@
+program PalindromesList
+    class Element {
+        char info;
+        Element prev, next;
+    }
+
+    Element first, last;
+{
+    void initList() {
+        first = null;
+        last = null;
+    }
+    
+    void addToEnd(char c) 
+	Element newone;
+	{	
+		newone = new Element;
+		newone.info = c;
+		newone.next = null;
+        newone.prev = null;
+
+        if (last == null) {
+            first = newone;
+            last = newone;
+        } else {
+            newone.prev = last;
+            last.next = newone;
+            last = newone;
+        }
+	}
+
+    void printSubword(Element start, Element end) 
+    Element curr;
+    {
+        curr = start;
+        while (curr != end) {
+            print(curr.info, 3);
+            curr = curr.next;
+        }
+        print(curr.info, 3);
+        print('\n');
+    }
+
+    int isPalindrome(Element start, Element end)
+    {
+        while (start != end && start.next != end) {
+            if (start.info != end.info) {
+                return 0;
+            } else {
+                start = start.next;
+                end = end.prev;
+            }
+        }
+
+        if (start.info == end.info) {
+            return 1;
+        }
+        return 0;
+    }
+
+    void printAllPalindromes()
+    Element start, end;
+    {
+        start = first;
+        while (start != null) {
+            end = last;
+            while (end != start) {
+                if (isPalindrome(start, end) == 1) {
+                    printSubword(start, end);
+                }
+                end = end.prev;
+            }
+            start = start.next;
+        }
+    }
+
+	void printlist() 
+	Element cur;
+	{
+		cur = first;
+		while (cur != null) {
+			print(cur.info);
+			cur = cur.next;
+		}
+		print('\n');
+	}
+
+    void load()
+    int num, c;
+    char in;
+    {
+        print('l');
+		print('?');
+		read(num);
+		c = 0;
+        while (c<num) {
+            print(c);
+            print('?');
+            read(in);
+            if (ord(in) == 10) {
+                read(in);
+            }
+            addToEnd(in);
+            c++;
+        }
+        print('l');
+        print(':');
+        printlist();
+    }
+
+    void main() 
+    {
+        load();
+        printAllPalindromes();
+    }
+}

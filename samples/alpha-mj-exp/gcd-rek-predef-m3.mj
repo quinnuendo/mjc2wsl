@@ -1,0 +1,18 @@
+program RekGCD{
+
+	int gcd(int a, int b)
+	{
+		if (a>b) 
+			return gcd(a-b,b);
+		if (a<b)
+			return gcd(a,b-a);
+		return a;
+	}
+	
+	void main()
+	{
+		print(gcd(8,12),3);
+		print(gcd(9,31),3);
+		print(gcd(164,88),3);
+	}
+}

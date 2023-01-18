@@ -1,0 +1,10 @@
+program InOut2{
+	void main()
+	char c;
+	{
+			print('c');
+			print('?');
+			read(c);
+			print(c);
+	}
+}

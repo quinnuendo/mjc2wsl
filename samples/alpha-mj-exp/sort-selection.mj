@@ -1,0 +1,63 @@
+program SelectionSort {
+    int[] load() 
+		int[] res;
+		int c,num,in; {
+		print('l');
+		print('?');
+		read(num);
+		res = new int[num];
+                c = 0;
+                while (c<num) {
+                        print(c);
+                        print('?');
+                        read(in);
+                        res[c] = in;
+                        c++;
+                }
+		return res;
+	}
+
+	void printar(int[] arr) 
+		int c;
+	{
+		c = 0;
+		while (c < len(arr)) {
+			print(arr[c]);
+			print(' ');
+			c++;
+		}
+		print(chr(10));	
+	}
+	
+	void sort(int[] arr)
+		int i, j, min, temp;
+	{
+		i = 0;
+		while (i < len(arr) - 1) {
+			min = i;
+            j = i + 1;
+			while (j < len(arr)) {
+				if (arr[j] < arr[min]) {
+                    min = j;
+                }
+				j++;
+			}
+
+            temp = arr[min];
+            arr[min] = arr[i];
+            arr[i] = temp;
+
+			i++;
+		}
+
+	}
+
+	void main() 
+		int[] arr;
+	{
+		arr = load();
+		printar(arr);	
+		sort(arr);
+		printar(arr);
+	}
+}

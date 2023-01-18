@@ -1,0 +1,24 @@
+program rekgcdinput{
+
+	int gcd(int a, int b)
+	{
+		if (a>b) 
+			return gcd(a-b,b);
+		if (a<b)
+			return gcd(a,b-a);
+		return a;
+	}
+	
+	void main()
+		int a;
+		int b;
+	{
+		print('a');
+		print('?');
+		read(a);
+		print('b');
+		print('?');
+		read(b);
+		print(gcd(a,b),3);
+	}
+}

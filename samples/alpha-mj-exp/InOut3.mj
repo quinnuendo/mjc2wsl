@@ -1,0 +1,23 @@
+program InOut3{
+	void main()
+	char c;
+	int i;
+	{
+			i = 5;
+			print('c');
+			print('?');
+			read(c);
+			print(c);
+			print(chr(10));
+			if (c=='y') {
+				print('i');
+				read(i);
+			} else {
+				print('c');
+				read(c);
+			}
+			print(chr(10));
+			print(i,5);
+			print(c,5);
+	}
+}

@@ -1,0 +1,76 @@
+program QuickSort {
+    int[] load() 
+		int[] res;
+		int c,num,in; {
+		print('l');
+		print('?');
+		read(num);
+		res = new int[num];
+                c = 0;
+                while (c<num) {
+                        print(c);
+                        print('?');
+                        read(in);
+                        res[c] = in;
+                        c++;
+                }
+		return res;
+	}
+
+	void printar(int[] arr) 
+		int c;
+	{
+		c = 0;
+		while (c < len(arr)) {
+			print(arr[c]);
+			print(' ');
+			c++;
+		}
+		print(chr(10));	
+	}
+	
+	int partition(int[] arr, int low, int high)
+    int pivot, i, j, temp;
+    {
+        pivot = arr[high];
+        i = low - 1;
+        j = low;
+
+        while (j < high) {
+            if (arr[j] < pivot) {
+                i++;
+
+                temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+            j++;
+        }
+
+        temp = arr[i+1];
+        arr[i+1] = arr[high];
+        arr[high] = temp;
+        
+        return i + 1;
+    }
+    
+    void sort(int[] arr, int low, int high)
+	int p;
+	{
+		if (low < high) {
+            p = partition(arr, low, high);
+
+            sort(arr, low, p-1);
+            sort(arr, p+1, high);
+        }
+	}
+
+	void main() 
+		int[] arr;
+	{
+		arr = load();
+		printar(arr);	
+		sort(arr, 0, len(arr) - 1);
+		printar(arr);
+	}
+}

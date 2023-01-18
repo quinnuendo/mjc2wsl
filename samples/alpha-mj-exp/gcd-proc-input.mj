@@ -1,0 +1,26 @@
+program procgcdinput{
+
+	int gcd(int a, int b)
+	{
+		while (a != b) {
+			if (a>b) 
+				a = a-b;
+			if (a<b)
+				b = b-a;
+		}
+		return a;
+	}
+	
+	void main()
+		int a;
+		int b;
+	{
+		print('a');
+		print('?');
+		read(a);
+		print('b');
+		print('?');
+		read(b);
+		print(gcd(a,b),3);
+	}
+}

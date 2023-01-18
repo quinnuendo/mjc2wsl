@@ -1,0 +1,20 @@
+program ArrayTest
+	int[] arr;
+	int i;
+	int max;
+{
+	void main(){
+		max = 10;
+		arr = new int[max];
+		i = 0;
+		while (i<max){
+			arr[i] = max-i;
+			i++;
+		}
+		i = 0;
+		while (i<len(arr)){
+			print(arr[i],3);
+			i++;
+		}
+	}
+}
